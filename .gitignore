@@ -7,6 +7,10 @@ log.txt
 #assets folder
 Assets/
 
+#visual c++ project files
+Stick.vcxproj
+Stick.vcxproj.filters
+
 # User-specific files
 *.suo
 *.user
