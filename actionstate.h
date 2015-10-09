@@ -10,6 +10,7 @@
 //game files
 #include "block.h"
 #include "hero.h"
+#include "springcamera.h"
 
 extern Graphics * g_graphics;
 extern Gui * g_gui;
@@ -33,6 +34,7 @@ private:
 
 	Block * m_Block;
 	Hero * m_Hero;
+	SpringCamera * m_Camera;
 };
 
 #endif

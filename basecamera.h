@@ -2,7 +2,7 @@
 #define _BASECAMERA_H_
 
 
-#include <D3D11.h>
+//#include <D3D11.h>
 #include <D3DX10math.h>
 #include "vector.h"
 

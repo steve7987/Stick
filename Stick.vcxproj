@@ -104,6 +104,7 @@
     <ClInclude Include="renderable.h" />
     <ClInclude Include="shield.h" />
     <ClInclude Include="shieldshader.h" />
+    <ClInclude Include="springcamera.h" />
     <ClInclude Include="text.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="texturemanager.h" />
@@ -139,6 +140,7 @@
     <ClCompile Include="progressbar.cpp" />
     <ClCompile Include="shield.cpp" />
     <ClCompile Include="shieldshader.cpp" />
+    <ClCompile Include="springcamera.cpp" />
     <ClCompile Include="text.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texturemanager.cpp" />

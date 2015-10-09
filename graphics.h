@@ -9,7 +9,7 @@
 
 #include "classlist.h"
 #include "d3dgraphics.h"
-#include "camera.h"
+
 
 #include "renderable.h"
 #include "bitmap.h"
@@ -19,7 +19,9 @@
 #include "light.h"
 
 #include "basecamera.h"
+#include "camera.h"
 #include "billboard.h"
+
 //shaders
 #include "colorshader.h"
 #include "textureshader.h"

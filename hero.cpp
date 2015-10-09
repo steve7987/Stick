@@ -44,3 +44,7 @@ void Hero::Update(float t, Vector velocityDirection){
 	position = position + t*velocityDirection / 1000.0;
 	heroModel->SetPosition(position);
 }
+
+Vector Hero::GetPosition(){
+	return position;
+}

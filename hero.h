@@ -20,6 +20,8 @@ public:
 	bool Render(float t);
 	void Update(float t, Vector velocity);  //velocity should come from the keyboard 
 
+	Vector GetPosition();
+
 private:
 	Model * heroModel;
 
