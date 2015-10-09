@@ -7,7 +7,9 @@
 #include "gamestatemanager.h"
 #include "input.h"
 #include "gui.h"
+//game files
 #include "block.h"
+#include "hero.h"
 
 extern Graphics * g_graphics;
 extern Gui * g_gui;
@@ -30,7 +32,7 @@ private:
 	int asSentence;
 
 	Block * m_Block;
-
+	Hero * m_Hero;
 };
 
 #endif

@@ -7,8 +7,8 @@
 
 extern Graphics * g_graphics;
 
-#define BLOCK_MODEL "./Assets/shipmodel1.txt"
-#define BLOCK_TEXTURE L"./Assets/shiptex.dds"
+#define BLOCK_MODEL "./Assets/cube.txt"
+#define BLOCK_TEXTURE L"./Assets/blocktex.dds"
 
 class Block{
 public:

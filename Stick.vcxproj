@@ -92,6 +92,7 @@
     <ClInclude Include="graphics.h" />
     <ClInclude Include="gui.h" />
     <ClInclude Include="helpers.h" />
+    <ClInclude Include="hero.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="lightshader.h" />
@@ -127,6 +128,7 @@
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="gui.cpp" />
     <ClCompile Include="helpers.cpp" />
+    <ClCompile Include="hero.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="lightshader.cpp" />
