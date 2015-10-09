@@ -7,6 +7,7 @@
 #include "gamestatemanager.h"
 #include "input.h"
 #include "gui.h"
+#include "block.h"
 
 extern Graphics * g_graphics;
 extern Gui * g_gui;
@@ -27,6 +28,8 @@ public:
 
 private:
 	int asSentence;
+
+	Block * m_Block;
 
 };
 
