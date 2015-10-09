@@ -19,8 +19,9 @@
 #include "gamestate.h"
 #include "gamestatemanager.h"
 #include "modelmanager.h"
-//specific classes
+//game state classes
 #include "mainmenustate.h"
+#include "actionstate.h"
 
 extern ModelManager * g_modelManager;
 extern TextureManager * g_textureManager;

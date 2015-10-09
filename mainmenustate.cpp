@@ -12,8 +12,8 @@ MainMenuState::~MainMenuState(){
 bool MainMenuState::Initialize(){
 	mmSentence = g_graphics->RegisterSentence(64);
 	g_graphics->ChangeSentence(mmSentence, "Main Menu State", 12, 38, 1.0f, 1.0f, 1.0f);
-	g_graphics->SetVisibleSentence(mmSentence, true);
-	g_gui->setVisible(GUIWINDOW_MAINMENU, true);
+	g_graphics->SetVisibleSentence(mmSentence, false);
+	g_gui->setVisible(GUIWINDOW_MAINMENU, false);
 	return true;
 }
 
@@ -35,8 +35,8 @@ bool MainMenuState::update(float t, Input * input){
 		if (window == GUIWINDOW_MAINMENUQUIT){
 			return false;
 		}
-		if (window == GUIWINDOW_MAINMENUWOLRD){
-			//g_gameStateManager->change("world");
+		if (window == GUIWINDOW_MAINMENUACTION){
+			g_gameStateManager->change("action");
 		}
 		if (window == GUIWINDOW_MAINMENUANIM){
 			//g_gameStateManager->change("animation");

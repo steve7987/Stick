@@ -13,7 +13,6 @@
 
 
 extern Graphics * g_graphics;
-extern Level * g_level;
 
 class GameStateManager{
 public:

@@ -117,6 +117,9 @@
     <ClInclude Include="shieldshader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="actionstate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="billboard.cpp">
@@ -204,6 +207,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="shieldshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="actionstate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

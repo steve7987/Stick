@@ -31,11 +31,13 @@ void GameStateManager::Shutdown(){
 
 
 bool GameStateManager::update(float t, Fps * fps){
+	//change the game state
 	if (m_nextState != 0){
 		if (m_currentState){
 			m_currentState->onExit();
 		}
 		m_currentState = m_nextState;
+		m_currentState->onEnter();
 		m_nextState = 0;
 		input->ResetInput();
 		textDump("game state changed");

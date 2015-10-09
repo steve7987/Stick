@@ -101,6 +101,10 @@ bool Gapp::Initialize() {
 	m_gameStateManager->add("main menu", mms);
 	m_gameStateManager->change("main menu");  //set menu as starting state
 	
+	ActionState * as = new ActionState();
+	as->Initialize();
+	m_gameStateManager->add("action", as);
+	
 	
 	textDump("finished main load");
 	return true;
