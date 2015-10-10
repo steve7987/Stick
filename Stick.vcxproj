@@ -94,6 +94,7 @@
     <ClInclude Include="helpers.h" />
     <ClInclude Include="hero.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="levelcompletestate.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="lightshader.h" />
     <ClInclude Include="mainmenustate.h" />
@@ -131,6 +132,7 @@
     <ClCompile Include="helpers.cpp" />
     <ClCompile Include="hero.cpp" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="levelcompletestate.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="lightshader.cpp" />
     <ClCompile Include="main.cpp" />

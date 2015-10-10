@@ -129,6 +129,9 @@
     <ClInclude Include="springcamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="levelcompletestate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="billboard.cpp">
@@ -228,6 +231,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="springcamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="levelcompletestate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

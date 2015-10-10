@@ -58,6 +58,10 @@ bool ActionState::update(float t, Input * input){
 	m_Hero->Update(t, vel);
 	m_Camera->Update(m_Hero->GetPosition());
 
+	//check for end of level
+	if (m_Hero->GetPosition().z > blockDeque->back()->getPosition().z){
+		g_gameStateManager->change("level complete");
+	}
 	return true;
 }
 
@@ -222,7 +226,6 @@ void ActionState::CreateBlocks(unsigned int seed, int width, int length, float b
 			}
 		}
 		//add edge blocks
-
 		if (edgeCounter == 0){
 			int z = 7 + rand() % 7;
 			edgeCounter = z + 7 + rand() % 7;

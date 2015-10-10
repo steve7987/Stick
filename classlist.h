@@ -17,6 +17,7 @@ class Gapp;  //main app
 class Graphics;  //uses d3d to do graphics
 class Gui;
 class Input;  //handles input from mouse/keyboard
+class LevelCompleteState;  //game state that occurs after a level has been finished
 class Light;
 class LightShader;
 class MainMenuState;  //opening menu of game

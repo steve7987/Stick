@@ -22,6 +22,7 @@
 //game state classes
 #include "mainmenustate.h"
 #include "actionstate.h"
+#include "levelcompletestate.h"
 
 extern ModelManager * g_modelManager;
 extern TextureManager * g_textureManager;
