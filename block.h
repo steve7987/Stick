@@ -20,6 +20,9 @@ public:
 
 	bool Render(float t);
 
+	Vector getPosition();
+	Vector getDimensions();
+
 private:
 	Model * blockModel;
 

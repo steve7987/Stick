@@ -33,8 +33,13 @@ public:
 	void onEnter();
 
 private:
-	void CreateBlocks(unsigned int seed);  //create the deque of blocks that will be the platforms for the level
-
+	//create the deque of blocks that will be the platforms for the level
+	//width and length is size of the field
+	//blockPercent is percentage of possible area which should be covered
+	void CreateBlocks(unsigned int seed, int width, int length, float blockPercent);  
+	//determines if the array contains a rect of zeros from (i,j) to (i+y, j+x)
+	bool ValidRect(int * bpath, int i, int j, int x, int z, int width); 
+	
 	int asSentence;
 
 	std::deque<Block*> * blockDeque;

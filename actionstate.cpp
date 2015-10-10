@@ -78,6 +78,12 @@ void ActionState::render(float t){
 void ActionState::onExit(){
 	g_gui->setVisible(GUIWINDOW_ACTION, false);
 	g_graphics->SetVisibleSentence(asSentence, false);
+	//shutdown hero
+	if (m_Hero){
+		m_Hero->Shutdown();
+		delete m_Hero;
+		m_Hero = 0;
+	}
 	//shutdown blocks
 	while (!blockDeque->empty()){
 		Block * del = blockDeque->front();
@@ -86,52 +92,118 @@ void ActionState::onExit(){
 		delete del;
 		del = 0;
 	}
-	//shutdown hero
-	if (m_Hero){
-		m_Hero->Shutdown();
-		delete m_Hero;
-		m_Hero = 0;
-	}
 }
 
 void ActionState::onEnter(){
 	g_gui->setVisible(GUIWINDOW_ACTION, true);
 	g_graphics->SetVisibleSentence(asSentence, true);
+	//create blocks
+	unsigned int seed = time(NULL);
+	std::stringstream oss;
+	oss << "Seed for creating blocks is: " << seed;
+	textDump(oss.str());
+	CreateBlocks(seed, 4, 40, 0.57);
 	//create hero
 	m_Hero = new Hero();
 	if (!m_Hero){
 		textDump("error creating hero in action state");
 		return;
 	}
-	if (!m_Hero->Initialize(Vector(0,1.25,0))){
+	//calc hero start based on where first blocks are
+	Vector startpos = blockDeque->front()->getPosition() + blockDeque->front()->getDimensions() / 2;  //middle of block
+	startpos = startpos + Vector(0, blockDeque->front()->getDimensions().y / 2, 0);
+	if (!m_Hero->Initialize(startpos)){
 		textDump("error initializing hero in action state");
 		return;
 	}
-	//create blocks
-	unsigned int seed = time(NULL);
-	std::stringstream oss;
-	oss << "Seed for creating blocks is: " << seed;
-	textDump(oss.str());
-	CreateBlocks(seed);
+	//reset camera
+	m_Camera->Reset(startpos + Vector(0, 3, 0));
 }
 
 
-void ActionState::CreateBlocks(unsigned int seed){
+void ActionState::CreateBlocks(unsigned int seed, int width, int length, float blockPercent){
 	srand(seed);
-	for (int i = 0; i < 50; i++){
-		Vector position = Vector(0,0,2*i);
-		Vector size = Vector(1,1,1);
-		Block * b = new Block();
-		if (!b){
-			textDump("Error creating block in action state");
-			return;
+	//first create an int array for pathing 0 is valid/open -1 is no block/closed
+	int * bpath = new int[width*length];
+	for (int i = 0; i < length; i++){
+		for (int j = 0; j < width; j++){
+			if ((float)(rand() % 1024) / 1024 < blockPercent){
+				bpath[i*width + j] = 0;
+			}
+			else{
+				bpath[i*width + j] = -1;
+			}
 		}
-		if (!b->Initialize(position, size)){
-			textDump("Error initializing block in action state");
-			return;
-		}
-
-
-		blockDeque->push_back(b);
 	}
+	//add block at the beginning of the level
+
+	//add other blocks
+	for (int i = 0; i < length; i++){
+		for (int j = 0; j < width; j++){
+			if (bpath[i*width + j] == 0){
+				int x = 1;
+				int z = 1;
+				bool canExpand = true;
+				while (canExpand){
+					if (rand() % 2 == 0 && j + x < width){ //check if block can expand in x dir
+						if (ValidRect(bpath, i, j, x+1, z, width)){
+							x++;
+						}
+						else {
+							canExpand = false;
+						}
+					}
+					else if (i + z < length)  { //check if it can expand in z dir
+						if (ValidRect(bpath, i, j, x, z+1, width)){
+							z++;
+						}
+						else {
+							canExpand = false;
+						}
+					}
+					else {
+						canExpand = false;
+					}
+				}
+				//close blocks that were included
+				for (int a = i; a < i + z; a++){
+					for (int b = j; b < j + x; b++){
+						bpath[a*width + b] = -1;
+					}
+				}
+				//add block with dimensions x, 1, z (adjusted slightly for edge gap)
+				Vector position = Vector(j,0,i);
+				Vector size = Vector(x - 0.1, 1, z - 0.1);  //0.1 is edge gap
+					
+				Block * b = new Block();
+				if (!b){
+					textDump("Error creating block in action state");
+					return;
+				}
+				if (!b->Initialize(position, size)){
+					textDump("Error initializing block in action state");
+					return;
+				}
+				blockDeque->push_back(b);
+			}
+		}
+	}
+
+
+	//add block at end of the level
+
+
+
+	delete [] bpath;
+}
+
+bool ActionState::ValidRect(int * bpath, int i, int j, int x, int z, int width){
+	for (int a = i; a < i + z; a++){
+		for (int b = j; b < j + x; b++){
+			if (bpath[a*width + b] != 0){
+				return false;
+			}
+		}
+	}
+	return true;
 }

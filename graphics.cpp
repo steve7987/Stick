@@ -116,10 +116,10 @@ bool Graphics::Initialize(int x , int y , HWND hwnd){
 		return false;
 	}
 	//set light color and direction
-	m_Light->SetDiffuseColor(0.8f, 0.8f, 0.8f, 1.0f);
+	m_Light->SetDiffuseColor(0.4f, 0.4f, 0.4f, 1.0f);
 	//m_Light->SetDirection(0.2f, -1.0f, 0.1f);
-	m_Light->SetDirection(0.1f, 0.3f, 1.0f);
-	m_Light->SetAmbientColor(0.2f, 0.2f, 0.2f, 1.0f);
+	m_Light->SetDirection(0.5f, -0.8f, 1.0f);
+	m_Light->SetAmbientColor(0.6f, 0.6f, 0.6f, 1.0f);
 	activeLight = m_Light;
 	textDump("Graphics initialized");
 	return true;

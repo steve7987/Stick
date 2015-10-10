@@ -42,3 +42,11 @@ bool Block::Render(float t){
 	g_graphics->RenderObject(blockModel, SHADER_LIGHT);
 	return true;
 }
+
+Vector Block::getPosition(){
+	return position;
+}
+	
+Vector Block::getDimensions(){
+	return dimensions;
+}
