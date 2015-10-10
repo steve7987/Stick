@@ -1,9 +1,9 @@
 #include "actionstate.h"
 
 ActionState::ActionState(){
-	m_Block = 0;
 	m_Hero = 0;
 	m_Camera = 0;
+	blockDeque = 0;
 }
 
 ActionState::~ActionState(){
@@ -27,12 +27,18 @@ bool ActionState::Initialize(){
 		return false;
 	}
 
+	blockDeque = new deque<Block *>();
+
 	return true;
 }
 
 void ActionState::Shutdown(){
 	if (m_Camera){
 		delete m_Camera;
+		m_Camera = 0;
+	}
+	if (blockDeque){
+		delete blockDeque;
 	}
 }
 
@@ -58,7 +64,12 @@ bool ActionState::update(float t, Input * input){
 void ActionState::render(float t){
 	g_graphics->StartFrame(t, m_Camera);
 
-	m_Block->Render(t);
+	
+	//render blocks
+	for (std::deque<Block*>::iterator it = blockDeque->begin(); it != blockDeque->end(); ++it){
+		(*it)->Render(t);
+	}
+	//render hero
 	m_Hero->Render(t);
 
 	g_graphics->EndFrame();
@@ -68,29 +79,59 @@ void ActionState::onExit(){
 	g_gui->setVisible(GUIWINDOW_ACTION, false);
 	g_graphics->SetVisibleSentence(asSentence, false);
 	//shutdown blocks
-	m_Block->Shutdown();
-	delete m_Block;
+	while (!blockDeque->empty()){
+		Block * del = blockDeque->front();
+		blockDeque->pop_front();
+		del->Shutdown();
+		delete del;
+		del = 0;
+	}
 	//shutdown hero
 	if (m_Hero){
 		m_Hero->Shutdown();
 		delete m_Hero;
+		m_Hero = 0;
 	}
 }
 
 void ActionState::onEnter(){
 	g_gui->setVisible(GUIWINDOW_ACTION, true);
 	g_graphics->SetVisibleSentence(asSentence, true);
-	//create blocks
-	m_Block = new Block();
-	m_Block->Initialize(Vector(0,0,0), Vector(1,1,1));
 	//create hero
 	m_Hero = new Hero();
 	if (!m_Hero){
 		textDump("error creating hero in action state");
 		return;
 	}
-	if (!m_Hero->Initialize(Vector(0,2,0))){
+	if (!m_Hero->Initialize(Vector(0,1.25,0))){
 		textDump("error initializing hero in action state");
 		return;
+	}
+	//create blocks
+	unsigned int seed = time(NULL);
+	std::stringstream oss;
+	oss << "Seed for creating blocks is: " << seed;
+	textDump(oss.str());
+	CreateBlocks(seed);
+}
+
+
+void ActionState::CreateBlocks(unsigned int seed){
+	srand(seed);
+	for (int i = 0; i < 50; i++){
+		Vector position = Vector(0,0,2*i);
+		Vector size = Vector(1,1,1);
+		Block * b = new Block();
+		if (!b){
+			textDump("Error creating block in action state");
+			return;
+		}
+		if (!b->Initialize(position, size)){
+			textDump("Error initializing block in action state");
+			return;
+		}
+
+
+		blockDeque->push_back(b);
 	}
 }

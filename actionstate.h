@@ -1,6 +1,9 @@
 #ifndef _ACTIONSTATE_H_
 #define _ACTIONSTATE_H_
 
+#include <deque>
+#include <time.h>
+
 #include "classlist.h"
 #include "helpers.h"
 #include "gamestate.h"
@@ -30,10 +33,14 @@ public:
 	void onEnter();
 
 private:
+	void CreateBlocks(unsigned int seed);  //create the deque of blocks that will be the platforms for the level
+
 	int asSentence;
 
-	Block * m_Block;
+	std::deque<Block*> * blockDeque;
+	
 	Hero * m_Hero;
+	
 	SpringCamera * m_Camera;
 };
 

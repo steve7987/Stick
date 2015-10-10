@@ -24,6 +24,7 @@ bool Hero::Initialize(Vector position){
 	}
 	this->position = position;
 	heroModel->SetPosition(position);
+	heroModel->SetScale(0.25, 0.25, 0.25);
 	return true;
 }
 	
@@ -41,7 +42,7 @@ bool Hero::Render(float t){
 }
 
 void Hero::Update(float t, Vector velocityDirection){
-	position = position + t*velocityDirection / 1000.0;
+	position = position + t*velocityDirection / 1000.0 * 6;  //6 is just temporary velocity
 	heroModel->SetPosition(position);
 }
 

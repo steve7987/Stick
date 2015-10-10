@@ -118,7 +118,7 @@ bool Graphics::Initialize(int x , int y , HWND hwnd){
 	//set light color and direction
 	m_Light->SetDiffuseColor(0.8f, 0.8f, 0.8f, 1.0f);
 	//m_Light->SetDirection(0.2f, -1.0f, 0.1f);
-	m_Light->SetDirection(0.0f, 0.3f, 1.0f);
+	m_Light->SetDirection(0.1f, 0.3f, 1.0f);
 	m_Light->SetAmbientColor(0.2f, 0.2f, 0.2f, 1.0f);
 	activeLight = m_Light;
 	textDump("Graphics initialized");
@@ -203,7 +203,7 @@ bool Graphics::StartFrame(float time, BaseCamera * cam, Light * light){
 	}
 	
 	// Clear the buffers to begin the scene.
-	m_d3d->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+	m_d3d->BeginScene(0.55f, 0.55f, 0.55f, 1.0f);
 
 	//get view matrix from camera
 	activeCamera->Render(time);

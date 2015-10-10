@@ -59,7 +59,7 @@ void SpringCamera::Reset(){
 }
 
 void SpringCamera::Render(float t){
-	Vector desiredPosition = targetPosition + Vector(0, 0, -4);  //adding offset from target
+	Vector desiredPosition = targetPosition + Vector(0, 0.5, -4);  //adding offset from target
 	Vector up = Vector(0, 1, 0);
 	//simulate spring deq
 	Vector accel = vweight * velocity + dweight * (position - desiredPosition);
