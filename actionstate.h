@@ -36,7 +36,8 @@ private:
 	//create the deque of blocks that will be the platforms for the level
 	//width and length is size of the field
 	//blockPercent is percentage of possible area which should be covered
-	void CreateBlocks(unsigned int seed, int width, int length, float blockPercent);  
+	//there will always be a 2x2 or 3x2 starting block and a 2xwidth ending block
+	void CreateBlocks(unsigned int seed, int width, int length, float blockPercent, float edgeGap);  
 	//determines if the array contains a rect of zeros from (i,j) to (i+y, j+x)
 	bool ValidRect(int * bpath, int i, int j, int x, int z, int width); 
 	

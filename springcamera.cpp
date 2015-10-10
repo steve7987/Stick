@@ -52,8 +52,8 @@ void SpringCamera::Update(Vector targetPosition){
 	this->targetPosition = targetPosition;
 }
 	
-void SpringCamera::Reset(){
-	position = Vector(-4,0,0);
+void SpringCamera::Reset(Vector position){
+	this->position = position;
 	targetPosition = Vector(0,0,0);
 	velocity = Vector(0,0,0);
 }

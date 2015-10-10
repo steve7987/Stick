@@ -18,7 +18,7 @@ public:
 	Vector GetLookVector();
 	Vector GetPosition();
 	void Update(Vector targetPosition);
-	void Reset();
+	void Reset(Vector position);
 
 	void Render(float t);
 	void GetViewMatrix(D3DXMATRIX& viewMatrix);

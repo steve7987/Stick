@@ -102,7 +102,7 @@ void ActionState::onEnter(){
 	std::stringstream oss;
 	oss << "Seed for creating blocks is: " << seed;
 	textDump(oss.str());
-	CreateBlocks(seed, 4, 40, 0.57);
+	CreateBlocks(seed, 4, 40, 0.57, 0.1);
 	//create hero
 	m_Hero = new Hero();
 	if (!m_Hero){
@@ -121,7 +121,7 @@ void ActionState::onEnter(){
 }
 
 
-void ActionState::CreateBlocks(unsigned int seed, int width, int length, float blockPercent){
+void ActionState::CreateBlocks(unsigned int seed, int width, int length, float blockPercent, float edgeGap){
 	srand(seed);
 	//first create an int array for pathing 0 is valid/open -1 is no block/closed
 	int * bpath = new int[width*length];
@@ -136,8 +136,42 @@ void ActionState::CreateBlocks(unsigned int seed, int width, int length, float b
 		}
 	}
 	//add block at the beginning of the level
-
+	if (width % 2 == 0){
+		int x = width / 2 - 1;
+		int z = -2;
+		Vector position = Vector(x,0,z);
+		Vector size = Vector(2 - edgeGap, 1, 2 - edgeGap);  
+					
+		Block * b = new Block();
+			if (!b){
+				textDump("Error creating block in action state");
+				return;
+			}
+			if (!b->Initialize(position, size)){
+				textDump("Error initializing block in action state");
+				return;
+			}
+		blockDeque->push_back(b);
+	}
+	else{
+		int x = width / 2 - 1;
+		int z = -2;
+		Vector position = Vector(x,0,z);
+		Vector size = Vector(3 - edgeGap, 1, 2 - edgeGap);  
+					
+		Block * b = new Block();
+			if (!b){
+				textDump("Error creating block in action state");
+				return;
+			}
+			if (!b->Initialize(position, size)){
+				textDump("Error initializing block in action state");
+				return;
+			}
+		blockDeque->push_back(b);
+	}
 	//add other blocks
+	int edgeCounter = 0;
 	for (int i = 0; i < length; i++){
 		for (int j = 0; j < width; j++){
 			if (bpath[i*width + j] == 0){
@@ -173,7 +207,7 @@ void ActionState::CreateBlocks(unsigned int seed, int width, int length, float b
 				}
 				//add block with dimensions x, 1, z (adjusted slightly for edge gap)
 				Vector position = Vector(j,0,i);
-				Vector size = Vector(x - 0.1, 1, z - 0.1);  //0.1 is edge gap
+				Vector size = Vector(x - edgeGap, 1, z - edgeGap);  //0.1 is edge gap
 					
 				Block * b = new Block();
 				if (!b){
@@ -187,11 +221,59 @@ void ActionState::CreateBlocks(unsigned int seed, int width, int length, float b
 				blockDeque->push_back(b);
 			}
 		}
+		//add edge blocks
+
+		if (edgeCounter == 0){
+			int z = 7 + rand() % 7;
+			edgeCounter = z + 7 + rand() % 7;
+			if (i + z > length + 2){
+				z = length + 2 - i;
+			}
+			Vector position = Vector(-1,0,i);
+			Vector size = Vector(1 - edgeGap, 3, z - edgeGap);  
+					
+			Block * b = new Block();
+			if (!b){
+				textDump("Error creating block in action state");
+				return;
+			}
+			if (!b->Initialize(position, size)){
+				textDump("Error initializing block in action state");
+				return;
+			}
+			blockDeque->push_back(b);
+			//right side
+			position = Vector(width, 0, i);
+			size = Vector(1 - edgeGap, 3, z - edgeGap);  
+			b = new Block();
+			if (!b){
+				textDump("Error creating block in action state");
+				return;
+			}
+			if (!b->Initialize(position, size)){
+				textDump("Error initializing block in action state");
+				return;
+			}
+			blockDeque->push_back(b);
+		}
+		edgeCounter--;
 	}
 
 
 	//add block at end of the level
-
+	Vector position = Vector(0,0,length);
+	Vector size = Vector(width - edgeGap, 1, 2 - edgeGap);  
+					
+	Block * b = new Block();
+		if (!b){
+			textDump("Error creating block in action state");
+			return;
+		}
+		if (!b->Initialize(position, size)){
+			textDump("Error initializing block in action state");
+			return;
+		}
+	blockDeque->push_back(b);
 
 
 	delete [] bpath;
