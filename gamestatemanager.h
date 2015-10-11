@@ -7,10 +7,9 @@
 #include "classlist.h"
 #include "input.h"
 #include "fps.h"
-#include "helpers.h"
 #include "gamestate.h"
 #include "graphics.h"
-
+#include "helpers.h"
 
 extern Graphics * g_graphics;
 

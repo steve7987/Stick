@@ -15,10 +15,10 @@
 #include "fps.h"
 #include "timer.h"
 #include "gui.h"
-#include "helpers.h"
 #include "gamestate.h"
 #include "gamestatemanager.h"
 #include "modelmanager.h"
+#include "helpers.h"
 //game state classes
 #include "mainmenustate.h"
 #include "actionstate.h"

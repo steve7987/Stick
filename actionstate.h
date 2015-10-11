@@ -5,11 +5,11 @@
 #include <time.h>
 
 #include "classlist.h"
-#include "helpers.h"
 #include "gamestate.h"
 #include "gamestatemanager.h"
 #include "input.h"
 #include "gui.h"
+#include "helpers.h"
 //game files
 #include "block.h"
 #include "hero.h"
