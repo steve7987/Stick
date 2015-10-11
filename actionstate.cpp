@@ -55,7 +55,7 @@ bool ActionState::update(float t, Input * input){
 		if (input->IsKeyDown(0x53)) vel = vel + Vector(0,0,-1);
 		if (input->IsKeyDown(0x44)) vel = vel + Vector(1,0,0);
 	}
-	m_Hero->Update(t, vel);
+	m_Hero->Update(t, vel, blockDeque);
 	m_Camera->Update(m_Hero->GetPosition());
 
 	//check for end of level
@@ -115,7 +115,7 @@ void ActionState::onEnter(){
 	}
 	//calc hero start based on where first blocks are
 	Vector startpos = blockDeque->front()->getPosition() + blockDeque->front()->getDimensions() / 2;  //middle of block
-	startpos = startpos + Vector(0, blockDeque->front()->getDimensions().y / 2, 0);
+	startpos = startpos + Vector(0, blockDeque->front()->getDimensions().y, 0);
 	if (!m_Hero->Initialize(startpos)){
 		textDump("error initializing hero in action state");
 		return;
