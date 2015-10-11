@@ -47,15 +47,8 @@ bool ActionState::update(float t, Input * input){
 	if (input->KeyBeenPushed(VK_ESCAPE)){
 		g_gameStateManager->change("main menu");
 	}
-	Vector vel = Vector(0,0,0);
-	if (input->IsKeyDown(0x57) || input->IsKeyDown(0x41) || input->IsKeyDown(0x53) || input->IsKeyDown(0x44)){  //wasd for horizontal movement
-		
-		if (input->IsKeyDown(0x57)) vel = vel + Vector(0,0,1);
-		if (input->IsKeyDown(0x41)) vel = vel + Vector(-1,0,0);
-		if (input->IsKeyDown(0x53)) vel = vel + Vector(0,0,-1);
-		if (input->IsKeyDown(0x44)) vel = vel + Vector(1,0,0);
-	}
-	m_Hero->Update(t, vel, blockDeque);
+	
+	m_Hero->Update(t, input, blockDeque);
 	m_Camera->Update(m_Hero->GetPosition());
 
 	//check for end of level

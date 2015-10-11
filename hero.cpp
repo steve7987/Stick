@@ -44,14 +44,26 @@ bool Hero::Render(float t){
 	return true;
 }
 
-void Hero::Update(float t, Vector velocityDirection, deque<Block *> * blockDeque){
+void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
+	Vector keyXZvel = Vector(0,0,0);
+	if (input->IsKeyDown(0x57) || input->IsKeyDown(0x41) || input->IsKeyDown(0x53) || input->IsKeyDown(0x44)){  
+		//wasd for xz movement
+		if (input->IsKeyDown(0x57)) keyXZvel = keyXZvel + Vector(0,0,1);
+		if (input->IsKeyDown(0x41)) keyXZvel = keyXZvel + Vector(-1,0,0);
+		if (input->IsKeyDown(0x53)) keyXZvel = keyXZvel + Vector(0,0,-1);
+		if (input->IsKeyDown(0x44)) keyXZvel = keyXZvel + Vector(1,0,0);
+	}
 	//calculate velocity
 	velocity.x = 0;
 	velocity.z = 0;
-	velocity = velocity + velocityDirection * 6; //6 is just temporary velocity
+	velocity = velocity + keyXZvel * 6; //6 is just temporary velocity
 	//check if gravity should be applied
 	if (anchorBlock == 0){
-		velocity.y = velocity.y + t / 1000.0 * -6;
+		velocity.y = velocity.y + t / 1000.0 * -6; //-6 is just temp gravity constant
+	}
+	//check for jump
+	if (anchorBlock != 0 && input->IsKeyDown(VK_SPACE)){
+		velocity.y = 2;  //const is just temp jump power
 	}
 	//update position
 	position = position + t * velocity / 1000.0;  

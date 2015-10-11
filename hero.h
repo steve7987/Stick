@@ -4,6 +4,7 @@
 #include <deque>
 
 #include "graphics.h"
+#include "input.h"
 #include "model.h"
 #include "vector.h"
 #include "helpers.h"
@@ -24,7 +25,7 @@ public:
 	bool Render(float t);
 	//velocity should come from the keyboard
 	//blockDeque is a deque of blocks that can be collided with
-	void Update(float t, Vector velocity, deque<Block *> * blockDeque );   
+	void Update(float t, Input * input, deque<Block *> * blockDeque );   
 
 	Vector GetPosition();
 
