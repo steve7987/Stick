@@ -28,6 +28,8 @@ public:
 	void Update(float t, Input * input, deque<Block *> * blockDeque );   
 
 	Vector GetPosition();
+	Vector GetAnchorVector();
+	Block * GetAnchorBlock();
 
 private:
 	//checks for collisions with any block in the list, if a collision occurs, position and velocity are adjusted
@@ -43,6 +45,8 @@ private:
 
 	//the block that the hero is attached to, 0 if in the air
 	Block * anchorBlock;
+	//contains the faces of the block that the hero is anchored to (e.g. <0,1,-1> means far y and near z planes)
+	Vector anchorVector; 
 };
 
 #endif

@@ -42,6 +42,7 @@ private:
 	bool ValidRect(int * bpath, int i, int j, int x, int z, int width); 
 	
 	int asSentence;
+	int debugSentence;  //used for ouputting different messages
 
 	std::deque<Block*> * blockDeque;
 	

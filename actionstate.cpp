@@ -15,6 +15,11 @@ bool ActionState::Initialize(){
 	asSentence = g_graphics->RegisterSentence(64);
 	g_graphics->ChangeSentence(asSentence, "Action State", 12, 38, 1.0f, 1.0f, 1.0f);
 	g_graphics->SetVisibleSentence(asSentence, false);
+	
+	debugSentence = g_graphics->RegisterSentence(256);
+	g_graphics->ChangeSentence(debugSentence, "Block Vector: ", 12, 52, 1.0f, 1.0f, 1.0f);
+	g_graphics->SetVisibleSentence(debugSentence, false);
+	
 	g_gui->setVisible(GUIWINDOW_ACTION, false);
 	//setup camera
 	m_Camera = new SpringCamera();
@@ -44,6 +49,11 @@ void ActionState::Shutdown(){
 
 	
 bool ActionState::update(float t, Input * input){
+	//put out debug info
+	std::ostringstream oss;
+	oss << "Block Vector: " << m_Hero->GetAnchorVector().x << ", " << m_Hero->GetAnchorVector().y << ", " << m_Hero->GetAnchorVector().z << " has: " <<m_Hero->GetAnchorBlock() == 0 ;
+	g_graphics->ChangeSentence(debugSentence, oss.str(), 12, 52, 1.0f, 1.0f, 1.0f);
+	
 	if (input->KeyBeenPushed(VK_ESCAPE)){
 		g_gameStateManager->change("main menu");
 	}
@@ -75,6 +85,7 @@ void ActionState::render(float t){
 void ActionState::onExit(){
 	g_gui->setVisible(GUIWINDOW_ACTION, false);
 	g_graphics->SetVisibleSentence(asSentence, false);
+	g_graphics->SetVisibleSentence(debugSentence, false);
 	//shutdown hero
 	if (m_Hero){
 		m_Hero->Shutdown();
@@ -94,6 +105,7 @@ void ActionState::onExit(){
 void ActionState::onEnter(){
 	g_gui->setVisible(GUIWINDOW_ACTION, true);
 	g_graphics->SetVisibleSentence(asSentence, true);
+	g_graphics->SetVisibleSentence(debugSentence, true);
 	//create blocks
 	unsigned int seed = time(NULL);
 	std::stringstream oss;
