@@ -16,6 +16,18 @@ float randb(float a, float b){
 	return a + ret*(b-a);
 }
 
+bool aabbCollide(Vector pos1, Vector dim1, Vector pos2, Vector dim2){
+	//compute centers
+	Vector c1 = pos1 + 0.5 * dim1;
+	Vector c2 = pos2 + 0.5 * dim2;
+
+	bool x = abs(c1.x - c2.x) < (dim1.x + dim2.x) / 2;
+	bool y = abs(c1.y - c2.y) < (dim1.y + dim2.y) / 2;
+	bool z = abs(c1.z - c2.z) < (dim1.z + dim2.z) / 2;
+
+	return x && y && z;
+}
+
 bool sphereBoxCollide(Vector center, float radius, Vector position, Vector dimensions){
 	float dmin = 0;
 	Vector posMax = position + dimensions;
