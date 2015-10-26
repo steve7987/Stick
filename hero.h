@@ -35,13 +35,22 @@ private:
 	//checks for collisions with any block in the list, if a collision occurs, position and velocity are adjusted
 	void checkCollisions(deque<Block *> * blockDeque);
 	//knowing that there has been a collision with b, resolve the collision by changing position and velocity
-	void resolveCollision(Block * b);
+	void resolveSphereCollision(Block * b);
+	//resolve a collision involving the leg block
+	void resolveBlockCollision(Block * b);
 
+	//model for the sphere
 	Model * heroModel;
+	float radius;
+	//info for the block representing the legs
+	Model * heroLegModel;
+	Vector legBlockDimensions;  //dimensions of the block
+	Vector legBlockPosition;
+	Vector legBlockOffset;  //offset vector from positon to legBlockPosition
 
 	Vector position;
 	Vector velocity;  //velocity is in units per second
-	float radius;
+	
 
 	//the block that the hero is attached to, 0 if in the air
 	Block * anchorBlock;

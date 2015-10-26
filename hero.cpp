@@ -5,6 +5,7 @@ Hero::Hero(void)
 {
 	heroModel = 0;
 	anchorBlock = 0;
+	heroLegModel = 0;
 }
 
 
@@ -29,6 +30,22 @@ bool Hero::Initialize(Vector position){
 	heroModel->SetPosition(position);
 	heroModel->SetScale(0.25, 0.25, 0.25);
 	this->radius = 0.25;
+
+	heroLegModel = new Model();
+	if (!heroLegModel){
+		textDump("Could not create model in the hero class");
+		return false;
+	}
+	if (!heroLegModel->Initialize(g_graphics->GetDevice(), "./Assets/cube.txt", L"./Assets/border.dds", false)){
+		textDump("Could not create model in hero class");
+		return false;
+	}
+	legBlockDimensions = Vector(0.25, 0.5, 0.25);
+	legBlockOffset = -1* legBlockDimensions + Vector(0.125, 0, 0.125);
+	legBlockPosition = position + legBlockOffset;
+	heroLegModel->SetPosition(legBlockPosition);
+	heroLegModel->SetScale(legBlockDimensions);
+
 	return true;
 }
 	
@@ -37,11 +54,16 @@ void Hero::Shutdown(){
 		heroModel->Shutdown();
 		delete heroModel;
 	}
+	if (heroLegModel){
+		heroLegModel->Shutdown();
+		delete heroLegModel;
+	}
 }
 
 
 bool Hero::Render(float t){
 	g_graphics->RenderObject(heroModel, SHADER_LIGHT);
+	g_graphics->RenderObject(heroLegModel, SHADER_LIGHT);
 	return true;
 }
 
@@ -69,6 +91,8 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	//update position
 	position = position + t * velocity / 1000.0;  
 	heroModel->SetPosition(position);
+	legBlockPosition = position + legBlockOffset;
+	heroLegModel->SetPosition(legBlockPosition);
 	//check and resolve collisions with blocks
 	checkCollisions(blockDeque);
 	//update anchorVector
@@ -91,14 +115,21 @@ Block * Hero::GetAnchorBlock(){
 
 //check if we collided with any block, if not in the air so set anchor to zero
 void Hero::checkCollisions(deque<Block *> * blockDeque){
-	if (anchorBlock != 0 && !sphereBoxCollide(position, radius, anchorBlock->getPosition(), anchorBlock->getDimensions())){
+	//check for detatchment from anchor block
+	if (anchorBlock != 0 && !sphereBoxCollide(position, radius, anchorBlock->getPosition(), anchorBlock->getDimensions())
+		&& !aabbCollide(legBlockPosition, legBlockDimensions, anchorBlock->getPosition(), anchorBlock->getDimensions())){
 		anchorBlock = 0;
 		anchorVector = Vector(0, 0, 0);
 	}
 	bool collided = false;
 	for (std::deque<Block*>::iterator it = blockDeque->begin(); it != blockDeque->end(); ++it){
+		if (aabbCollide(legBlockPosition, legBlockDimensions, (*it)->getPosition(), (*it)->getDimensions())){
+			resolveBlockCollision((*it));
+			collided = true;
+		}
+		
 		if (sphereBoxCollide(position, radius, (*it)->getPosition(), (*it)->getDimensions())){
-			resolveCollision((*it));
+			resolveSphereCollision((*it));
 			collided = true;
 		}
 	}
@@ -109,7 +140,7 @@ void Hero::checkCollisions(deque<Block *> * blockDeque){
 }
 
 //if theres no anchor, b becomes anchor and set velocity to zero
-void Hero::resolveCollision(Block * b){
+void Hero::resolveSphereCollision(Block * b){
 	if (anchorBlock == 0){
 		anchorBlock = b;
 		anchorVector = sphereBoxSidesCollide(position, radius, b->getPosition(), b->getDimensions());
@@ -117,4 +148,13 @@ void Hero::resolveCollision(Block * b){
 		return;
 	}
 	//check collision further with regards to other types of motion
+}
+
+void Hero::resolveBlockCollision(Block * b){
+	if (anchorBlock == 0){
+		anchorBlock = b;
+		anchorVector = Vector(0, 0, 0);
+		velocity = Vector(0, 0, 0);
+		return;
+	}
 }
