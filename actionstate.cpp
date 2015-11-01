@@ -120,7 +120,7 @@ void ActionState::onEnter(){
 	}
 	//calc hero start based on where first blocks are
 	Vector startpos = blockDeque->front()->getPosition() + blockDeque->front()->getDimensions() / 2;  //middle of block
-	startpos = startpos + Vector(0, blockDeque->front()->getDimensions().y, 0);
+	startpos = startpos + Vector(0, blockDeque->front()->getDimensions().y * 2, 0);  //*2 to put hero above so it falls
 	if (!m_Hero->Initialize(startpos)){
 		textDump("error initializing hero in action state");
 		return;

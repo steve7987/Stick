@@ -40,11 +40,13 @@ bool Hero::Initialize(Vector position){
 		textDump("Could not create model in hero class");
 		return false;
 	}
-	legBlockDimensions = Vector(0.25, 0.5, 0.25);
-	legBlockOffset = -1* legBlockDimensions + Vector(0.125, 0, 0.125);
+	Vector legBlockDisplayDimensions = Vector(0.25, 0.5, 0.25);
+	legBlockOffset = -1* legBlockDisplayDimensions + Vector(0.125, 0, 0.125);
 	legBlockPosition = position + legBlockOffset;
 	heroLegModel->SetPosition(legBlockPosition);
-	heroLegModel->SetScale(legBlockDimensions);
+	heroLegModel->SetScale(legBlockDisplayDimensions);
+	legBlockDimensions = Vector(0.25, 0.25, 0.25);
+	legAnchorBuffer = Vector(0.01, 0.01, 0.01);
 
 	return true;
 }
@@ -88,17 +90,23 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	if (anchorBlock != 0 && input->IsKeyDown(VK_SPACE)){  //could change to check for key press??
 		velocity.y = 2;  //const is just temp jump power
 	}
-	//update position
-	position = position + t * velocity / 1000.0;  
-	heroModel->SetPosition(position);
-	legBlockPosition = position + legBlockOffset;
-	heroLegModel->SetPosition(legBlockPosition);
+	
 	//check and resolve collisions with blocks
-	checkCollisions(blockDeque);
+	proposedPosition = position + t * velocity / 1000.0;
+	proposedVelocity = velocity;
+	legBlockPosition = proposedPosition + legBlockOffset;
+	checkCollisions(blockDeque, t);
 	//update anchorVector
 	if (anchorBlock != 0){
 		anchorVector = sphereBoxSidesCollide(position, radius, anchorBlock->getPosition(), anchorBlock->getDimensions());
 	}
+
+	//update position
+	velocity = proposedVelocity;
+	position = proposedPosition;  
+	heroModel->SetPosition(position);
+	legBlockPosition = position + legBlockOffset;
+	heroLegModel->SetPosition(legBlockPosition);
 }
 
 Vector Hero::GetPosition(){
@@ -114,47 +122,85 @@ Block * Hero::GetAnchorBlock(){
 }
 
 //check if we collided with any block, if not in the air so set anchor to zero
-void Hero::checkCollisions(deque<Block *> * blockDeque){
-	//check for detatchment from anchor block
-	if (anchorBlock != 0 && !sphereBoxCollide(position, radius, anchorBlock->getPosition(), anchorBlock->getDimensions())
-		&& !aabbCollide(legBlockPosition, legBlockDimensions, anchorBlock->getPosition(), anchorBlock->getDimensions())){
-		anchorBlock = 0;
-		anchorVector = Vector(0, 0, 0);
-	}
+void Hero::checkCollisions(deque<Block *> * blockDeque, float t){
 	bool collided = false;
 	for (std::deque<Block*>::iterator it = blockDeque->begin(); it != blockDeque->end(); ++it){
 		if (aabbCollide(legBlockPosition, legBlockDimensions, (*it)->getPosition(), (*it)->getDimensions())){
-			resolveBlockCollision((*it));
+			resolveBlockCollision((*it), t);
 			collided = true;
 		}
 		
-		if (sphereBoxCollide(position, radius, (*it)->getPosition(), (*it)->getDimensions())){
-			resolveSphereCollision((*it));
+		if (sphereBoxCollide(proposedPosition, radius, (*it)->getPosition(), (*it)->getDimensions())){
+			resolveSphereCollision((*it), t);
 			collided = true;
 		}
 	}
-	if (!collided){
+	//check for leg collision with anchor block (using leganchorbuffer)
+	if (anchorBlock != 0 && !aabbCollide(legBlockPosition - legAnchorBuffer, 
+		legBlockDimensions + legAnchorBuffer, anchorBlock->getPosition(), anchorBlock->getDimensions()))
+	{
 		anchorBlock = 0;
 		anchorVector = Vector(0, 0, 0);
+		collided = true;
 	}
 }
 
 //if theres no anchor, b becomes anchor and set velocity to zero
-void Hero::resolveSphereCollision(Block * b){
+void Hero::resolveSphereCollision(Block * b, float t){
+	/*
 	if (anchorBlock == 0){
 		anchorBlock = b;
 		anchorVector = sphereBoxSidesCollide(position, radius, b->getPosition(), b->getDimensions());
 		velocity = Vector(0, 0, 0);
 		return;
-	}
+	}*/
 	//check collision further with regards to other types of motion
 }
 
-void Hero::resolveBlockCollision(Block * b){
-	if (anchorBlock == 0){
-		anchorBlock = b;
-		anchorVector = Vector(0, 0, 0);
-		velocity = Vector(0, 0, 0);
-		return;
+
+void Hero::resolveBlockCollision(Block * b, float t){
+	//compute which side hit the block, and revert that side to old position
+	Vector offset = proposedPosition - position;
+	if (velocity.x > 0 && legBlockPosition.x + legBlockDimensions.x > b->getPosition().x 
+		&& legBlockPosition.x + legBlockDimensions.x - offset.x <= b->getPosition().x)
+	{
+		proposedPosition.x = position.x;
+		proposedVelocity.x = 0;
+
+	}
+	if (velocity.x < 0 && legBlockPosition.x < b->getPosition().x + b->getDimensions().x 
+		&& legBlockPosition.x - offset.x >= b->getPosition().x + b->getDimensions().x)
+	{
+		proposedPosition.x = position.x;
+		proposedVelocity.x = 0;
+	}
+
+	if (velocity.y > 0 && legBlockPosition.y + legBlockDimensions.y > b->getPosition().y 
+		&& legBlockPosition.y + legBlockDimensions.y - offset.y <= b->getPosition().y)
+	{
+		proposedPosition.y = position.y;
+		proposedVelocity.y = 0;
+
+	}
+	if (velocity.y < 0 && legBlockPosition.y < b->getPosition().y + b->getDimensions().y 
+		&& legBlockPosition.y - offset.y >= b->getPosition().y + b->getDimensions().y)
+	{
+		proposedPosition.y = position.y;
+		anchorBlock = b;  //landed on top of a block
+		proposedVelocity.y = 0;
+	}
+
+	if (velocity.z > 0 && legBlockPosition.z + legBlockDimensions.z > b->getPosition().z 
+		&& legBlockPosition.z + legBlockDimensions.z - offset.z <= b->getPosition().z)
+	{
+		proposedPosition.z = position.z;
+		proposedVelocity.z = 0;
+
+	}
+	if (velocity.z < 0 && legBlockPosition.z < b->getPosition().z + b->getDimensions().z 
+		&& legBlockPosition.z - offset.z >= b->getPosition().z + b->getDimensions().z)
+	{
+		proposedPosition.z = position.z;
+		proposedVelocity.z = 0;
 	}
 }
