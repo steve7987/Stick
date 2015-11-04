@@ -51,7 +51,8 @@ void ActionState::Shutdown(){
 bool ActionState::update(float t, Input * input){
 	//put out debug info
 	std::ostringstream oss;
-	oss << "Block Vector: " << m_Hero->GetAnchorVector().x << ", " << m_Hero->GetAnchorVector().y << ", " << m_Hero->GetAnchorVector().z << " has: " <<m_Hero->GetAnchorBlock() == 0 ;
+	oss << "Anchor block code is: " <<m_Hero->GetAnchorBlock() == 0 ;
+	oss << " hand vector is: " << m_Hero->GetHandAnchorVector().y;
 	g_graphics->ChangeSentence(debugSentence, oss.str(), 12, 52, 1.0f, 1.0f, 1.0f);
 	
 	if (input->KeyBeenPushed(VK_ESCAPE)){
@@ -62,7 +63,7 @@ bool ActionState::update(float t, Input * input){
 	m_Camera->Update(m_Hero->GetPosition());
 
 	//check for end of level
-	if (m_Hero->GetPosition().z > blockDeque->back()->getPosition().z){
+	if (m_Hero->GetAnchorBlock() == blockDeque->back()){
 		g_gameStateManager->change("level complete");
 	}
 	return true;

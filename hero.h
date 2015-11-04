@@ -28,8 +28,9 @@ public:
 	void Update(float t, Input * input, deque<Block *> * blockDeque );   
 
 	Vector GetPosition();
-	Vector GetAnchorVector();
+	Vector GetHandAnchorVector();
 	Block * GetAnchorBlock();
+	Block * GetHandAnchorBlock();
 
 private:
 	//checks for collisions with any block in the list, if a collision occurs, position and velocity are adjusted
@@ -57,10 +58,11 @@ private:
 	Vector velocity;  //velocity is in units per second
 	
 
-	//the block that the hero is attached to, 0 if in the air
+	//the block that the hero is standing on to, 0 if in the air
 	Block * anchorBlock;
 	//contains the faces of the block that the hero is anchored to (e.g. <0,1,-1> means far y and near z planes)
-	Vector anchorVector; 
+	Block * handAnchorBlock;
+	Vector handAnchorVector; 
 };
 
 #endif

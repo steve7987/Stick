@@ -5,6 +5,7 @@ Hero::Hero(void)
 {
 	heroModel = 0;
 	anchorBlock = 0;
+	handAnchorBlock = 0;
 	heroLegModel = 0;
 }
 
@@ -26,7 +27,7 @@ bool Hero::Initialize(Vector position){
 	}
 	this->position = position;
 	this->velocity = Vector(0, 0, 0);
-	this->anchorVector = Vector(0 ,0, 0);
+	this->handAnchorVector = Vector(0 ,0, 0);
 	heroModel->SetPosition(position);
 	heroModel->SetScale(0.25, 0.25, 0.25);
 	this->radius = 0.25;
@@ -81,13 +82,13 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	//calculate velocity
 	velocity.x = 0;
 	velocity.z = 0;
-	velocity = velocity + keyXZvel * 6; //6 is just temporary velocity
+	velocity = velocity + keyXZvel * 3; //num is just temporary velocity
 	//check if gravity should be applied
-	if (anchorBlock == 0){
+	if (anchorBlock == 0 && handAnchorVector.y != 1){
 		velocity.y = velocity.y + t / 1000.0 * -6; //-6 is just temp gravity constant
 	}
 	//check for jump
-	if (anchorBlock != 0 && input->IsKeyDown(VK_SPACE)){  //could change to check for key press??
+	if ((handAnchorVector.y == 1 || anchorBlock != 0) && input->IsKeyDown(VK_SPACE)){  //could change to check for key press??
 		velocity.y = 2;  //const is just temp jump power
 	}
 	
@@ -96,11 +97,7 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	proposedVelocity = velocity;
 	legBlockPosition = proposedPosition + legBlockOffset;
 	checkCollisions(blockDeque, t);
-	//update anchorVector
-	if (anchorBlock != 0){
-		anchorVector = sphereBoxSidesCollide(position, radius, anchorBlock->getPosition(), anchorBlock->getDimensions());
-	}
-
+	
 	//update position
 	velocity = proposedVelocity;
 	position = proposedPosition;  
@@ -113,48 +110,72 @@ Vector Hero::GetPosition(){
 	return position;
 }
 
-Vector Hero::GetAnchorVector(){
-	return anchorVector;
+Vector Hero::GetHandAnchorVector(){
+	return handAnchorVector;
 }
 
 Block * Hero::GetAnchorBlock(){
 	return anchorBlock;
 }
 
+Block * Hero::GetHandAnchorBlock(){
+	return handAnchorBlock;
+}
+
 //check if we collided with any block, if not in the air so set anchor to zero
 void Hero::checkCollisions(deque<Block *> * blockDeque, float t){
-	bool collided = false;
-	for (std::deque<Block*>::iterator it = blockDeque->begin(); it != blockDeque->end(); ++it){
-		if (aabbCollide(legBlockPosition, legBlockDimensions, (*it)->getPosition(), (*it)->getDimensions())){
-			resolveBlockCollision((*it), t);
-			collided = true;
-		}
-		
-		if (sphereBoxCollide(proposedPosition, radius, (*it)->getPosition(), (*it)->getDimensions())){
-			resolveSphereCollision((*it), t);
-			collided = true;
-		}
-	}
 	//check for leg collision with anchor block (using leganchorbuffer)
 	if (anchorBlock != 0 && !aabbCollide(legBlockPosition - legAnchorBuffer, 
 		legBlockDimensions + legAnchorBuffer, anchorBlock->getPosition(), anchorBlock->getDimensions()))
 	{
 		anchorBlock = 0;
-		anchorVector = Vector(0, 0, 0);
-		collided = true;
+	}
+	//check for arm collision with anchor block
+	if (handAnchorBlock != 0 && !sphereBoxCollide(proposedPosition, radius, handAnchorBlock->getPosition(), 
+												  handAnchorBlock->getDimensions()))
+	{
+		handAnchorBlock = 0;
+		handAnchorVector = Vector(0, 0, 0);
+	}
+	bool legCollided = false;
+	bool armCollided = false;
+	for (std::deque<Block*>::iterator it = blockDeque->begin(); it != blockDeque->end(); ++it){
+		if (aabbCollide(legBlockPosition, legBlockDimensions, (*it)->getPosition(), (*it)->getDimensions())){
+			resolveBlockCollision((*it), t);
+			legCollided = true;
+		}
+		
+		if (sphereBoxCollide(proposedPosition, radius, (*it)->getPosition(), (*it)->getDimensions())){
+			resolveSphereCollision((*it), t);
+			armCollided = true;
+		}
+	}
+	
+	if (armCollided == false){
+		handAnchorBlock = 0;
+		handAnchorVector = Vector(0, 0, 0);
 	}
 }
 
-//if theres no anchor, b becomes anchor and set velocity to zero
+
 void Hero::resolveSphereCollision(Block * b, float t){
-	/*
-	if (anchorBlock == 0){
-		anchorBlock = b;
-		anchorVector = sphereBoxSidesCollide(position, radius, b->getPosition(), b->getDimensions());
-		velocity = Vector(0, 0, 0);
-		return;
-	}*/
-	//check collision further with regards to other types of motion
+	//if no hand block make it this one
+	if (handAnchorBlock == 0){
+		handAnchorBlock = b;
+		handAnchorVector = sphereBoxSidesCollide(position, radius, b->getPosition(), b->getDimensions());
+	}
+	//if top of this box can be reached, make it the anchor
+	if (sphereBoxSidesCollide(proposedPosition, radius, b->getPosition(), b->getDimensions()).y == 1){
+		handAnchorBlock = b;
+		handAnchorVector = sphereBoxSidesCollide(proposedPosition, radius, b->getPosition(), b->getDimensions());
+	}
+	//if top of this box was held last frame but it isnt any more, move back to old spot and stop y velocity if its negative
+	else if (sphereBoxSidesCollide(position, radius, b->getPosition(), b->getDimensions()).y == 1){
+		if (velocity.y < 0){
+			proposedVelocity.y = 0;
+			proposedPosition.y = position.y;
+		}
+	}
 }
 
 
