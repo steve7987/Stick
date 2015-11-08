@@ -7,6 +7,8 @@ Hero::Hero(void)
 	anchorBlock = 0;
 	handAnchorBlock = 0;
 	heroLegModel = 0;
+	footModel[0] = 0;
+	footModel[1] = 0;
 }
 
 
@@ -21,7 +23,7 @@ bool Hero::Initialize(Vector position){
 		textDump("Could not create model in the hero class");
 		return false;
 	}
-	if (!heroModel->Initialize(g_graphics->GetDevice(), "./Assets/sphere.txt", L"./Assets/border.dds", false)){
+	if (!heroModel->Initialize(g_graphics->GetDevice(), "./Assets/sphere.txt", L"./Assets/Outline.dds", true)){
 		textDump("Could not create model in hero class");
 		return false;
 	}
@@ -37,7 +39,7 @@ bool Hero::Initialize(Vector position){
 		textDump("Could not create model in the hero class");
 		return false;
 	}
-	if (!heroLegModel->Initialize(g_graphics->GetDevice(), "./Assets/cube.txt", L"./Assets/border.dds", false)){
+	if (!heroLegModel->Initialize(g_graphics->GetDevice(), "./Assets/cube.txt", L"./Assets/Outline.dds", true)){
 		textDump("Could not create model in hero class");
 		return false;
 	}
@@ -49,10 +51,36 @@ bool Hero::Initialize(Vector position){
 	legBlockDimensions = Vector(0.25, 0.25, 0.25);
 	legAnchorBuffer = Vector(0.01, 0.01, 0.01);
 
+	//setup stick figure animation
+	for (int i = 0; i < 2; i++){
+		footModel[i] = new Model();
+		if (!footModel[i]){
+			textDump("Could not create model in the hero class");
+			return false;
+		}
+		if (!footModel[i]->Initialize(g_graphics->GetDevice(), "./Assets/sphere.txt", L"./Assets/Black.dds", false)){
+			textDump("Could not initialize model in the hero class");
+			return false;
+		}
+		float footRadius = 0.03;
+		footPosition[i] = -1 * Vector(0, legBlockDisplayDimensions.y, 0) + Vector(0, footRadius, 0) 
+						  + (2*i - 1) * Vector(legBlockDisplayDimensions.x / 2 - footRadius, 0, 0);
+		footModel[i]->SetPosition(position + footPosition[i]);
+		footModel[i]->SetScale(Vector(footRadius, footRadius, footRadius));
+	}
+
 	return true;
 }
 	
 void Hero::Shutdown(){
+	for (int i = 0; i < 2; i++){
+		if (footModel[i]){
+			footModel[i]->Shutdown();
+			delete footModel[i];
+			footModel[i] = 0;
+		}
+	}
+	
 	if (heroModel){
 		heroModel->Shutdown();
 		delete heroModel;
@@ -67,6 +95,9 @@ void Hero::Shutdown(){
 bool Hero::Render(float t){
 	g_graphics->RenderObject(heroModel, SHADER_LIGHT);
 	g_graphics->RenderObject(heroLegModel, SHADER_LIGHT);
+	for (int i = 0; i < 2; i++){
+		g_graphics->RenderObject(footModel[i], SHADER_LIGHT);
+	}
 	return true;
 }
 
@@ -104,6 +135,10 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	heroModel->SetPosition(position);
 	legBlockPosition = position + legBlockOffset;
 	heroLegModel->SetPosition(legBlockPosition);
+	//update stick figure
+	for (int i = 0; i < 2; i++){
+		footModel[i]->SetPosition(position + footPosition[i]);
+	}
 }
 
 Vector Hero::GetPosition(){

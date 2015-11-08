@@ -63,6 +63,10 @@ private:
 	//contains the faces of the block that the hero is anchored to (e.g. <0,1,-1> means far y and near z planes)
 	Block * handAnchorBlock;
 	Vector handAnchorVector; 
+
+	//STUFF FOR STICK FIGURE ANIMATION
+	Model * footModel[2];
+	Vector footPosition[2];  //relative to Vector position
 };
 
 #endif
