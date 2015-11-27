@@ -7,8 +7,9 @@ Hero::Hero(void)
 	anchorBlock = 0;
 	handAnchorBlock = 0;
 	heroLegModel = 0;
-	footModel[0] = 0;
-	footModel[1] = 0;
+	for (int i = 0; i < HERO_NUMFEET; i++){
+		footModel[i] = 0;
+	}
 }
 
 
@@ -52,7 +53,7 @@ bool Hero::Initialize(Vector position){
 	legAnchorBuffer = Vector(0.01, 0.01, 0.01);
 
 	//setup stick figure animation
-	for (int i = 0; i < 2; i++){
+	for (int i = 0; i < HERO_NUMFEET; i++){
 		footModel[i] = new Model();
 		if (!footModel[i]){
 			textDump("Could not create model in the hero class");
@@ -62,18 +63,22 @@ bool Hero::Initialize(Vector position){
 			textDump("Could not initialize model in the hero class");
 			return false;
 		}
-		float footRadius = 0.03;
-		footPosition[i] = -1 * Vector(0, legBlockDisplayDimensions.y, 0) + Vector(0, footRadius, 0) 
-						  + (2*i - 1) * Vector(legBlockDisplayDimensions.x / 2 - footRadius, 0, 0);
+		footRadius = 0.03;
+		footDefault[i] = -1 * Vector(0, legBlockDisplayDimensions.y, 0) + Vector(0, footRadius, 0) 
+						  + (2*i - 1) * Vector(legBlockDisplayDimensions.x / 4 - footRadius, 0, 0);
+		footPosition[i] = footDefault[i];
 		footModel[i]->SetPosition(position + footPosition[i]);
 		footModel[i]->SetScale(Vector(footRadius, footRadius, footRadius));
+		
 	}
+	footVelocity = Vector(0,0,0);
+	mainFootForward = true;
 
 	return true;
 }
 	
 void Hero::Shutdown(){
-	for (int i = 0; i < 2; i++){
+	for (int i = 0; i < HERO_NUMFEET; i++){
 		if (footModel[i]){
 			footModel[i]->Shutdown();
 			delete footModel[i];
@@ -95,7 +100,7 @@ void Hero::Shutdown(){
 bool Hero::Render(float t){
 	g_graphics->RenderObject(heroModel, SHADER_LIGHT);
 	g_graphics->RenderObject(heroLegModel, SHADER_LIGHT);
-	for (int i = 0; i < 2; i++){
+	for (int i = 0; i < HERO_NUMFEET; i++){
 		g_graphics->RenderObject(footModel[i], SHADER_LIGHT);
 	}
 	return true;
@@ -113,7 +118,7 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	//calculate velocity
 	velocity.x = 0;
 	velocity.z = 0;
-	velocity = velocity + keyXZvel * 3; //num is just temporary velocity
+	velocity = velocity + keyXZvel * 0.5; //num is just temporary velocity
 	//check if gravity should be applied
 	if (anchorBlock == 0 && handAnchorVector.y != 1){
 		velocity.y = velocity.y + t / 1000.0 * -6; //-6 is just temp gravity constant
@@ -135,10 +140,9 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	heroModel->SetPosition(position);
 	legBlockPosition = position + legBlockOffset;
 	heroLegModel->SetPosition(legBlockPosition);
-	//update stick figure
-	for (int i = 0; i < 2; i++){
-		footModel[i]->SetPosition(position + footPosition[i]);
-	}
+	
+	//update stick animations
+	updateAnimations(t);
 }
 
 Vector Hero::GetPosition(){
@@ -259,4 +263,62 @@ void Hero::resolveBlockCollision(Block * b, float t){
 		proposedPosition.z = position.z;
 		proposedVelocity.z = 0;
 	}
+}
+
+
+void Hero::updateAnimations(float t){
+	if (anchorBlock != 0 && velocity * velocity != 0){
+		//if moving on the ground
+		Vector targetPos = getDesiredStepPoint();
+		Vector footVel = targetPos - footPosition[0];
+		if (footVel * velocity > 0){
+			mainFootForward = true;
+		}
+		else {
+			mainFootForward = false;
+		}
+		footVel = footVel / footVel.length() * velocity.length();
+		footPosition[0] = footPosition[0] + footVel * t / 1000.0;
+	}
+
+	//compute position of mirrored foot (foot 1)
+	footPosition[1] = footDefault[1] - (footPosition[0] - footDefault[0]);
+	//update feet model positions
+	for (int i = 0; i < HERO_NUMFEET; i++){
+		footModel[i]->SetPosition(position + footPosition[i]);
+	}
+}
+
+Vector Hero::getDesiredStepPoint(){
+	Vector dir;
+	if (mainFootForward){
+		dir = velocity;
+	}
+	else {
+		dir = -1 * velocity;
+	}
+	float tmin = FLT_MAX;
+	//compute time to hit four edges of the foot box (leg half of leg box)
+	float txmin = (legBlockOffset.x - footDefault[0].x + footRadius) / dir.x;
+	float txmax = (0 - footDefault[0].x - footRadius) / dir.x;
+	float tzmin = (legBlockOffset.z + footRadius) / dir.z;
+	float tzmax = (legBlockOffset.z + legBlockDimensions.z - footRadius) / dir.z;
+	//find smallest positive time
+	if (dir.x != 0 && txmin > 0 && txmin < tmin){
+		tmin = txmin;
+	}
+	if (dir.x != 0 && txmax > 0 && txmax < tmin){
+		tmin = txmax;
+	}
+	if (dir.z != 0 && tzmin > 0 && tzmin < tmin){
+		tmin = tzmin;
+	}
+	if (dir.z != 0 && tzmax > 0 && tzmax < tmin){
+		tmin = tzmax;
+	}
+	//if there is only yvel, move back to default point;
+	if (dir.x == 0 && dir.z == 0){
+		tmin = 0;
+	}
+	return footDefault[0] + tmin * dir;
 }

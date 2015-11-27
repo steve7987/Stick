@@ -131,3 +131,13 @@ Vector sphereBoxSidesCollide(Vector center, float radius, Vector position, Vecto
 	}
 	return ret;
 }
+
+bool sphereInsideBox(Vector center, float radius, Vector position, Vector dimensions){
+	Vector sphereBot = center - Vector(radius, radius, radius);
+	Vector sphereTop = center + Vector(radius, radius, radius);
+
+	Vector boxTop = position + dimensions;
+
+	return (sphereBot.x > position.x && sphereBot.y > position.y && sphereBot.z > position.z && 
+			sphereTop.x < boxTop.x && sphereTop.y < boxTop.y && sphereTop.z < boxTop.z);
+}

@@ -12,6 +12,7 @@
 
 extern Graphics * g_graphics;
 
+#define HERO_NUMFEET 2
 
 class Hero
 {
@@ -39,6 +40,10 @@ private:
 	void resolveSphereCollision(Block * b, float t);
 	//resolve a collision involving the leg block
 	void resolveBlockCollision(Block * b, float t);
+	//updates the animations of the stick figure
+	void updateAnimations(float t);
+	//returns where main foot should be stepping based on hero velocity
+	Vector getDesiredStepPoint();
 
 	//model for the sphere
 	Model * heroModel;
@@ -65,8 +70,14 @@ private:
 	Vector handAnchorVector; 
 
 	//STUFF FOR STICK FIGURE ANIMATION
-	Model * footModel[2];
-	Vector footPosition[2];  //relative to Vector position
+	float footRadius;
+	Model * footModel[HERO_NUMFEET];
+	
+
+	Vector footDefault[HERO_NUMFEET];  //relative to vector position
+	Vector footPosition[HERO_NUMFEET];  //relative to Vector position
+	Vector footVelocity; //vel of the main foot, other is just mirrored
+	bool mainFootForward;  //if the main foot is moving with or against the characters velocity
 };
 
 #endif

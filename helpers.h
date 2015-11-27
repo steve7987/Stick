@@ -27,4 +27,7 @@ bool sphereBoxCollide(Vector center, float radius, Vector position, Vector dimen
 //in the case where both near and fall walls collide, the wall closer to the sphere's center is returned
 Vector sphereBoxSidesCollide(Vector center, float radius, Vector position, Vector dimensions);
 
+bool sphereInsideBox(Vector center, float radius, Vector position, Vector dimensions);
+
+
 #endif
