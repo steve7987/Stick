@@ -118,7 +118,7 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	//calculate velocity
 	velocity.x = 0;
 	velocity.z = 0;
-	velocity = velocity + keyXZvel * 0.5; //num is just temporary velocity
+	velocity = velocity + keyXZvel * 1.5; //num is just temporary velocity
 	//check if gravity should be applied
 	if (anchorBlock == 0 && handAnchorVector.y != 1){
 		velocity.y = velocity.y + t / 1000.0 * -6; //-6 is just temp gravity constant

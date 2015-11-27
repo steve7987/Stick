@@ -58,6 +58,14 @@ bool ActionState::update(float t, Input * input){
 	if (input->KeyBeenPushed(VK_ESCAPE)){
 		g_gameStateManager->change("main menu");
 	}
+	if (input->IsKeyDown(0x45)){  //e pressed
+		textDump("rotate cam");
+		m_Camera->SetRotation(m_Camera->GetRotation() * Quaternion(Vector(0,1,0), t / 2000.0));
+	}
+	if (input->IsKeyDown(0x51)){  //q pressed
+		textDump("rotate cam");
+		m_Camera->SetRotation(m_Camera->GetRotation() * Quaternion(Vector(0,1,0), -1 * t / 2000.0));
+	}
 	
 	m_Hero->Update(t, input, blockDeque);
 	m_Camera->Update(m_Hero->GetPosition());

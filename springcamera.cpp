@@ -11,35 +11,11 @@ bool SpringCamera::Initialize(float positionWeight, float springStep){
 	position = Vector(0,0,0);
 	targetPosition = Vector(0,0,0);
 	velocity = Vector(0,0,0);
-	look = Vector(0,0,1);  //camera always looks forward in z direction 
+	look = Vector(0,0,4);  //camera always looks forward in z direction 
+	rotation = Quaternion(Vector(0,1,0), 0);
+	return true;
+}
 
-	return true;
-}
-/*
-bool SpringCamera::Initialize(char * datafile){
-	position = Vector(0,0,0);
-	shipPosition = Vector(0,0,0);
-	velocity = Vector(0,0,0);
-	distance = 0;
-	//load data from file
-	ifstream fin;
-	char input;
-	fin.open(datafile);
-	if (fin.fail()){
-		textDump("failed to open camera data file");
-		return false;
-	}
-	for (fin.get(input); input != ':'; fin.get(input));
-	float w;
-	fin >> w;
-	vweight = -2*w;
-	dweight = -1*w*w;
-	for (fin.get(input); input != ':'; fin.get(input));
-	fin >> step;
-	fin.close();
-	return true;
-}
-*/
 Vector SpringCamera::GetLookVector(){
 	return look;
 }
@@ -56,6 +32,15 @@ void SpringCamera::Reset(Vector position){
 	this->position = position;
 	targetPosition = Vector(0,0,0);
 	velocity = Vector(0,0,0);
+	rotation = Quaternion(Vector(0,1,0), 0);
+}
+
+void SpringCamera::SetRotation(Quaternion rotate){
+	rotation = rotate;
+}
+
+Quaternion SpringCamera::GetRotation(){
+	return rotation;
 }
 
 void SpringCamera::Render(float t){
@@ -65,25 +50,12 @@ void SpringCamera::Render(float t){
 	Vector accel = vweight * velocity + dweight * (position - desiredPosition);
 	velocity = velocity + accel * t / 1000.0f;
 	position = position + velocity * t / 1000.0f;
-	/*
-	while (t > 0) {
-		Vector accel = vweight * velocity + dweight * (position - desiredPosition);
-		if (t > step){
-			t -= step;
-			velocity = velocity + accel * step / 1000.0f;
-			position = position + velocity * step / 1000.0f;
-		}
-		else {
-			velocity = velocity + accel * t / 1000.0f;
-			position = position + velocity * t / 1000.0f;
-			t = 0;
-		}
-	}
-	*/
+	
 	Vector target = position + look;
+	Vector finalPos = target - rotation* look;
 	//create matricies
-	D3DXMatrixLookAtLH(&m_viewMatrix, &(position).d3dvector(), &(target).d3dvector(), &up.d3dvector());
-	D3DXMatrixTranslation(&m_worldMatrix, position.x, position.y, position.z);
+	D3DXMatrixLookAtLH(&m_viewMatrix, &(finalPos).d3dvector(), &(target).d3dvector(), &up.d3dvector());
+	D3DXMatrixTranslation(&m_worldMatrix, finalPos.x, finalPos.y, finalPos.z);
 }
 
 void SpringCamera::GetViewMatrix(D3DXMATRIX& viewMatrix){

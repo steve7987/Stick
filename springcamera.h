@@ -13,13 +13,13 @@ public:
 	SpringCamera();
 
 	bool Initialize(float positionWeight, float springStep);
-	bool Initialize(char * datafile);
 
 	Vector GetLookVector();
 	Vector GetPosition();
 	void Update(Vector targetPosition);
 	void Reset(Vector position);
-
+	void SetRotation(Quaternion rotate);
+	Quaternion GetRotation();
 	void Render(float t);
 	void GetViewMatrix(D3DXMATRIX& viewMatrix);
 	void GetGUIWorldMatrix(D3DXMATRIX& worldMatrix);
@@ -33,7 +33,7 @@ private:
 
 	Vector targetPosition;  //position of target camera is following
 
-	Quaternion rotation;  //rotation of camera (not currently used)
+	Quaternion rotation;  //rotation of camera 
 
 
 	//weights for spring
