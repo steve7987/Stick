@@ -141,3 +141,61 @@ bool sphereInsideBox(Vector center, float radius, Vector position, Vector dimens
 	return (sphereBot.x > position.x && sphereBot.y > position.y && sphereBot.z > position.z && 
 			sphereTop.x < boxTop.x && sphereTop.y < boxTop.y && sphereTop.z < boxTop.z);
 }
+
+Vector closestPointOnBlock(Vector center, float radius, Vector position, Vector dimensions, Vector validSides){
+	//adjust block size base on valid sides
+	if (validSides.x > 0) {
+		position.x += dimensions.x;
+		dimensions.x = 0;
+	}
+	else if (validSides.x < 0) {
+		dimensions.x = 0;
+	}
+	if (validSides.y > 0) {
+		position.y += dimensions.y;
+		dimensions.y = 0;
+	}
+	else if (validSides.y < 0) {
+		dimensions.y = 0;
+	}
+	if (validSides.z > 0) {
+		position.z += dimensions.z;
+		dimensions.z = 0;
+	}
+	else if (validSides.z < 0) {
+		dimensions.z = 0;
+	}
+	//find the nearest point on the modified block
+	Vector result;
+	//if the center isn't over the x range of the block take an endpoint of the xrange, else take the center as the x point
+	if (center.x < position.x){  
+		result.x = position.x;
+	}
+	else if (center.x > position.x + dimensions.x){
+		result.x = position.x + dimensions.x;
+	}
+	else {
+		result.x = center.x;
+	}
+
+	if (center.y < position.y){  
+		result.y = position.y;
+	}
+	else if (center.y > position.y + dimensions.y){
+		result.y = position.y + dimensions.y;
+	}
+	else {
+		result.y = center.y;
+	}
+
+	if (center.z < position.z){  
+		result.z = position.z;
+	}
+	else if (center.z > position.z + dimensions.z){
+		result.z = position.z + dimensions.z;
+	}
+	else {
+		result.z = center.z;
+	}
+	return result;
+}

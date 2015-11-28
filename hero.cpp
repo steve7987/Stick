@@ -267,22 +267,34 @@ void Hero::resolveBlockCollision(Block * b, float t){
 
 
 void Hero::updateAnimations(float t){
+	//if moving on the ground
 	if (anchorBlock != 0 && velocity * velocity != 0){
 		//if moving on the ground
-		Vector targetPos = getDesiredStepPoint();
+		Vector targetPos = getDesiredStepPoint();  //get target point for main foot
+		Vector offTargetPos = footDefault[1] + footDefault[0] - targetPos;
+		//make sure that point is on the anchor block
+		targetPos = closestPointOnBlock(targetPos + position, footRadius, anchorBlock->getPosition(), anchorBlock->getDimensions(), Vector(0, 1, 0));
+		targetPos = targetPos - position + Vector(0, footRadius, 0);
+		//move main foot
 		Vector footVel = targetPos - footPosition[0];
+		footVel = footVel / footVel.length() * velocity.length();
+		footPosition[0] = footPosition[0] + footVel * t / 1000.0;
+		//check if end of step has been reached
 		if (footVel * velocity > 0){
 			mainFootForward = true;
 		}
 		else {
 			mainFootForward = false;
 		}
+		//do same for opposite foot
+		offTargetPos = closestPointOnBlock(offTargetPos + position, footRadius, anchorBlock->getPosition(), anchorBlock->getDimensions(), Vector(0, 1, 0));
+		offTargetPos = offTargetPos - position + Vector(0, footRadius, 0);
+		footVel = offTargetPos - footPosition[1];
 		footVel = footVel / footVel.length() * velocity.length();
-		footPosition[0] = footPosition[0] + footVel * t / 1000.0;
+		footPosition[1] = footPosition[1] + footVel * t / 1000.0;
 	}
+	
 
-	//compute position of mirrored foot (foot 1)
-	footPosition[1] = footDefault[1] - (footPosition[0] - footDefault[0]);
 	//update feet model positions
 	for (int i = 0; i < HERO_NUMFEET; i++){
 		footModel[i]->SetPosition(position + footPosition[i]);

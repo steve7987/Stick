@@ -27,7 +27,12 @@ bool sphereBoxCollide(Vector center, float radius, Vector position, Vector dimen
 //in the case where both near and fall walls collide, the wall closer to the sphere's center is returned
 Vector sphereBoxSidesCollide(Vector center, float radius, Vector position, Vector dimensions);
 
+//gives a vector to a point on the given block that is closest to the given sphere.  The point must be on all of the sides
+//specified by validSides (e.g. vs = <0,1,1> point must be on top and back sides)
+Vector closestPointOnBlock(Vector center, float radius, Vector position, Vector dimensions, Vector validSides);
+
 bool sphereInsideBox(Vector center, float radius, Vector position, Vector dimensions);
+
 
 
 #endif
