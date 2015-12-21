@@ -30,7 +30,7 @@ public:
 
 	Vector GetPosition();
 	Vector GetHandAnchorVector();
-	Block * GetAnchorBlock();
+	deque<Block *> * GetAnchorBlocks();
 	Block * GetHandAnchorBlock();
 
 private:
@@ -63,8 +63,8 @@ private:
 	Vector velocity;  //velocity is in units per second
 	
 
-	//the block that the hero is standing on to, 0 if in the air
-	Block * anchorBlock;
+	//deque of blocks that the hero is standing on, should have size of zero if in the air
+	deque<Block *> * anchorBlocks;
 	//contains the faces of the block that the hero is anchored to (e.g. <0,1,-1> means far y and near z planes)
 	Block * handAnchorBlock;
 	Vector handAnchorVector; 

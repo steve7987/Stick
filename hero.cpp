@@ -4,7 +4,7 @@
 Hero::Hero(void)
 {
 	heroModel = 0;
-	anchorBlock = 0;
+	anchorBlocks = 0;
 	handAnchorBlock = 0;
 	heroLegModel = 0;
 	for (int i = 0; i < HERO_NUMFEET; i++){
@@ -19,6 +19,8 @@ Hero::~Hero(void)
 
 
 bool Hero::Initialize(Vector position){
+	anchorBlocks = new deque<Block *>();
+	
 	heroModel = new Model();
 	if (!heroModel){
 		textDump("Could not create model in the hero class");
@@ -94,6 +96,9 @@ void Hero::Shutdown(){
 		heroLegModel->Shutdown();
 		delete heroLegModel;
 	}
+	if (anchorBlocks){
+		delete anchorBlocks;
+	}
 }
 
 
@@ -120,11 +125,11 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	velocity.z = 0;
 	velocity = velocity + keyXZvel * 1.5; //num is just temporary velocity
 	//check if gravity should be applied
-	if (anchorBlock == 0 && handAnchorVector.y != 1){
+	if (anchorBlocks->size() == 0 && handAnchorVector.y != 1){
 		velocity.y = velocity.y + t / 1000.0 * -6; //-6 is just temp gravity constant
 	}
 	//check for jump
-	if ((handAnchorVector.y == 1 || anchorBlock != 0) && input->IsKeyDown(VK_SPACE)){  //could change to check for key press??
+	if ((handAnchorVector.y == 1 || anchorBlocks->size() != 0) && input->IsKeyDown(VK_SPACE)){  //could change to check for key press??
 		velocity.y = 2;  //const is just temp jump power
 	}
 	
@@ -153,22 +158,18 @@ Vector Hero::GetHandAnchorVector(){
 	return handAnchorVector;
 }
 
-Block * Hero::GetAnchorBlock(){
-	return anchorBlock;
+deque<Block *> * Hero::GetAnchorBlocks(){
+	return anchorBlocks;
 }
 
 Block * Hero::GetHandAnchorBlock(){
 	return handAnchorBlock;
 }
 
-//check if we collided with any block, if not in the air so set anchor to zero
+//check if we collided with any block, recreate the deque of anchor blocks
 void Hero::checkCollisions(deque<Block *> * blockDeque, float t){
-	//check for leg collision with anchor block (using leganchorbuffer)
-	if (anchorBlock != 0 && !aabbCollide(legBlockPosition - legAnchorBuffer, 
-		legBlockDimensions + legAnchorBuffer, anchorBlock->getPosition(), anchorBlock->getDimensions()))
-	{
-		anchorBlock = 0;
-	}
+	//clear out anchorblocks from last frame
+	anchorBlocks->clear();
 	//check for arm collision with anchor block
 	if (handAnchorBlock != 0 && !sphereBoxCollide(proposedPosition, radius, handAnchorBlock->getPosition(), 
 												  handAnchorBlock->getDimensions()))
@@ -179,6 +180,14 @@ void Hero::checkCollisions(deque<Block *> * blockDeque, float t){
 	bool legCollided = false;
 	bool armCollided = false;
 	for (std::deque<Block*>::iterator it = blockDeque->begin(); it != blockDeque->end(); ++it){
+		//check if hero is standing on this block, and add it to anchorblock deque if it is
+		if (aabbCollide(legBlockPosition - legAnchorBuffer, legBlockDimensions + legAnchorBuffer, 
+			(*it)->getPosition(), (*it)->getDimensions()) && legBlockPosition.y > (*it)->getPosition().y + (*it)->getDimensions().y)
+		{
+			//textDump("added anchor block in checkCollisions");
+			anchorBlocks->push_front((*it));
+		}
+		//check for contact collisions
 		if (aabbCollide(legBlockPosition, legBlockDimensions, (*it)->getPosition(), (*it)->getDimensions())){
 			resolveBlockCollision((*it), t);
 			legCollided = true;
@@ -246,7 +255,10 @@ void Hero::resolveBlockCollision(Block * b, float t){
 		&& legBlockPosition.y - offset.y >= b->getPosition().y + b->getDimensions().y)
 	{
 		proposedPosition.y = position.y;
-		anchorBlock = b;  //landed on top of a block
+		if (anchorBlocks->size() == 0 || b != anchorBlocks->front()){
+			anchorBlocks->push_front(b);  //landed on top of a block and not already on deque
+			//textDump("added anchor block in resolveBlockCollision");
+		}
 		proposedVelocity.y = 0;
 	}
 
@@ -268,12 +280,12 @@ void Hero::resolveBlockCollision(Block * b, float t){
 
 void Hero::updateAnimations(float t){
 	//if moving on the ground
-	if (anchorBlock != 0 && velocity * velocity != 0){
+	if (anchorBlocks->size() != 0 && velocity * velocity != 0){
 		//if moving on the ground
 		Vector targetPos = getDesiredStepPoint();  //get target point for main foot
 		Vector offTargetPos = footDefault[1] + footDefault[0] - targetPos;
 		//make sure that point is on the anchor block
-		targetPos = closestPointOnBlock(targetPos + position, footRadius, anchorBlock->getPosition(), anchorBlock->getDimensions(), Vector(0, 1, 0));
+		targetPos = closestPointOnBlock(targetPos + position, footRadius, anchorBlocks->front()->getPosition(), anchorBlocks->front()->getDimensions(), Vector(0, 1, 0));
 		targetPos = targetPos - position + Vector(0, footRadius, 0);
 		//move main foot
 		Vector footVel = targetPos - footPosition[0];
@@ -287,7 +299,7 @@ void Hero::updateAnimations(float t){
 			mainFootForward = false;
 		}
 		//do same for opposite foot
-		offTargetPos = closestPointOnBlock(offTargetPos + position, footRadius, anchorBlock->getPosition(), anchorBlock->getDimensions(), Vector(0, 1, 0));
+		offTargetPos = closestPointOnBlock(offTargetPos + position, footRadius, anchorBlocks->front()->getPosition(), anchorBlocks->front()->getDimensions(), Vector(0, 1, 0));
 		offTargetPos = offTargetPos - position + Vector(0, footRadius, 0);
 		footVel = offTargetPos - footPosition[1];
 		footVel = footVel / footVel.length() * velocity.length();
