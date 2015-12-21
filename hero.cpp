@@ -1,5 +1,8 @@
 #include "hero.h"
 
+#define GRAVITY_CONST -6
+#define SPEED_CONST 1.5
+
 
 Hero::Hero(void)
 {
@@ -123,10 +126,10 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 	//calculate velocity
 	velocity.x = 0;
 	velocity.z = 0;
-	velocity = velocity + keyXZvel * 1.5; //num is just temporary velocity
+	velocity = velocity + keyXZvel * SPEED_CONST;
 	//check if gravity should be applied
 	if (anchorBlocks->size() == 0 && handAnchorVector.y != 1){
-		velocity.y = velocity.y + t / 1000.0 * -6; //-6 is just temp gravity constant
+		velocity.y = velocity.y + t / 1000.0 * GRAVITY_CONST;
 	}
 	//check for jump
 	if ((handAnchorVector.y == 1 || anchorBlocks->size() != 0) && input->IsKeyDown(VK_SPACE)){  //could change to check for key press??
@@ -280,30 +283,50 @@ void Hero::resolveBlockCollision(Block * b, float t){
 
 void Hero::updateAnimations(float t){
 	//if moving on the ground
-	if (anchorBlocks->size() != 0 && velocity * velocity != 0){
-		//if moving on the ground
-		Vector targetPos = getDesiredStepPoint();  //get target point for main foot
-		Vector offTargetPos = footDefault[1] + footDefault[0] - targetPos;
-		//make sure that point is on the anchor block
-		targetPos = closestPointOnBlock(targetPos + position, footRadius, anchorBlocks->front()->getPosition(), anchorBlocks->front()->getDimensions(), Vector(0, 1, 0));
-		targetPos = targetPos - position + Vector(0, footRadius, 0);
-		//move main foot
-		Vector footVel = targetPos - footPosition[0];
-		footVel = footVel / footVel.length() * velocity.length();
-		footPosition[0] = footPosition[0] + footVel * t / 1000.0;
-		//check if end of step has been reached
-		if (footVel * velocity > 0){
-			mainFootForward = true;
+	if (anchorBlocks->size() != 0){
+		//get target points for feet
+		Vector targetPos [2];
+		targetPos[0] = footDefault[0];  
+		targetPos[1] = footDefault[1];
+		if (velocity * velocity != 0){
+			targetPos[0] = getDesiredStepPoint();  
+			targetPos[1] = footDefault[1] + footDefault[0] - targetPos[0];
 		}
-		else {
-			mainFootForward = false;
+		//adjust target positions for the feet, and move them accordingly
+		for (int i = 0; i < HERO_NUMFEET; i++){
+			//find closest spot to targetpos that is on an anchor block
+			Vector newTarget = closestPointOnBlock(targetPos[i] + position, footRadius, anchorBlocks->front()->getPosition(), 
+												   anchorBlocks->front()->getDimensions(), Vector(0, 1, 0)) 
+												   - position + Vector(0, footRadius, 0);
+			float distSQ = (targetPos[i] - newTarget) * (targetPos[i] - newTarget);
+			for (std::deque<Block*>::iterator it = anchorBlocks->begin(); it != anchorBlocks->end(); ++it){
+				Vector tmp = closestPointOnBlock(targetPos[i] + position, footRadius, (*it)->getPosition(), 
+												 (*it)->getDimensions(), Vector(0, 1, 0)) 
+												 - position + Vector(0, footRadius, 0);
+				if (distSQ > (targetPos[i] - tmp)*(targetPos[i] - tmp)){
+					distSQ = (targetPos[i] - tmp)*(targetPos[i] - tmp);
+					newTarget = tmp;
+				}
+			}
+			targetPos[i] = newTarget;
+			//make sure that point is on the anchor block
+		
+			//move foot
+			Vector footVel = targetPos[i] - footPosition[i];
+			if (footVel * footVel != 0){  //if need to move
+				footVel = footVel / footVel.length() * SPEED_CONST;
+				if ((targetPos[i] - footPosition[i]) * (targetPos[i] - footPosition[i]) <= (footVel * t / 1000.0) * (footVel * t / 1000.0)){
+					footPosition[i] = targetPos[i];
+					//if target has been reached, swap foot moving forward (only if its the main foot moving)
+					if (i == 0){
+						mainFootForward = !mainFootForward;
+					}
+				}
+				else {
+					footPosition[i] = footPosition[i] + footVel * t / 1000.0;
+				}
+			}
 		}
-		//do same for opposite foot
-		offTargetPos = closestPointOnBlock(offTargetPos + position, footRadius, anchorBlocks->front()->getPosition(), anchorBlocks->front()->getDimensions(), Vector(0, 1, 0));
-		offTargetPos = offTargetPos - position + Vector(0, footRadius, 0);
-		footVel = offTargetPos - footPosition[1];
-		footVel = footVel / footVel.length() * velocity.length();
-		footPosition[1] = footPosition[1] + footVel * t / 1000.0;
 	}
 	
 
