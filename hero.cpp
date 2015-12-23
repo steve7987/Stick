@@ -1,7 +1,7 @@
 #include "hero.h"
 
 #define GRAVITY_CONST -6
-#define SPEED_CONST 1.5
+#define SPEED_CONST 0.25
 
 
 Hero::Hero(void)
@@ -72,6 +72,7 @@ bool Hero::Initialize(Vector position){
 		footDefault[i] = -1 * Vector(0, legBlockDisplayDimensions.y, 0) + Vector(0, footRadius, 0) 
 						  + (2*i - 1) * Vector(legBlockDisplayDimensions.x / 4 - footRadius, 0, 0);
 		footPosition[i] = footDefault[i];
+		stepHeight[i] = 0;
 		footModel[i]->SetPosition(position + footPosition[i]);
 		footModel[i]->SetScale(Vector(footRadius, footRadius, footRadius));
 		
@@ -282,15 +283,24 @@ void Hero::resolveBlockCollision(Block * b, float t){
 
 
 void Hero::updateAnimations(float t){
+
 	//if moving on the ground
 	if (anchorBlocks->size() != 0){
 		//get target points for feet
 		Vector targetPos [2];
-		targetPos[0] = footDefault[0];  
-		targetPos[1] = footDefault[1];
-		if (velocity * velocity != 0){
+		targetPos[0] = footPosition[0];  
+		targetPos[1] = footPosition[1];
+		if (velocity * velocity != 0){  //if moving get desired point to step to
 			targetPos[0] = getDesiredStepPoint();  
 			targetPos[1] = footDefault[1] + footDefault[0] - targetPos[0];
+		}
+		else {  //if not moving reset forward foot (then it will switch and other foot will be reset too)
+			if (mainFootForward){
+				targetPos[0] = footDefault[0];
+			}
+			else {
+				targetPos[1] = footDefault[1];
+			}
 		}
 		//adjust target positions for the feet, and move them accordingly
 		for (int i = 0; i < HERO_NUMFEET; i++){
@@ -309,8 +319,6 @@ void Hero::updateAnimations(float t){
 				}
 			}
 			targetPos[i] = newTarget;
-			//make sure that point is on the anchor block
-		
 			//move foot
 			Vector footVel = targetPos[i] - footPosition[i];
 			if (footVel * footVel != 0){  //if need to move
@@ -326,13 +334,35 @@ void Hero::updateAnimations(float t){
 					footPosition[i] = footPosition[i] + footVel * t / 1000.0;
 				}
 			}
+			//calculate step height
+			float desiredHeight = 0;
+			if (mainFootForward ^ (i % 2 == 1)){  //if this is main foot and moving forward, or off foot and not forward
+				desiredHeight = (targetPos[i] - footPosition[i]).length() / 2;
+			}
+			//adjust stepHeight
+			if (desiredHeight > stepHeight[i]){
+				if (desiredHeight - stepHeight[i] > SPEED_CONST * t / 1000.0){
+					stepHeight[i] += SPEED_CONST * t / 1000.0;
+				}
+				else {
+					stepHeight[i] = desiredHeight;
+				}
+			}
+			else if (desiredHeight < stepHeight[i]){
+				if (stepHeight[i]  - desiredHeight > SPEED_CONST * t / 1000.0){
+					stepHeight[i] -= SPEED_CONST * t / 1000.0;
+				}
+				else {
+					stepHeight[i] = desiredHeight;
+				}
+			}
 		}
 	}
 	
 
 	//update feet model positions
 	for (int i = 0; i < HERO_NUMFEET; i++){
-		footModel[i]->SetPosition(position + footPosition[i]);
+		footModel[i]->SetPosition(position + footPosition[i] + Vector(0, stepHeight[i], 0));
 	}
 }
 

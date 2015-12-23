@@ -73,9 +73,10 @@ private:
 	float footRadius;
 	Model * footModel[HERO_NUMFEET];
 	
-
+	//main foot is the left foot
 	Vector footDefault[HERO_NUMFEET];  //relative to vector position
-	Vector footPosition[HERO_NUMFEET];  //relative to Vector position
+	Vector footPosition[HERO_NUMFEET];  //relative to vector position, doesn't include height from steps
+	float stepHeight[HERO_NUMFEET];  //height for each foot due to stepping (i.e. walking)
 	Vector footVelocity; //vel of the main foot, other is just mirrored
 	bool mainFootForward;  //if the main foot is moving with or against the characters velocity
 };
