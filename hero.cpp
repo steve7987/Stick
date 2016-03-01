@@ -1,7 +1,9 @@
 #include "hero.h"
 
 #define GRAVITY_CONST -6
-#define SPEED_CONST 0.25
+#define SPEED_CONST 0.9
+//additional speed for moving forward
+#define SPEED_FORWARD 0.7
 
 
 Hero::Hero(void)
@@ -124,10 +126,13 @@ void Hero::Update(float t, Input * input, deque<Block *> * blockDeque){
 		if (input->IsKeyDown(0x53)) keyXZvel = keyXZvel + Vector(0,0,-1);
 		if (input->IsKeyDown(0x44)) keyXZvel = keyXZvel + Vector(1,0,0);
 	}
+	if (keyXZvel * keyXZvel != 0){
+		keyXZvel = keyXZvel / keyXZvel.length();
+	}
 	//calculate velocity
 	velocity.x = 0;
 	velocity.z = 0;
-	velocity = velocity + keyXZvel * SPEED_CONST;
+	velocity = velocity + keyXZvel * (SPEED_CONST + SPEED_FORWARD * max(0, keyXZvel.z));
 	//check if gravity should be applied
 	if (anchorBlocks->size() == 0 && handAnchorVector.y != 1){
 		velocity.y = velocity.y + t / 1000.0 * GRAVITY_CONST;
@@ -321,8 +326,12 @@ void Hero::updateAnimations(float t){
 			targetPos[i] = newTarget;
 			//move foot
 			Vector footVel = targetPos[i] - footPosition[i];
+			float fspeed = SPEED_CONST;
+			if (velocity * velocity != 0){
+				fspeed = velocity.length();
+			}
 			if (footVel * footVel != 0){  //if need to move
-				footVel = footVel / footVel.length() * SPEED_CONST;
+				footVel = footVel / footVel.length() * fspeed;
 				if ((targetPos[i] - footPosition[i]) * (targetPos[i] - footPosition[i]) <= (footVel * t / 1000.0) * (footVel * t / 1000.0)){
 					footPosition[i] = targetPos[i];
 					//if target has been reached, swap foot moving forward (only if its the main foot moving)
