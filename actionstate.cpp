@@ -2,6 +2,7 @@
 
 ActionState::ActionState(){
 	m_Camera = 0;
+	m_Hero = 0;
 }
 
 ActionState::~ActionState(){
@@ -29,7 +30,6 @@ bool ActionState::Initialize(){
 		textDump("unable to initialize camera in action state");
 		return false;
 	}
-
 	return true;
 }
 
@@ -37,6 +37,11 @@ void ActionState::Shutdown(){
 	if (m_Camera){
 		delete m_Camera;
 		m_Camera = 0;
+	}
+	if (m_Hero){
+		m_Hero->Shutdown();
+		delete m_Hero;
+		m_Hero = 0;
 	}
 }
 
@@ -52,7 +57,7 @@ bool ActionState::update(float t, Input * input){
 	if (input->IsKeyDown(0x51)){  //q pressed
 		m_Camera->SetRotation(m_Camera->GetRotation() * Quaternion(Vector(0,1,0), -1 * t / 2000.0));
 	}
-	
+	m_Hero->Update(t, input);
 
 	//check for end of level
 	if (LevelEndReached()){
@@ -63,7 +68,7 @@ bool ActionState::update(float t, Input * input){
 
 void ActionState::render(float t){
 	g_graphics->StartFrame(t, m_Camera);
-
+	m_Hero->Render(t);
 	g_graphics->EndFrame();
 }
 
@@ -71,6 +76,11 @@ void ActionState::onExit(){
 	g_gui->setVisible(GUIWINDOW_ACTION, false);
 	g_graphics->SetVisibleSentence(asSentence, false);
 	g_graphics->SetVisibleSentence(debugSentence, false);
+	if (m_Hero){
+		m_Hero->Shutdown();
+		delete m_Hero;
+		m_Hero = 0;
+	}
 }
 
 void ActionState::onEnter(){
@@ -79,7 +89,17 @@ void ActionState::onEnter(){
 	g_graphics->SetVisibleSentence(debugSentence, true);
 	
 	//reset camera
-	m_Camera->Reset(Vector(0, 3, 0));
+	m_Camera->Reset(Vector(0, 0, 0));
+	m_Camera->SetFieldOfView(PI / 2);
+
+	//create hero
+	m_Hero = new Hero();
+	if (!m_Hero){
+		textDump("unable to create hero in action state");
+	}
+	if (!m_Hero->Initialize(Vector(0,0,0))){
+		textDump("unable to initialize hero in action state");
+	}
 }
 
 bool ActionState::LevelEndReached(){

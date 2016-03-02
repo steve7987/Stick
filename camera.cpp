@@ -5,6 +5,7 @@ Camera::Camera(){
 	position = Vector(0,0,0);
 	rotation = Quaternion(0, 0, 0, 1);
 	target = Vector(0, 0, -1);
+	m_fieldOfView = 3.14159265 / 4;
 }
 
 Camera::~Camera(){
@@ -67,4 +68,8 @@ void Camera::GetViewMatrix(D3DXMATRIX& viewMatrix){
 
 void Camera::GetGUIWorldMatrix(D3DXMATRIX& worldMatrix){
 	worldMatrix = m_worldMatrix;
+}
+
+float Camera::GetFieldOfView(){
+	return m_fieldOfView;
 }

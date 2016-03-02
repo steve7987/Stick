@@ -11,8 +11,10 @@ bool SpringCamera::Initialize(float positionWeight, float springStep){
 	position = Vector(0,0,0);
 	targetPosition = Vector(0,0,0);
 	velocity = Vector(0,0,0);
-	look = Vector(0,0,4);  //camera always looks forward in z direction 
+	look = Vector(1,0,0);  //camera always looks forward in x direction 
 	rotation = Quaternion(Vector(0,1,0), 0);
+	m_fieldOfView = PI / 4;  //probably overwritten in actionstate
+
 	return true;
 }
 
@@ -44,7 +46,7 @@ Quaternion SpringCamera::GetRotation(){
 }
 
 void SpringCamera::Render(float t){
-	Vector desiredPosition = targetPosition + Vector(0, 0.5, -4);  //adding offset from target
+	Vector desiredPosition = targetPosition + Vector(-20, 0, 0);  //adding offset from target
 	Vector up = Vector(0, 1, 0);
 	//simulate spring deq
 	Vector accel = vweight * velocity + dweight * (position - desiredPosition);
@@ -64,4 +66,12 @@ void SpringCamera::GetViewMatrix(D3DXMATRIX& viewMatrix){
 
 void SpringCamera::GetGUIWorldMatrix(D3DXMATRIX& worldMatrix){
 	worldMatrix = m_worldMatrix;
+}
+
+void SpringCamera::SetFieldOfView(float fov){
+	m_fieldOfView = fov;
+}
+
+float SpringCamera::GetFieldOfView(){
+	return m_fieldOfView;
 }

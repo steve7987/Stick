@@ -32,6 +32,7 @@ public:
 	virtual void Render(float t);
 	void GetViewMatrix(D3DXMATRIX& viewMatrix);
 	void GetGUIWorldMatrix(D3DXMATRIX& worldMatrix);  //gives matrix to translate gui based on camera position
+	float GetFieldOfView();
 
 private:
 	Vector position;
@@ -41,6 +42,8 @@ private:
 	
 	D3DXMATRIX m_viewMatrix;
 	D3DXMATRIX m_worldMatrix;
+
+	float m_fieldOfView;
 };
 
 #endif

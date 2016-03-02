@@ -10,6 +10,7 @@ class BaseCamera{
 public:
 	virtual void Render(float t) = 0;
 	virtual void GetViewMatrix(D3DXMATRIX& viewMatrix) = 0;
+	virtual float GetFieldOfView() = 0;
 	virtual Vector GetLookVector() = 0;
 	virtual Vector GetPosition() = 0;
 };

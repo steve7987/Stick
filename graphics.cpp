@@ -210,8 +210,11 @@ bool Graphics::StartFrame(float time, BaseCamera * cam, Light * light){
 
 	//get matrices from cd3d object should both be identity
 	activeCamera->GetViewMatrix(viewMatrix);
+
+	float aspect = (float) screenWidth / (float) screenHeight;
+	D3DXMatrixPerspectiveFovLH(&projectionMatrix, activeCamera->GetFieldOfView(), aspect, SCREEN_NEAR, SCREEN_DEPTH);
 	m_d3d->GetWorldMatrix(worldMatrix);
-	m_d3d->GetProjectionMatrix(projectionMatrix);
+//	m_d3d->GetProjectionMatrix(projectionMatrix);
 	m_d3d->GetOrthoMatrix(orthoMatrix);
 	
 	m_d3d->TurnZBufferOff();
@@ -226,7 +229,7 @@ bool Graphics::StartFrame(float time, BaseCamera * cam, Light * light){
 		{
 			return false;
 		}
-		textDump("rendered bg");
+		//textDump("rendered bg");
 	}
 	m_d3d->TurnZBufferOn();
 	m_d3d->TurnOffAlphaBlending();

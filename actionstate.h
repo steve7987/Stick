@@ -11,6 +11,7 @@
 #include "gui.h"
 #include "helpers.h"
 //game files
+#include "hero.h"
 #include "springcamera.h"
 
 extern Graphics * g_graphics;
@@ -35,6 +36,8 @@ private:
 	
 	int asSentence;
 	int debugSentence;  //used for ouputting different messages
+	
+	Hero * m_Hero;
 
 	SpringCamera * m_Camera;
 };

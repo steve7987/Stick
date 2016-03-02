@@ -19,10 +19,14 @@ public:
 	void Update(Vector targetPosition);
 	void Reset(Vector position);
 	void SetRotation(Quaternion rotate);
+	
 	Quaternion GetRotation();
 	void Render(float t);
 	void GetViewMatrix(D3DXMATRIX& viewMatrix);
 	void GetGUIWorldMatrix(D3DXMATRIX& worldMatrix);
+
+	void SetFieldOfView(float fov);
+	float GetFieldOfView();
 
 private:
 	//position and velocity of camera
@@ -43,6 +47,7 @@ private:
 
 	D3DXMATRIX m_viewMatrix;
 	D3DXMATRIX m_worldMatrix;
+	float m_fieldOfView;
 };
 
 #endif
