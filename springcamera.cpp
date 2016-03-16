@@ -46,7 +46,7 @@ Quaternion SpringCamera::GetRotation(){
 }
 
 void SpringCamera::Render(float t){
-	Vector desiredPosition = targetPosition + Vector(-20, 0, 0);  //adding offset from target
+	Vector desiredPosition = targetPosition + Vector(-40, 0, 0);  //adding offset from target
 	Vector up = Vector(0, 1, 0);
 	//simulate spring deq
 	Vector accel = vweight * velocity + dweight * (position - desiredPosition);

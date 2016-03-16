@@ -3,6 +3,7 @@
 ActionState::ActionState(){
 	m_Camera = 0;
 	m_Hero = 0;
+	m_Environment = 0;
 }
 
 ActionState::~ActionState(){
@@ -57,7 +58,9 @@ bool ActionState::update(float t, Input * input){
 	if (input->IsKeyDown(0x51)){  //q pressed
 		m_Camera->SetRotation(m_Camera->GetRotation() * Quaternion(Vector(0,1,0), -1 * t / 2000.0));
 	}
+
 	m_Hero->Update(t, input);
+	m_Environment->update(t);
 
 	//check for end of level
 	if (LevelEndReached()){
@@ -69,6 +72,7 @@ bool ActionState::update(float t, Input * input){
 void ActionState::render(float t){
 	g_graphics->StartFrame(t, m_Camera);
 	m_Hero->Render(t);
+	m_Environment->render(t);
 	g_graphics->EndFrame();
 }
 
@@ -76,6 +80,11 @@ void ActionState::onExit(){
 	g_gui->setVisible(GUIWINDOW_ACTION, false);
 	g_graphics->SetVisibleSentence(asSentence, false);
 	g_graphics->SetVisibleSentence(debugSentence, false);
+	if (m_Environment){
+		m_Environment->Shutdown();
+		delete m_Environment;
+		m_Environment = 0;
+	}
 	if (m_Hero){
 		m_Hero->Shutdown();
 		delete m_Hero;
@@ -90,7 +99,7 @@ void ActionState::onEnter(){
 	
 	//reset camera
 	m_Camera->Reset(Vector(0, 0, 0));
-	m_Camera->SetFieldOfView(PI / 2);
+	m_Camera->SetFieldOfView(PI / 3);
 
 	//create hero
 	m_Hero = new Hero();
@@ -99,6 +108,14 @@ void ActionState::onEnter(){
 	}
 	if (!m_Hero->Initialize(Vector(0,0,0))){
 		textDump("unable to initialize hero in action state");
+	}
+	//create environment
+	m_Environment = new Environment();
+	if (!m_Environment){
+		textDump("unable to create environment in action state");
+	}
+	if (!m_Environment->Initialize()){
+		textDump("unable to initialize environment in action state");
 	}
 }
 

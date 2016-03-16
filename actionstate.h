@@ -13,6 +13,7 @@
 //game files
 #include "hero.h"
 #include "springcamera.h"
+#include "environment.h"
 
 extern Graphics * g_graphics;
 extern Gui * g_gui;
@@ -38,6 +39,8 @@ private:
 	int debugSentence;  //used for ouputting different messages
 	
 	Hero * m_Hero;
+
+	Environment * m_Environment;
 
 	SpringCamera * m_Camera;
 };
