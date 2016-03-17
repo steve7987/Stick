@@ -15,7 +15,7 @@ public:
 	Hero(void);
 	~Hero(void);
 
-	bool Initialize(Vector position, Vector softBoundry);
+	bool Initialize(Vector position, Vector softBoundary);
 	void Shutdown();
 
 	bool Render(float t);
@@ -35,7 +35,7 @@ private:
 	Vector position;
 	Vector velocity;  //velocity is in units per second
 
-	Vector softBoundry;  //outside this boundry (box from -sb to sb) ship wont accelerate
+	Vector softBoundary;  //outside this boundry (box from -sb to sb) ship wont accelerate
 };
 
 #endif

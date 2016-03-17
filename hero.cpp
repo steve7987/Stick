@@ -17,7 +17,7 @@ Hero::~Hero(void)
 }
 
 
-bool Hero::Initialize(Vector position, Vector softBoundry){
+bool Hero::Initialize(Vector position, Vector softBoundary){
 	heroModel = new Model();
 	if (!heroModel){
 		textDump("Could not create model in the hero class");
@@ -31,7 +31,7 @@ bool Hero::Initialize(Vector position, Vector softBoundry){
 	this->velocity = Vector(0, 0, 0);
 	heroModel->SetPosition(position);
 
-	this->softBoundry = softBoundry;
+	this->softBoundary = softBoundary;
 	
 	return true;
 }
@@ -64,16 +64,16 @@ void Hero::Update(float t, Input * input){
 	Vector acceleration = keyYZacc;
 	//if outside of softboundry set acceleration to zero if its moving away from boundry
 	//decel will activate to change velocity if needed
-	if (position.y > softBoundry.y && acceleration.y > 0){
+	if (position.y > softBoundary.y && acceleration.y > 0){
 		acceleration.y = 0;
 	}
-	if (position.y < -1 * softBoundry.y && acceleration.y < 0){
+	if (position.y < -1 * softBoundary.y && acceleration.y < 0){
 		acceleration.y = 0;
 	}
-	if (position.z > softBoundry.z && acceleration.z > 0){
+	if (position.z > softBoundary.z && acceleration.z > 0){
 		acceleration.z = 0;
 	}
-	if (position.z < -1 * softBoundry.z && acceleration.z < 0){
+	if (position.z < -1 * softBoundary.z && acceleration.z < 0){
 		acceleration.z = 0;
 	}
 	//set accel to go in opposite direction of movement if no key pressed
