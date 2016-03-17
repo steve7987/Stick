@@ -48,7 +48,10 @@ void ActionState::Shutdown(){
 
 	
 bool ActionState::update(float t, Input * input){
-	
+	std::ostringstream debugoss;
+	debugoss << "Velocity: " << m_Hero->GetVelocity().y << ", " << m_Hero->GetVelocity().z;
+	g_graphics->ChangeSentence(debugSentence, debugoss.str(), 12, 52, 1.0f, 1.0f, 1.0f);
+
 	if (input->KeyBeenPushed(VK_ESCAPE)){
 		g_gameStateManager->change("main menu");
 	}
@@ -106,7 +109,7 @@ void ActionState::onEnter(){
 	if (!m_Hero){
 		textDump("unable to create hero in action state");
 	}
-	if (!m_Hero->Initialize(Vector(0,0,0))){
+	if (!m_Hero->Initialize(Vector(0,0,0), Vector(0, 10, 10))){
 		textDump("unable to initialize hero in action state");
 	}
 	//create environment
