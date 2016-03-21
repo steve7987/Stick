@@ -13,7 +13,7 @@ Environment::~Environment(void)
 
 
 bool Environment::Initialize(){
-	Vector position = Vector(-20,-8,-50);
+	Vector position = Vector(-60,-8,-50);
 	Vector dimensions = Vector(1000,1,100);
 	m_block = new Block();
 	m_block->Initialize(position, dimensions);

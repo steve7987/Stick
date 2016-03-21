@@ -101,8 +101,9 @@ void ActionState::onEnter(){
 	g_graphics->SetVisibleSentence(debugSentence, true);
 	
 	//reset camera
-	m_Camera->Reset(Vector(0, 0, 0));
+	m_Camera->Reset(Vector(-60, 0, 0));
 	m_Camera->SetFieldOfView(PI / 3);
+	m_Camera->Update(Vector(-40, 0, 0));
 
 	//create hero
 	m_Hero = new Hero();

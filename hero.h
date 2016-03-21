@@ -31,6 +31,7 @@ private:
 
 	//model for the hero
 	Model * heroModel;
+	Model *sbModel;  //transparent cube to represent the soft boundary for the ship
 	
 	Vector position;
 	Vector velocity;  //velocity is in units per second

@@ -31,9 +31,15 @@ void SpringCamera::Update(Vector targetPosition){
 }
 	
 void SpringCamera::Reset(Vector position){
-	this->position = position;
+	/*this->position = position;
 	targetPosition = Vector(0,0,0);
 	velocity = Vector(0,0,0);
+	rotation = Quaternion(Vector(0,1,0), 0);
+	*/
+	this->position = position;
+	targetPosition = position;
+	velocity = Vector(0,0,0);
+	look = Vector(1,0,0);  //camera always looks forward in x direction 
 	rotation = Quaternion(Vector(0,1,0), 0);
 }
 
@@ -46,13 +52,19 @@ Quaternion SpringCamera::GetRotation(){
 }
 
 void SpringCamera::Render(float t){
-	Vector desiredPosition = targetPosition + Vector(-40, 0, 0);  //adding offset from target
+	Vector desiredPosition = targetPosition;
 	Vector up = Vector(0, 1, 0);
 	//simulate spring deq
+	while (t > step){
+		Vector accel = vweight * velocity + dweight * (position - desiredPosition);
+		velocity = velocity + accel * step / 1000.0f;
+		position = position + velocity * step / 1000.0f;
+		t = t - step;
+	}
 	Vector accel = vweight * velocity + dweight * (position - desiredPosition);
 	velocity = velocity + accel * t / 1000.0f;
 	position = position + velocity * t / 1000.0f;
-	
+
 	Vector target = position + look;
 	Vector finalPos = target - rotation* look;
 	//create matricies

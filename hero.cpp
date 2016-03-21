@@ -8,6 +8,7 @@
 Hero::Hero(void)
 {
 	heroModel = 0;
+	sbModel = 0;
 	
 }
 
@@ -32,7 +33,18 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 	heroModel->SetPosition(position);
 
 	this->softBoundary = softBoundary;
-	
+	sbModel = new Model();
+	if (!sbModel){
+		textDump("Could not create sb model in the hero class");
+		return false;
+	}
+	if (!sbModel->Initialize(g_graphics->GetDevice(), "./Assets/cube.txt", L"./Assets/outline.dds", true)){
+		textDump("Could not create model in hero class");
+		return false;
+	}
+	sbModel->SetPosition(-1* softBoundary);
+	sbModel->SetScale(2 * softBoundary);
+
 	return true;
 }
 	
@@ -42,11 +54,16 @@ void Hero::Shutdown(){
 		heroModel->Shutdown();
 		delete heroModel;
 	}
+	if (sbModel){
+		sbModel->Shutdown();
+		delete sbModel;
+	}
 }
 
 
 bool Hero::Render(float t){
 	g_graphics->RenderObject(heroModel, SHADER_LIGHT);
+	g_graphics->RenderObject(sbModel, SHADER_LIGHT);
 	return true;
 }
 
