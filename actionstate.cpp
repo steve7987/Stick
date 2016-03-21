@@ -104,13 +104,17 @@ void ActionState::onEnter(){
 	m_Camera->Reset(Vector(-60, 0, 0));
 	m_Camera->SetFieldOfView(PI / 3);
 	m_Camera->Update(Vector(-40, 0, 0));
+	//compute soft boundary for hero based on camera
+	float frustrumHeight = 40.0f * tan(m_Camera->GetFieldOfView() * 0.5);
+	float frustrumWidth = frustrumHeight * g_graphics->GetAspectRatio();
+	Vector softBoundary = Vector(0, frustrumHeight, frustrumWidth);
 
 	//create hero
 	m_Hero = new Hero();
 	if (!m_Hero){
 		textDump("unable to create hero in action state");
 	}
-	if (!m_Hero->Initialize(Vector(0,0,0), Vector(0, 10, 10))){
+	if (!m_Hero->Initialize(Vector(0,0,0), softBoundary)){
 		textDump("unable to initialize hero in action state");
 	}
 	//create environment

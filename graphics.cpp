@@ -214,7 +214,6 @@ bool Graphics::StartFrame(float time, BaseCamera * cam, Light * light){
 	float aspect = (float) screenWidth / (float) screenHeight;
 	D3DXMatrixPerspectiveFovLH(&projectionMatrix, activeCamera->GetFieldOfView(), aspect, SCREEN_NEAR, SCREEN_DEPTH);
 	m_d3d->GetWorldMatrix(worldMatrix);
-//	m_d3d->GetProjectionMatrix(projectionMatrix);
 	m_d3d->GetOrthoMatrix(orthoMatrix);
 	
 	m_d3d->TurnZBufferOff();
@@ -456,4 +455,9 @@ void Graphics::ClearBackground(){
 		delete m_background;
 		m_background = 0;
 	}
+}
+
+float Graphics::GetAspectRatio(){
+	float aspect = (float) screenWidth / (float) screenHeight;
+	return aspect;
 }

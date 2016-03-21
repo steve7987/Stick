@@ -31,11 +31,6 @@ void SpringCamera::Update(Vector targetPosition){
 }
 	
 void SpringCamera::Reset(Vector position){
-	/*this->position = position;
-	targetPosition = Vector(0,0,0);
-	velocity = Vector(0,0,0);
-	rotation = Quaternion(Vector(0,1,0), 0);
-	*/
 	this->position = position;
 	targetPosition = position;
 	velocity = Vector(0,0,0);

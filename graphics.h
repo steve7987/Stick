@@ -74,6 +74,9 @@ public:
 	//creates a ray into the screen from pixel mouseX, mouseY
 	void GetMouseRay(int mouseX, int mouseY, Vector& origin, Vector& direction, BaseCamera * cam = NULL);
 
+	//gives the screen width / height
+	float GetAspectRatio();
+
 	//background commands
 	void SetBackground(WCHAR* textureFilename);  
 	void ClearBackground();
