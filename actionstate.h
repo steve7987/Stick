@@ -34,15 +34,16 @@ public:
 
 private:
 	bool LevelEndReached();
+	void AdjustCamera();
 	
 	int asSentence;
 	int debugSentence;  //used for ouputting different messages
 	
 	Hero * m_Hero;
-
 	Environment * m_Environment;
-
 	SpringCamera * m_Camera;
+
+	Vector softBoundary;  // yz boundary for the level.  Ship can move a bit outside of it
 };
 
 #endif

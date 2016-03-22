@@ -1,5 +1,7 @@
 #include "actionstate.h"
 
+#define CAM_DISTANCE 20.0f
+
 ActionState::ActionState(){
 	m_Camera = 0;
 	m_Hero = 0;
@@ -27,7 +29,7 @@ bool ActionState::Initialize(){
 		textDump("unable to create camera in action state");
 		return false;
 	}
-	if (!m_Camera->Initialize(20, 0.5)){
+	if (!m_Camera->Initialize(8, 0.5)){
 		textDump("unable to initialize camera in action state");
 		return false;
 	}
@@ -55,15 +57,19 @@ bool ActionState::update(float t, Input * input){
 	if (input->KeyBeenPushed(VK_ESCAPE)){
 		g_gameStateManager->change("main menu");
 	}
+	/*
 	if (input->IsKeyDown(0x45)){  //e pressed
 		m_Camera->SetRotation(m_Camera->GetRotation() * Quaternion(Vector(0,1,0), t / 2000.0));
 	}
 	if (input->IsKeyDown(0x51)){  //q pressed
 		m_Camera->SetRotation(m_Camera->GetRotation() * Quaternion(Vector(0,1,0), -1 * t / 2000.0));
 	}
+	*/
 
 	m_Hero->Update(t, input);
 	m_Environment->update(t);
+	AdjustCamera();
+	
 
 	//check for end of level
 	if (LevelEndReached()){
@@ -101,13 +107,13 @@ void ActionState::onEnter(){
 	g_graphics->SetVisibleSentence(debugSentence, true);
 	
 	//reset camera
-	m_Camera->Reset(Vector(-60, 0, 0));
-	m_Camera->SetFieldOfView(PI / 3);
-	m_Camera->Update(Vector(-40, 0, 0));
+	m_Camera->Reset(Vector(-2 * CAM_DISTANCE, 0, 0));
+	m_Camera->SetFieldOfView(PI / 4);
+	m_Camera->Update(Vector(-CAM_DISTANCE, 0, 0));
 	//compute soft boundary for hero based on camera
-	float frustrumHeight = 40.0f * tan(m_Camera->GetFieldOfView() * 0.5);
+	float frustrumHeight = CAM_DISTANCE * tan(m_Camera->GetFieldOfView() * 0.5);
 	float frustrumWidth = frustrumHeight * g_graphics->GetAspectRatio();
-	Vector softBoundary = Vector(0, frustrumHeight, frustrumWidth);
+	softBoundary = Vector(0, frustrumHeight, frustrumWidth);
 
 	//create hero
 	m_Hero = new Hero();
@@ -130,4 +136,22 @@ void ActionState::onEnter(){
 bool ActionState::LevelEndReached(){
 	
 	return false;
+}
+
+void ActionState::AdjustCamera(){
+	Vector pos = m_Hero->GetPosition();
+	if (pos.y > softBoundary.y){
+		pos.y = softBoundary.y;
+	}
+	if (pos.y < -softBoundary.y){
+		pos.y = -softBoundary.y;
+	}
+	if (pos.z > softBoundary.z){
+		pos.z = softBoundary.z;
+	}
+	if (pos.z < -softBoundary.z){
+		pos.z = -softBoundary.z;
+	}
+
+	m_Camera->Update(pos + Vector(-CAM_DISTANCE, 0, 0));
 }

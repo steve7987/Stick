@@ -1,7 +1,7 @@
 #include "hero.h"
 
-#define SPEED_MAX 60
-#define ACCELERATION 600
+#define SPEED_MAX 40
+#define ACCELERATION 120
 #define MAX_ROLL 0.523
 #define MAX_PITCH 0.523
 
