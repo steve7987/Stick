@@ -140,6 +140,7 @@ bool ActionState::LevelEndReached(){
 
 void ActionState::AdjustCamera(){
 	Vector pos = m_Hero->GetPosition();
+	pos = pos * 0.9;
 	if (pos.y > softBoundary.y){
 		pos.y = softBoundary.y;
 	}
@@ -154,4 +155,10 @@ void ActionState::AdjustCamera(){
 	}
 
 	m_Camera->Update(pos + Vector(-CAM_DISTANCE, 0, 0));
+	Quaternion xRot = m_Hero->GetRotation();  //compute only rotation around x-axis
+	xRot.y = 0;
+	xRot.z = 0;
+	xRot.w += 2;  //decreases the angle of rotation
+	xRot = xRot / sqrt(xRot.x * xRot.x + xRot.w * xRot.w);
+	m_Camera->SetRotation(xRot);
 }

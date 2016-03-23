@@ -25,6 +25,7 @@ public:
 
 	Vector GetPosition();
 	Vector GetVelocity();
+	Quaternion GetRotation();
 
 private:
 	
@@ -35,6 +36,7 @@ private:
 	
 	Vector position;
 	Vector velocity;  //velocity is in units per second
+	Quaternion rotation;
 
 	Vector softBoundary;  //outside this boundry (box from -sb to sb) ship wont accelerate
 };

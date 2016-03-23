@@ -12,7 +12,7 @@ bool SpringCamera::Initialize(float positionWeight, float springStep){
 	targetPosition = Vector(0,0,0);
 	velocity = Vector(0,0,0);
 	look = Vector(1,0,0);  //camera always looks forward in x direction 
-	rotation = Quaternion(Vector(0,1,0), 0);
+	rotation = Quaternion(Vector(1,0,0), 0);
 	m_fieldOfView = PI / 4;  //probably overwritten in actionstate
 
 	return true;
@@ -35,7 +35,7 @@ void SpringCamera::Reset(Vector position){
 	targetPosition = position;
 	velocity = Vector(0,0,0);
 	look = Vector(1,0,0);  //camera always looks forward in x direction 
-	rotation = Quaternion(Vector(0,1,0), 0);
+	rotation = Quaternion(Vector(1,0,0), 0);
 }
 
 void SpringCamera::SetRotation(Quaternion rotate){
@@ -49,6 +49,12 @@ Quaternion SpringCamera::GetRotation(){
 void SpringCamera::Render(float t){
 	Vector desiredPosition = targetPosition;
 	Vector up = Vector(0, 1, 0);
+	//rotate up vector by rotation around <1,0,0> of rotation quaternion
+	Quaternion upRot = rotation;
+	upRot.y = 0;
+	upRot.z = 0;
+	upRot = upRot / sqrt(upRot.x * upRot.x + upRot.w * upRot.w);
+	up = upRot * up;
 	//simulate spring deq
 	while (t > step){
 		Vector accel = vweight * velocity + dweight * (position - desiredPosition);

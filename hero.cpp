@@ -30,6 +30,7 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 	}
 	this->position = position;
 	this->velocity = Vector(0, 0, 0);
+	this->rotation = Quaternion(Vector(0,0,1), 0);
 	heroModel->SetPosition(position);
 
 	this->softBoundary = softBoundary;
@@ -133,7 +134,7 @@ void Hero::Update(float t, Input * input){
 	
 	
 	//based on velocity calculate desired rotation for the ship
-	Quaternion rotation = Quaternion(Vector(1,0,0), velocity.z / SPEED_MAX * MAX_ROLL) * Quaternion(Vector(0,0,1), velocity.y / SPEED_MAX * MAX_PITCH);
+	rotation = Quaternion(Vector(1,0,0), velocity.z / SPEED_MAX * MAX_ROLL) * Quaternion(Vector(0,0,1), velocity.y / SPEED_MAX * MAX_PITCH);
 	//update position
 	position = position + velocity * t / 1000.0;
 	//update model
@@ -147,4 +148,8 @@ Vector Hero::GetPosition(){
 
 Vector Hero::GetVelocity(){
 	return velocity;
+}
+
+Quaternion Hero::GetRotation(){
+	return rotation;
 }
