@@ -10,7 +10,8 @@ Hero::Hero(void)
 {
 	heroModel = 0;
 	sbModel = 0;
-	
+	m_NearTarget = 0;
+	m_FarTarget = 0;
 }
 
 
@@ -20,6 +21,7 @@ Hero::~Hero(void)
 
 
 bool Hero::Initialize(Vector position, Vector softBoundary){
+	//create model for the ship
 	heroModel = new Model();
 	if (!heroModel){
 		textDump("Could not create model in the hero class");
@@ -34,6 +36,7 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 	this->rotation = Quaternion(Vector(0,0,1), 0);
 	heroModel->SetPosition(position);
 
+	//create model for soft boundary
 	this->softBoundary = softBoundary;
 	sbModel = new Model();
 	if (!sbModel){
@@ -46,6 +49,27 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 	}
 	sbModel->SetPosition(-1* softBoundary);
 	sbModel->SetScale(2 * softBoundary);
+
+	//create near target
+	m_NearTarget = new Billboard();
+	if (!m_NearTarget){
+		textDump("unable to create near target in hero class");
+		return false;
+	}
+	if (!m_NearTarget->Initialize(g_graphics->GetDevice(), L"./Assets/outline.dds")){
+		textDump("unable to initialize near target in hero class");
+		return false;
+	}
+	//create far target
+	m_FarTarget = new Billboard();
+	if (!m_FarTarget){
+		textDump("unable to create far target in hero class");
+		return false;
+	}
+	if (!m_FarTarget->Initialize(g_graphics->GetDevice(), L"./Assets/outline.dds")){
+		textDump("unable to initialize far target in hero class");
+		return false;
+	}
 
 	return true;
 }
@@ -60,16 +84,45 @@ void Hero::Shutdown(){
 		sbModel->Shutdown();
 		delete sbModel;
 	}
+	if (m_NearTarget){
+		m_NearTarget->Shutdown();
+		delete m_NearTarget;
+		m_NearTarget = 0;
+	}
+	if (m_FarTarget){
+		m_FarTarget->Shutdown();
+		delete m_FarTarget;
+		m_FarTarget = 0;
+	}
 }
 
 
 bool Hero::Render(float t){
 	g_graphics->RenderObject(heroModel, SHADER_LIGHT);
+	g_graphics->RenderObject(m_NearTarget, SHADER_TEXTURE);
+	g_graphics->RenderObject(m_FarTarget, SHADER_TEXTURE);
 	//g_graphics->RenderObject(sbModel, SHADER_LIGHT);
 	return true;
 }
 
-void Hero::Update(float t, Input * input){
+void Hero::Update(float t, Input * input, BaseCamera * activeCam){
+	HandleMovement(t, input);
+	AdjustTargeting(input, activeCam);
+}
+
+Vector Hero::GetPosition(){
+	return position;
+}
+
+Vector Hero::GetVelocity(){
+	return velocity;
+}
+
+Quaternion Hero::GetRotation(){
+	return rotation;
+}
+
+void Hero::HandleMovement(float t, Input * input){
 	//get key movement
 	Vector keyYZacc = Vector(0,0,0);
 	if (input->IsKeyDown(0x57) || input->IsKeyDown(0x41) || input->IsKeyDown(0x53) || input->IsKeyDown(0x44)){  
@@ -144,14 +197,18 @@ void Hero::Update(float t, Input * input){
 	heroModel->SetRotation(rotation);
 }
 
-Vector Hero::GetPosition(){
-	return position;
-}
-
-Vector Hero::GetVelocity(){
-	return velocity;
-}
-
-Quaternion Hero::GetRotation(){
-	return rotation;
+void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam){
+	//compute near target pos
+	Vector origin, direction;
+	int mx, my;
+	input->GetMouseLocation(mx, my);
+	g_graphics->GetMouseRay(mx, my, origin, direction, activeCam);
+	direction = direction / direction.length();
+	Vector nearPos = origin + 100 * direction;
+	m_NearTarget->SetPosition(nearPos);
+	//compute fartarget pos
+	Vector shipRay = nearPos - position;
+	shipRay = shipRay / shipRay.length();
+	Vector farpos = position + 100 * shipRay;
+	m_FarTarget->SetPosition(farpos);
 }

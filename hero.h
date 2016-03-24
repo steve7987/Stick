@@ -6,6 +6,7 @@
 #include "model.h"
 #include "vector.h"
 #include "helpers.h"
+#include "billboard.h"
 
 extern Graphics * g_graphics;
 
@@ -21,14 +22,15 @@ public:
 	bool Render(float t);
 	//velocity should come from the keyboard
 	//blockDeque is a deque of blocks that can be collided with
-	void Update(float t, Input * input);   
+	void Update(float t, Input * input, BaseCamera * activeCam);   
 
 	Vector GetPosition();
 	Vector GetVelocity();
 	Quaternion GetRotation();
 
 private:
-	
+	void HandleMovement(float t, Input * input);
+	void AdjustTargeting(Input * input, BaseCamera * activeCam);
 
 	//model for the hero
 	Model * heroModel;
@@ -39,6 +41,9 @@ private:
 	Quaternion rotation;
 
 	Vector softBoundary;  //outside this boundry (box from -sb to sb) ship wont accelerate
+
+	Billboard * m_NearTarget;  //the near targeter goes from mouse to plane parallel to camera
+	Billboard * m_FarTarget;  //far targeter goes on ray from ship to near targeter
 };
 
 #endif

@@ -423,7 +423,8 @@ void Graphics::GetMouseRay(int mouseX, int mouseY, Vector& origin, Vector& direc
 	pointY = (((2.0f * (float)mouseY) / (float)screenHeight) - 1.0f) * -1.0f;
 		
 	// Adjust the points using the projection matrix to account for the aspect ratio of the viewport.
-	m_d3d->GetProjectionMatrix(projectionMatrix);
+	float aspect = (float) screenWidth / (float) screenHeight;
+	D3DXMatrixPerspectiveFovLH(&projectionMatrix, currentCam->GetFieldOfView(), aspect, SCREEN_NEAR, SCREEN_DEPTH);
 	pointX = pointX / projectionMatrix._11;
 	pointY = pointY / projectionMatrix._22;
 

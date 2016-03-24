@@ -6,6 +6,7 @@ ActionState::ActionState(){
 	m_Camera = 0;
 	m_Hero = 0;
 	m_Environment = 0;
+	
 }
 
 ActionState::~ActionState(){
@@ -46,6 +47,12 @@ void ActionState::Shutdown(){
 		delete m_Hero;
 		m_Hero = 0;
 	}
+	if (m_Environment){
+		m_Environment->Shutdown();
+		delete m_Environment;
+		m_Environment = 0;
+	}
+	
 }
 
 	
@@ -57,16 +64,9 @@ bool ActionState::update(float t, Input * input){
 	if (input->KeyBeenPushed(VK_ESCAPE)){
 		g_gameStateManager->change("main menu");
 	}
-	/*
-	if (input->IsKeyDown(0x45)){  //e pressed
-		m_Camera->SetRotation(m_Camera->GetRotation() * Quaternion(Vector(0,1,0), t / 2000.0));
-	}
-	if (input->IsKeyDown(0x51)){  //q pressed
-		m_Camera->SetRotation(m_Camera->GetRotation() * Quaternion(Vector(0,1,0), -1 * t / 2000.0));
-	}
-	*/
+	
 
-	m_Hero->Update(t, input);
+	m_Hero->Update(t, input, m_Camera);
 	m_Environment->update(t);
 	AdjustCamera();
 	
@@ -113,7 +113,7 @@ void ActionState::onEnter(){
 	//compute soft boundary for hero based on camera
 	float frustrumHeight = CAM_DISTANCE * tan(m_Camera->GetFieldOfView() * 0.5);
 	float frustrumWidth = frustrumHeight * g_graphics->GetAspectRatio();
-	softBoundary = Vector(0, frustrumHeight, frustrumWidth);
+	softBoundary = 2*Vector(0, frustrumHeight, frustrumWidth);
 
 	//create hero
 	m_Hero = new Hero();
@@ -131,6 +131,7 @@ void ActionState::onEnter(){
 	if (!m_Environment->Initialize()){
 		textDump("unable to initialize environment in action state");
 	}
+	
 }
 
 bool ActionState::LevelEndReached(){
@@ -156,9 +157,9 @@ void ActionState::AdjustCamera(){
 
 	m_Camera->Update(pos + Vector(-CAM_DISTANCE, 0, 0));
 	Quaternion xRot = m_Hero->GetRotation();  //compute only rotation around x-axis
-	xRot.y = 0;
+	//xRot.y = 0;
 	xRot.z = 0;
 	xRot.w += 3;  //decreases the angle of rotation
-	xRot = xRot / sqrt(xRot.x * xRot.x + xRot.w * xRot.w);
+	xRot = xRot / sqrt(xRot.x * xRot.x + xRot.w * xRot.w + xRot.y * xRot.y + xRot.z * xRot.z);
 	m_Camera->SetRotation(xRot);
 }

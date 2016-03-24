@@ -14,6 +14,7 @@
 #include "hero.h"
 #include "springcamera.h"
 #include "environment.h"
+#include "billboard.h"
 
 extern Graphics * g_graphics;
 extern Gui * g_gui;
@@ -44,6 +45,8 @@ private:
 	SpringCamera * m_Camera;
 
 	Vector softBoundary;  // yz boundary for the level.  Ship can move a bit outside of it
+
+	
 };
 
 #endif
