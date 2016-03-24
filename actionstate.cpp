@@ -158,7 +158,7 @@ void ActionState::AdjustCamera(){
 	Quaternion xRot = m_Hero->GetRotation();  //compute only rotation around x-axis
 	xRot.y = 0;
 	xRot.z = 0;
-	xRot.w += 2;  //decreases the angle of rotation
+	xRot.w += 3;  //decreases the angle of rotation
 	xRot = xRot / sqrt(xRot.x * xRot.x + xRot.w * xRot.w);
 	m_Camera->SetRotation(xRot);
 }

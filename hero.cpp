@@ -4,6 +4,7 @@
 #define ACCELERATION 120
 #define MAX_ROLL 0.523
 #define MAX_PITCH 0.523
+#define MAX_YAW 0.3
 
 Hero::Hero(void)
 {
@@ -64,7 +65,7 @@ void Hero::Shutdown(){
 
 bool Hero::Render(float t){
 	g_graphics->RenderObject(heroModel, SHADER_LIGHT);
-	g_graphics->RenderObject(sbModel, SHADER_LIGHT);
+	//g_graphics->RenderObject(sbModel, SHADER_LIGHT);
 	return true;
 }
 
@@ -134,7 +135,8 @@ void Hero::Update(float t, Input * input){
 	
 	
 	//based on velocity calculate desired rotation for the ship
-	rotation = Quaternion(Vector(1,0,0), velocity.z / SPEED_MAX * MAX_ROLL) * Quaternion(Vector(0,0,1), velocity.y / SPEED_MAX * MAX_PITCH);
+	rotation = Quaternion(Vector(1,0,0), velocity.z / SPEED_MAX * MAX_ROLL) * Quaternion(Vector(0,0,1), velocity.y / SPEED_MAX * MAX_PITCH) *
+			   Quaternion(Vector(0,1,0), -1*velocity.z / SPEED_MAX * MAX_YAW);
 	//update position
 	position = position + velocity * t / 1000.0;
 	//update model
