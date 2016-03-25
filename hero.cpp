@@ -56,20 +56,22 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 		textDump("unable to create near target in hero class");
 		return false;
 	}
-	if (!m_NearTarget->Initialize(g_graphics->GetDevice(), L"./Assets/outline.dds")){
+	if (!m_NearTarget->Initialize(g_graphics->GetDevice(), L"./Assets/targeter.dds")){
 		textDump("unable to initialize near target in hero class");
 		return false;
 	}
+	m_NearTarget->SetScale(3,3);
 	//create far target
 	m_FarTarget = new Billboard();
 	if (!m_FarTarget){
 		textDump("unable to create far target in hero class");
 		return false;
 	}
-	if (!m_FarTarget->Initialize(g_graphics->GetDevice(), L"./Assets/outline.dds")){
+	if (!m_FarTarget->Initialize(g_graphics->GetDevice(), L"./Assets/targeter.dds")){
 		textDump("unable to initialize far target in hero class");
 		return false;
 	}
+	m_FarTarget->SetScale(3,3);
 
 	return true;
 }

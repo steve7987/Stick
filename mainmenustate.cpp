@@ -26,10 +26,11 @@ bool MainMenuState::update(float t, Input * input){
 	if (input->KeyBeenPushed(VK_ESCAPE)){
 		return false;
 	}
-	
+	int mx, my;
+	input->GetMouseLocation(mx, my);
+	g_gui->updateMouse(mx, my);
 	if (input->MouseBeenPushed(MK_LBUTTON)){
-		int mx, my;
-		input->GetMouseLocation(mx, my);
+		
 		int window = g_gui->Frame(mx, my);
 
 		if (window == GUIWINDOW_MAINMENUQUIT){
@@ -58,6 +59,7 @@ void MainMenuState::onExit(){
 }
 
 void MainMenuState::onEnter(){
+	g_gui->setMouseVisible(true);
 	g_gui->setVisible(GUIWINDOW_MAINMENU, true);
 	g_graphics->SetVisibleSentence(mmSentence, true);
 	

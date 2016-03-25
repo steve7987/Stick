@@ -102,6 +102,7 @@ void ActionState::onExit(){
 }
 
 void ActionState::onEnter(){
+	g_gui->setMouseVisible(false);
 	g_gui->setVisible(GUIWINDOW_ACTION, true);
 	g_graphics->SetVisibleSentence(asSentence, true);
 	g_graphics->SetVisibleSentence(debugSentence, true);

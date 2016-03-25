@@ -14,7 +14,8 @@ Window::~Window(){
 
 bool Window::Initialize(ID3D11Device* device, int screenWidth, int screenHeight, WCHAR* textureFilename, 
 					int bitmapWidth, int bitmapHeight, float tx, float ty, float bx, float by, int idin, bool vis, 
-					int xpos, int ypos, bool hasBorder, std::string text){
+					int xpos, int ypos, bool hasBorder, std::string text)
+{
 	//copy vars
 	id = idin;
 	top = ypos;

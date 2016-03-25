@@ -8,6 +8,7 @@ Graphics::Graphics(){
 	m_ShieldShader = 0;
 	m_Text = 0;
 	m_background = 0;
+
 }
 
 Graphics::~Graphics(){
@@ -109,7 +110,6 @@ bool Graphics::Initialize(int x , int y , HWND hwnd){
 		m_ShieldShader = 0;
 		return false;
 	}
-	
 	//create the light
 	m_Light = new Light();
 	if (!m_Light){
@@ -134,7 +134,6 @@ void Graphics::Shutdown(){
 		delete m_Light;
 		m_Light = 0;
 	}
-		
 	//release shield shader
 	if (m_ShieldShader){
 		m_ShieldShader->Shutdown();
@@ -359,6 +358,10 @@ bool Graphics::EndFrame(){
 
 	//RENDER TEXT
 	if (!m_Text->Render(m_d3d->GetDeviceContext(), worldMatrix, orthoMatrix)){
+		return false;
+	}
+	//render mouse
+	if (!g_gui->RenderCursor(m_d3d->GetDeviceContext(), m_TextureShader, worldMatrix, baseViewMatrix, orthoMatrix)){
 		return false;
 	}
 

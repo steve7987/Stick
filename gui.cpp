@@ -4,6 +4,7 @@ Gui::Gui(){
 	m_graphics = 0;
 	//windowList = 0;
 	windowArray = 0;
+	m_Mouse = 0;
 }
 
 Gui::~Gui(){
@@ -19,13 +20,31 @@ bool Gui::Initialize(Graphics * graphics, char * guiFilename, int sWidth, int sH
 	if (!loadFile(guiFilename, device)){
 		return false;
 	}
+	//create mouse bitmap
+	m_Mouse = new Bitmap();
+	if (!m_Mouse || !m_Mouse->Initialize(device, screenWidth, screenHeight, L"./Assets/cursor.dds", 32, 32, 0, 0, 0, 0, 1, 1)){
+		textDump("Failed to load mouse bitmap in gui class");
+		m_Mouse = 0;
+		return false;
+	}
+	mouseVisible = true;
 	return true;
 }
 
 int Gui::Frame(int mouseX, int mouseY){
+	
 	//go through window list and check where the press was
 	return windowArray[0]->Frame(mouseX, mouseY, windowArray);
 	
+}
+
+void Gui::updateMouse(int mouseX, int mouseY){
+	//adjust mouse cursor
+	m_Mouse->setPosition(mouseX, mouseY);
+}
+
+void Gui::setMouseVisible(bool visible){
+	mouseVisible = visible;
 }
 
 void Gui::setVisible(int windowID, bool visible){
@@ -37,6 +56,11 @@ void Gui::setProgressBar(int windowID, float amount){
 }
 
 void Gui::Shutdown(){
+	if (m_Mouse){
+		m_Mouse->Shutdown();
+		delete m_Mouse;
+		m_Mouse = 0;
+	}	
 	//delete window list
 	if (windowArray){
 		for (int i = 0; i < winArrayLength; i++){
@@ -149,9 +173,25 @@ bool Gui::loadFile(char * filename, ID3D11Device* device){
 }
 
 bool Gui::Render(ID3D11DeviceContext* deviceContext, TextureShader * textureShader, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
-				 D3DXMATRIX orthoMatrix){
+				 D3DXMATRIX orthoMatrix)
+{
 	//just call render on root window
 	return windowArray[0]->Render(deviceContext, textureShader, worldMatrix, viewMatrix, orthoMatrix, windowArray);
+}
+
+bool Gui::RenderCursor(ID3D11DeviceContext* deviceContext, TextureShader * textureShader, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
+				D3DXMATRIX orthoMatrix)
+{
+	//Render mouse cursor
+	if (mouseVisible && m_Mouse != 0){
+		if (!m_Mouse->Render(deviceContext)){
+			return false;
+		}
+		if (!textureShader->Render(deviceContext, m_Mouse->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, m_Mouse->GetTexture())){
+			return false;
+		}
+	}
+	return true;
 }
 
 int Gui::AddWindow(WCHAR* textureFilename, int parent, int bitmapWidth, int bitmapHeight, float tx, float ty, float bx, float by, bool vis, 

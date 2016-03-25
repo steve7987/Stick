@@ -4,6 +4,7 @@
 #include "classlist.h"
 #include "graphics.h"
 #include "window.h"
+#include "bitmap.h"
 
 class Graphics;
 class Window;
@@ -33,10 +34,14 @@ public:
 	
 
 	int Frame(int mouseX, int mouseY);  //takes mouse x,y and returns window id that mouse is over or -1
+	void updateMouse(int mouseX, int mouseY);  //moves the mouse cursor to the input values
+	void setMouseVisible(bool visible);  //toggle whether to show the mouse cursor or not
 	void setVisible(int windowID, bool visible);
 	void setProgressBar(int windowID, float amount);  //amount should be between 0 and 1
 	bool Render(ID3D11DeviceContext* deviceContext, TextureShader * textureShader, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
 				D3DXMATRIX orthoMatrix);  //renders all the GUI windows
+	bool RenderCursor(ID3D11DeviceContext* deviceContext, TextureShader * textureShader, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
+				D3DXMATRIX orthoMatrix);  //renders the mouse cursor
 	int AddWindow(WCHAR* textureFilename, int parent, int bitmapWidth, int bitmapHeight, float tx, float ty, float bx, float by, bool vis, 
 					int xpos, int ypos, bool hasBorder);  //returns id of new window
 	void RemoveWindow(int id, int parentid);  //removes window but not children (although children will never be rendered if parent removed)
@@ -52,7 +57,9 @@ private:
 	int screenHeight;
 	Window ** windowArray;
 	int winArrayLength;
-
+	
+	Bitmap * m_Mouse;
+	bool mouseVisible;
 };
 
 

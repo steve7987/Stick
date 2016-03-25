@@ -257,6 +257,7 @@ void Gapp::InitializeWindows(int& x, int& y){
 	ShowWindow(m_hwnd, SW_SHOW);
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd);
+	ShowCursor(FALSE);
 }
 
 
