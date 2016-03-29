@@ -12,6 +12,7 @@ Hero::Hero(void)
 	sbModel = 0;
 	m_NearTarget = 0;
 	m_FarTarget = 0;
+	projDeque = 0;
 }
 
 
@@ -61,6 +62,7 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 		return false;
 	}
 	m_NearTarget->SetScale(3,3);
+	nearTargetPos = Vector(10,0,0);
 	//create far target
 	m_FarTarget = new Billboard();
 	if (!m_FarTarget){
@@ -72,6 +74,9 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 		return false;
 	}
 	m_FarTarget->SetScale(3,3);
+
+	//create projectile deque
+	projDeque = new deque<Projectile * >();
 
 	return true;
 }
@@ -96,10 +101,24 @@ void Hero::Shutdown(){
 		delete m_FarTarget;
 		m_FarTarget = 0;
 	}
+	if (projDeque){
+		while (!projDeque->empty()){
+			Projectile * del = projDeque->front();
+			projDeque->pop_front();
+			del->Shutdown();
+			delete del;
+			del = 0;
+		}
+		delete projDeque;
+		projDeque = 0;
+	}
 }
 
 
 bool Hero::Render(float t){
+	for (std::deque<Projectile*>::iterator it = projDeque->begin(); it != projDeque->end(); ++it){
+		(*it)->Render(t);
+	}
 	g_graphics->RenderObject(heroModel, SHADER_LIGHT);
 	g_graphics->RenderObject(m_NearTarget, SHADER_TEXTURE);
 	g_graphics->RenderObject(m_FarTarget, SHADER_TEXTURE);
@@ -110,6 +129,11 @@ bool Hero::Render(float t){
 void Hero::Update(float t, Input * input, BaseCamera * activeCam){
 	HandleMovement(t, input);
 	AdjustTargeting(input, activeCam);
+	HandleShooting(t, input);
+	//update projectiles
+	for (std::deque<Projectile*>::iterator it = projDeque->begin(); it != projDeque->end(); ++it){
+		(*it)->Update(t);
+	}
 }
 
 Vector Hero::GetPosition(){
@@ -208,9 +232,19 @@ void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam){
 	direction = direction / direction.length();
 	Vector nearPos = origin + 100 * direction;
 	m_NearTarget->SetPosition(nearPos);
+	nearTargetPos = nearPos;  //update near target position for shooting
 	//compute fartarget pos
 	Vector shipRay = nearPos - position;
 	shipRay = shipRay / shipRay.length();
 	Vector farpos = position + 100 * shipRay;
 	m_FarTarget->SetPosition(farpos);
+}
+
+void Hero::HandleShooting(float t, Input * input){
+	if (input->MouseBeenPushed(MK_LBUTTON)){
+		Projectile * shot = new Projectile();
+		Vector direction = (nearTargetPos - position).normalize();
+		shot->Initialize(position + direction * 5, direction);
+		projDeque->push_front(shot);
+	}
 }

@@ -102,6 +102,7 @@
     <ClInclude Include="model.h" />
     <ClInclude Include="modelmanager.h" />
     <ClInclude Include="progressbar.h" />
+    <ClInclude Include="projectile.h" />
     <ClInclude Include="quaternion.h" />
     <ClInclude Include="renderable.h" />
     <ClInclude Include="shield.h" />
@@ -142,6 +143,7 @@
     <ClCompile Include="model.cpp" />
     <ClCompile Include="modelmanager.cpp" />
     <ClCompile Include="progressbar.cpp" />
+    <ClCompile Include="projectile.cpp" />
     <ClCompile Include="shield.cpp" />
     <ClCompile Include="shieldshader.cpp" />
     <ClCompile Include="springcamera.cpp" />

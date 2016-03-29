@@ -25,6 +25,7 @@ class MainMenuState;  //opening menu of game
 class Model;  //3d object loaded from a text file
 class ModelManager;
 class ProgressBar;  //for gui
+class Projectile;  //lasers, bombs etc.
 class Quaternion;
 class Renderable;   //any object thats rendered in 3d world
 class SelectionState;  //state for preparing ship and level

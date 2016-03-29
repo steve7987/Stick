@@ -34,6 +34,7 @@ void Block::Shutdown(){
 	if (blockModel){
 		blockModel->Shutdown();
 		delete blockModel;
+		blockModel = 0;
 	}
 
 }
