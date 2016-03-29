@@ -27,6 +27,7 @@ private:
 	Vector position;  
 	Vector direction;
 
+	float timer;
 };
 
 #endif

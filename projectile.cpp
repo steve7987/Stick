@@ -2,6 +2,7 @@
 
 #define PROJECTILE_MODEL "./Assets/cube.txt"
 #define PROJECTILE_TEXTURE L"./Assets/blocktex.dds"
+#define PROJECTILE_TIMER 4.0f
 #define PROJECTILE_SPEED 80.0f
 
 Projectile::Projectile(void)
@@ -29,6 +30,8 @@ bool Projectile::Initialize(Vector position, Vector direction){
 	this->direction = direction;
 	projectileModel->SetPosition(position);
 	
+	timer = PROJECTILE_TIMER;
+
 	return true;
 }
 	
@@ -49,7 +52,8 @@ bool Projectile::Render(float t){
 bool Projectile::Update(float t){
 	position = position + direction * PROJECTILE_SPEED * t / 1000.0f;
 	projectileModel->SetPosition(position);
-	return true;
+	timer -= t / 1000.0f;
+	return timer > 0;
 }
 
 Vector Projectile::getPosition(){

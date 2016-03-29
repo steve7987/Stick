@@ -131,8 +131,17 @@ void Hero::Update(float t, Input * input, BaseCamera * activeCam){
 	AdjustTargeting(input, activeCam);
 	HandleShooting(t, input);
 	//update projectiles
-	for (std::deque<Projectile*>::iterator it = projDeque->begin(); it != projDeque->end(); ++it){
-		(*it)->Update(t);
+	for (std::deque<Projectile*>::iterator it = projDeque->begin(); it != projDeque->end(); ){
+		if (!(*it)->Update(t)){
+			//need to remove
+			(*it)->Shutdown();
+			delete (*it);
+			(*it) = 0;
+			it = projDeque->erase(it);
+		}
+		else {
+			++it;  //dont increment in for loop since removing automatically iterates to the next element
+		}
 	}
 }
 
@@ -245,6 +254,6 @@ void Hero::HandleShooting(float t, Input * input){
 		Projectile * shot = new Projectile();
 		Vector direction = (nearTargetPos - position).normalize();
 		shot->Initialize(position + direction * 5, direction);
-		projDeque->push_front(shot);
+		projDeque->push_back(shot);
 	}
 }
