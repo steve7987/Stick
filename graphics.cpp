@@ -202,7 +202,7 @@ bool Graphics::StartFrame(float time, BaseCamera * cam, Light * light){
 	}
 	
 	// Clear the buffers to begin the scene.
-	m_d3d->BeginScene(0.55f, 0.55f, 0.55f, 1.0f);
+	m_d3d->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	//get view matrix from camera
 	activeCamera->Render(time);

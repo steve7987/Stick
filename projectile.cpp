@@ -1,9 +1,9 @@
 #include "projectile.h"
 
-#define PROJECTILE_MODEL "./Assets/cube.txt"
-#define PROJECTILE_TEXTURE L"./Assets/blocktex.dds"
+#define PROJECTILE_MODEL "./Assets/laser.txt"
+#define PROJECTILE_TEXTURE L"./Assets/Outline.dds"
 #define PROJECTILE_TIMER 4.0f
-#define PROJECTILE_SPEED 80.0f
+#define PROJECTILE_SPEED 180.0f
 
 Projectile::Projectile(void)
 {
@@ -29,6 +29,7 @@ bool Projectile::Initialize(Vector position, Vector direction){
 	this->position = position;
 	this->direction = direction;
 	projectileModel->SetPosition(position);
+	projectileModel->SetRotation(Quaternion(Vector(1,0,0), direction));
 	
 	timer = PROJECTILE_TIMER;
 
