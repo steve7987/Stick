@@ -199,3 +199,25 @@ Vector closestPointOnBlock(Vector center, float radius, Vector position, Vector 
 	}
 	return result;
 }
+
+bool ellipsoidLineSegmentCollide(Vector center, Vector scale, Vector start, Vector end){
+	//transform everything so center is at (0,0,0);
+	start = start - center;
+	end = end - center;
+	//rescale so ellipsoid becomes sphere of radius 1
+	start.x = start.x / scale.x;
+	start.y = start.y / scale.y;
+	start.z = start.z / scale.z;
+	end.x = end.x / scale.x;
+	end.y = end.y / scale.y;
+	end.z = end.z / scale.z;
+	//calculate distance from line to origin set to 2 since its larger than radius
+	Vector hyp = -1 * start;
+	Vector lineDir = end - start;
+	float dist = 2;
+
+	if ((lineDir * start) * (lineDir * end) < 0){  //if start and end on opposite sides of the sphere, need to use dist from line
+		dist = (hyp.cross(lineDir) * hyp.cross(lineDir)) / (lineDir * lineDir);
+	}
+	return dist < 1 || start * start < 1 || end * end < 1;
+}

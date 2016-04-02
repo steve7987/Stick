@@ -157,6 +157,10 @@ Quaternion Hero::GetRotation(){
 	return rotation;
 }
 
+std::deque<Projectile*> * Hero::GetProjectileDeque(){
+	return projDeque;
+}
+
 void Hero::HandleMovement(float t, Input * input){
 	//get key movement
 	Vector keyYZacc = Vector(0,0,0);

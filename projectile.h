@@ -20,12 +20,17 @@ public:
 	bool Update(float t);  //returns false if the projectile should be removed
 
 	Vector getPosition();
+	Vector getPreviousPosition();
+
+	void HitObject();  //called when the projectile hits an object
 
 private:
 	Model * projectileModel;
 
-	Vector position;  
+	Vector position;  //current position of proj tip
 	Vector direction;
+
+	Vector previousPosition;  //position of the tip during the previous frame (same as pos during first frame)
 
 	float timer;
 };

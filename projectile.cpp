@@ -28,6 +28,7 @@ bool Projectile::Initialize(Vector position, Vector direction){
 	}
 	this->position = position;
 	this->direction = direction;
+	this->previousPosition = position;
 	projectileModel->SetPosition(position);
 	projectileModel->SetRotation(Quaternion(Vector(1,0,0), direction));
 	
@@ -51,6 +52,7 @@ bool Projectile::Render(float t){
 }
 
 bool Projectile::Update(float t){
+	this->previousPosition = position;
 	position = position + direction * PROJECTILE_SPEED * t / 1000.0f;
 	projectileModel->SetPosition(position);
 	timer -= t / 1000.0f;
@@ -59,4 +61,12 @@ bool Projectile::Update(float t){
 
 Vector Projectile::getPosition(){
 	return position;
+}
+
+Vector Projectile::getPreviousPosition(){
+	return previousPosition;
+}
+
+void Projectile::HitObject(){
+	timer = 0;
 }

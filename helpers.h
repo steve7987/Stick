@@ -33,6 +33,9 @@ Vector closestPointOnBlock(Vector center, float radius, Vector position, Vector 
 
 bool sphereInsideBox(Vector center, float radius, Vector position, Vector dimensions);
 
+//returns true if the line segment from start to end intersects the ellipsoid with given center and scale
+bool ellipsoidLineSegmentCollide(Vector center, Vector scale, Vector start, Vector end);
+
 
 
 #endif

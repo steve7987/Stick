@@ -26,6 +26,7 @@ bool Enemy::Initialize(Vector position, Vector dimensions){
 	this->dimensions = dimensions;
 	m_Model->SetPosition(position);
 	m_Model->SetScale(dimensions);
+	remove = false;
 	return true;
 }
 
@@ -43,10 +44,18 @@ bool Enemy::Render(float t){
 	return true;
 }
 	
-void Enemy::Update(float t){
-
+bool Enemy::Update(float t){
+	return !remove;
 }
 	
 Vector Enemy::GetPosition(){
 	return position;
+}
+
+Vector Enemy::GetDimensions(){
+	return dimensions;
+}
+
+void Enemy::BeenHit(){
+	remove = true;
 }

@@ -81,10 +81,21 @@ bool ActionState::update(float t, Input * input){
 	m_Hero->Update(t, input, m_Camera);
 	m_Environment->update(t);
 	AdjustCamera();
-	//update enemies
-	for (std::deque<Enemy*>::iterator it = m_EnemyDeque->begin(); it != m_EnemyDeque->end(); ++it){
-		(*it)->Update(t);
+	//update enemies, check if they should be removed
+	for (std::deque<Enemy*>::iterator it = m_EnemyDeque->begin(); it != m_EnemyDeque->end(); ){
+		if (!(*it)->Update(t)){
+			//need to remove
+			(*it)->Shutdown();
+			delete (*it);
+			(*it) = 0;
+			it = m_EnemyDeque->erase(it);
+		}
+		else {
+			++it;  //dont increment in for loop since removing automatically iterates to the next element
+		}
 	}
+
+	CheckCollisions();
 
 	//check for end of level
 	if (LevelEndReached()){
@@ -203,4 +214,20 @@ void ActionState::AdjustCamera(){
 	xRot.w += 3;  //decreases the angle of rotation
 	xRot = xRot / sqrt(xRot.x * xRot.x + xRot.w * xRot.w + xRot.y * xRot.y + xRot.z * xRot.z);
 	m_Camera->SetRotation(xRot);
+}
+
+void ActionState::CheckCollisions(){
+	//check for collision between enemies and hero projectiles
+	std::deque<Projectile*> * projDeque = m_Hero->GetProjectileDeque();
+
+	for (std::deque<Enemy*>::iterator it = m_EnemyDeque->begin(); it != m_EnemyDeque->end(); ++it){
+		for (std::deque<Projectile*>::iterator pit = projDeque->begin(); pit != projDeque->end(); ++pit){
+			//see if the two intersected
+			if (ellipsoidLineSegmentCollide((*it)->GetPosition(), (*it)->GetDimensions(), (*pit)->getPosition(), (*pit)->getPreviousPosition())){
+				(*pit)->HitObject();
+				(*it)->BeenHit();
+			}
+		}
+	}
+
 }

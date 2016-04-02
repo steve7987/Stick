@@ -16,6 +16,7 @@
 #include "environment.h"
 #include "billboard.h"
 #include "enemy.h"
+#include "projectile.h"
 
 extern Graphics * g_graphics;
 extern Gui * g_gui;
@@ -35,6 +36,7 @@ public:
 	void onEnter();
 
 private:
+	void CheckCollisions();
 	bool LevelEndReached();
 	void AdjustCamera();
 	

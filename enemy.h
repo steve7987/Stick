@@ -20,15 +20,20 @@ public:
 	void Shutdown();
 
 	bool Render(float t);
-	void Update(float t);   
+	bool Update(float t);   //returns false if the enemy should be removed from the deque
 
 	Vector GetPosition();
+	Vector GetDimensions();
+
+	void BeenHit();  //called when the ship has been hit
 
 private:
 	Vector position;
 	Vector dimensions;
 
 	Model * m_Model;  //model for the main part of the enemy ship
+
+	bool remove;
 
 };
 

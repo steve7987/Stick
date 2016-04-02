@@ -31,6 +31,8 @@ public:
 	Vector GetVelocity();
 	Quaternion GetRotation();
 
+	std::deque<Projectile*> * GetProjectileDeque();
+
 private:
 	void HandleMovement(float t, Input * input);
 	void AdjustTargeting(Input * input, BaseCamera * activeCam);
