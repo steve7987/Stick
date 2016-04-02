@@ -15,6 +15,7 @@
 #include "springcamera.h"
 #include "environment.h"
 #include "billboard.h"
+#include "enemy.h"
 
 extern Graphics * g_graphics;
 extern Gui * g_gui;
@@ -46,7 +47,7 @@ private:
 
 	Vector softBoundary;  // yz boundary for the level.  Ship can move a bit outside of it
 
-	
+	std::deque<Enemy*> * m_EnemyDeque;  //contains all of the current enemies
 };
 
 #endif

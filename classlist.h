@@ -8,6 +8,7 @@ class Bitmap;  //2d images
 class Camera;  //basic camera for displaying a scene
 class ColorShader;  //displays all vertices as a single color
 class D3Dgraphics;  //low level graphics
+class Enemy;  //generic enemy that can be shot at or collided with
 class Environment; //contains all the assets needed to make the environment (e.g. terrain, water, buildings) doesn't contain enemies or powerups etc
 class Font;
 class FontShader;

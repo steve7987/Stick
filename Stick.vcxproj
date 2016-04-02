@@ -83,6 +83,7 @@
     <ClInclude Include="classlist.h" />
     <ClInclude Include="colorshader.h" />
     <ClInclude Include="d3dgraphics.h" />
+    <ClInclude Include="enemy.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="fontshader.h" />
@@ -124,6 +125,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="colorshader.cpp" />
     <ClCompile Include="d3dgraphics.cpp" />
+    <ClCompile Include="enemy.cpp" />
     <ClCompile Include="environment.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="fontshader.cpp" />

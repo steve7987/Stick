@@ -6,6 +6,7 @@ ActionState::ActionState(){
 	m_Camera = 0;
 	m_Hero = 0;
 	m_Environment = 0;
+	m_EnemyDeque = 0;
 	
 }
 
@@ -52,6 +53,17 @@ void ActionState::Shutdown(){
 		delete m_Environment;
 		m_Environment = 0;
 	}
+	if (m_EnemyDeque){
+		while (!m_EnemyDeque->empty()){
+			Enemy * del = m_EnemyDeque->front();
+			m_EnemyDeque->pop_front();
+			del->Shutdown();
+			delete del;
+			del = 0;
+		}
+		delete m_EnemyDeque;
+		m_EnemyDeque = 0;
+	}
 	
 }
 
@@ -69,7 +81,10 @@ bool ActionState::update(float t, Input * input){
 	m_Hero->Update(t, input, m_Camera);
 	m_Environment->update(t);
 	AdjustCamera();
-	
+	//update enemies
+	for (std::deque<Enemy*>::iterator it = m_EnemyDeque->begin(); it != m_EnemyDeque->end(); ++it){
+		(*it)->Update(t);
+	}
 
 	//check for end of level
 	if (LevelEndReached()){
@@ -81,8 +96,12 @@ bool ActionState::update(float t, Input * input){
 void ActionState::render(float t){
 	g_graphics->StartFrame(t, m_Camera);
 	m_Hero->Render(t);
+	for (std::deque<Enemy*>::iterator it = m_EnemyDeque->begin(); it != m_EnemyDeque->end(); ++it){
+		(*it)->Render(t);
+	}
 	m_Environment->render(t);
 	g_graphics->EndFrame();
+
 }
 
 void ActionState::onExit(){
@@ -98,6 +117,17 @@ void ActionState::onExit(){
 		m_Hero->Shutdown();
 		delete m_Hero;
 		m_Hero = 0;
+	}
+	if (m_EnemyDeque){
+		while (!m_EnemyDeque->empty()){
+			Enemy * del = m_EnemyDeque->front();
+			m_EnemyDeque->pop_front();
+			del->Shutdown();
+			delete del;
+			del = 0;
+		}
+		delete m_EnemyDeque;
+		m_EnemyDeque = 0;
 	}
 }
 
@@ -131,6 +161,16 @@ void ActionState::onEnter(){
 	}
 	if (!m_Environment->Initialize()){
 		textDump("unable to initialize environment in action state");
+	}
+	//create enemy deque
+	m_EnemyDeque = new deque<Enemy *>();
+	//add some random enemies
+	for (int i = 0; i < 10; i++){
+		Vector pos = Vector(100 + rand()%100, 5 + rand()%20, -30 + rand()%60);
+		Vector dim = Vector(randb(3.5, 5.5), randb(3.5, 5.5), randb(3.5, 5.5));
+		Enemy * add = new Enemy();
+		add->Initialize(pos, dim);
+		m_EnemyDeque->push_front(add);
 	}
 	
 }
