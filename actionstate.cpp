@@ -177,10 +177,9 @@ void ActionState::onEnter(){
 	m_EnemyDeque = new deque<Enemy *>();
 	//add some random enemies
 	for (int i = 0; i < 10; i++){
-		Vector pos = Vector(100 + rand()%100, 5 + rand()%20, -30 + rand()%60);
-		Vector dim = Vector(randb(3.5, 5.5), randb(3.5, 5.5), randb(3.5, 5.5));
+		Vector pos = Vector(50 + rand()%50, 5 + rand()%20, -30 + rand()%60);
 		Enemy * add = new Enemy();
-		add->Initialize(pos, dim);
+		add->Initialize(pos);
 		m_EnemyDeque->push_front(add);
 	}
 	

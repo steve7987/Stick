@@ -249,7 +249,7 @@ void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam){
 	//compute fartarget pos
 	Vector shipRay = nearPos - position;
 	shipRay = shipRay / shipRay.length();
-	Vector farpos = position + 100 * shipRay;
+	Vector farpos = position + 150 * shipRay;
 	m_FarTarget->SetPosition(farpos);
 }
 

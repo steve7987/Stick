@@ -16,7 +16,7 @@ public:
 	Enemy(void);
 	~Enemy(void);
 
-	bool Initialize(Vector position, Vector dimensions);
+	bool Initialize(Vector position);
 	void Shutdown();
 
 	bool Render(float t);
