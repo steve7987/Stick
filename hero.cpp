@@ -6,8 +6,8 @@
 #define MAX_PITCH 0.523
 #define MAX_YAW 0.3
 
-#define TARGETER_NEAR 40.0f
-#define TARGETER_FAR 50.0f
+#define TARGETER_NEAR 20.0f
+#define TARGETER_FAR 30.0f
 
 Hero::Hero(void)
 {

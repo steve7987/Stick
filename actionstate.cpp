@@ -1,6 +1,6 @@
 #include "actionstate.h"
 
-#define CAM_DISTANCE 20.0f
+#define CAM_DISTANCE 18.0f
 
 ActionState::ActionState(){
 	m_Camera = 0;
@@ -231,14 +231,60 @@ void ActionState::CheckCollisions(){
 }
 
 void ActionState::CreateWave(){
-	//add some random enemies
-	float dist = 40 + rand()%10;
-	for (int i = 0; i < 10; i++){
-		Vector ori = Vector(125, -20, -5 + i);
-		Vector tar = Vector(dist, 10, -50 + 10*i);
-		Vector exit = Vector(0, 80, -50 + 10*i);
+	int waveType = rand()%3;
+	if (waveType == 0){
+		TopWave();
+	}
+	else if (waveType == 1){
+		BottomWave();
+	}
+	else if (waveType == 2){
+		SideWave();
+	}
+}
+
+void ActionState::TopWave(){
+	for (int i = 0; i < 5; i++){
+		Vector ori = Vector(125, 150, -50 + i*20);
+		Vector tar = Vector(30, 0, -20 + 10*i);
+		Vector exit = Vector(-30, 0, -20 + 10*i);
+		
 		Enemy * add = new Enemy();
-		add->Initialize(ori, tar, exit, 30.0f);
+		add->Initialize(ori, tar, exit, 0.5f);
+		m_EnemyDeque->push_front(add);
+	}
+}
+
+void ActionState::BottomWave(){
+	float dist = 20;
+	for (int i = 0; i < 5; i++){
+		Vector ori = Vector(125, -10, -2 + i);
+		Vector tar = Vector(dist, 5, -20 + 10*i);
+		Vector exit = Vector(0, 80, -20 + 10*i);
+		
+		Enemy * add = new Enemy();
+		add->Initialize(ori, tar, exit, 2.0f);
+		m_EnemyDeque->push_front(add);
+	}
+}
+
+void ActionState::SideWave(){
+	for (int i = 0; i < 3; i++){
+		Vector ori = Vector(125, 5*i, -100);
+		Vector tar = Vector(30, 10*i, 5);
+		Vector exit = Vector(125, 5*i, 100);
+		
+		Enemy * add = new Enemy();
+		add->Initialize(ori, tar, exit, 0.5f);
+		m_EnemyDeque->push_front(add);
+	}
+	for (int i = 0; i < 3; i++){
+		Vector ori = Vector(125, 5*i, 100);
+		Vector tar = Vector(30, 10*i - 5, -5);
+		Vector exit = Vector(125, 5*i, -100);
+		
+		Enemy * add = new Enemy();
+		add->Initialize(ori, tar, exit, 0.5f);
 		m_EnemyDeque->push_front(add);
 	}
 }

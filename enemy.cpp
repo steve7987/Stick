@@ -27,7 +27,8 @@ bool Enemy::Initialize(Vector origin, Vector target, Vector exit, float time){
 		return false;
 	}
 	m_Model->SetPosition(position);
-	
+	m_Model->SetScale(3, 3, 3);
+
 	//setup motion for enemy
 	this->position = origin;
 	this->target = target;
@@ -36,7 +37,7 @@ bool Enemy::Initialize(Vector origin, Vector target, Vector exit, float time){
 	this->mode = 1;
 
 	//setup hitbox	
-	this->dimensions = SHIP_DIMENSIONS;
+	this->dimensions = 3*SHIP_DIMENSIONS;
 	this->remove = false;	
 
 	return true;

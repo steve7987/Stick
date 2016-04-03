@@ -41,6 +41,9 @@ private:
 	void AdjustCamera();
 	
 	void CreateWave();  //creates a new wave of enemies to fight
+	void BottomWave();  //creates a wave of enemies that spawn from the bottom
+	void TopWave();  //creates a wave of enemies that spawn from the top
+	void SideWave();  //creates a wave of enemies that spawn from the sides
 
 	int asSentence;
 	int debugSentence;  //used for ouputting different messages
