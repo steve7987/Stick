@@ -245,8 +245,8 @@ void ActionState::CreateWave(){
 
 void ActionState::TopWave(){
 	for (int i = 0; i < 5; i++){
-		Vector ori = Vector(125, 150, -50 + i*20);
-		Vector tar = Vector(30, 0, -20 + 10*i);
+		Vector ori = Vector(80, 150, -50 + i*20);
+		Vector tar = Vector(30, 5, -20 + 10*i);
 		Vector exit = Vector(-30, 0, -20 + 10*i);
 		
 		Enemy * add = new Enemy();
@@ -263,28 +263,29 @@ void ActionState::BottomWave(){
 		Vector exit = Vector(0, 80, -20 + 10*i);
 		
 		Enemy * add = new Enemy();
-		add->Initialize(ori, tar, exit, 2.0f);
+		add->Initialize(ori, tar, exit, 0.8f);
 		m_EnemyDeque->push_front(add);
 	}
 }
 
+
 void ActionState::SideWave(){
 	for (int i = 0; i < 3; i++){
-		Vector ori = Vector(125, 5*i, -100);
+		Vector ori = Vector(125, 5*i, -100 - 5 * i);
 		Vector tar = Vector(30, 10*i, 5);
 		Vector exit = Vector(125, 5*i, 100);
 		
 		Enemy * add = new Enemy();
-		add->Initialize(ori, tar, exit, 0.5f);
+		add->Initialize(ori, tar, exit, 0.2f + 0.2*i);
 		m_EnemyDeque->push_front(add);
 	}
 	for (int i = 0; i < 3; i++){
-		Vector ori = Vector(125, 5*i, 100);
+		Vector ori = Vector(125, 5*i, 100 + 5 * i);
 		Vector tar = Vector(30, 10*i - 5, -5);
 		Vector exit = Vector(125, 5*i, -100);
 		
 		Enemy * add = new Enemy();
-		add->Initialize(ori, tar, exit, 0.5f);
+		add->Initialize(ori, tar, exit, 0.2f + 0.2*i);
 		m_EnemyDeque->push_front(add);
 	}
 }

@@ -9,6 +9,8 @@
 #define TARGETER_NEAR 20.0f
 #define TARGETER_FAR 30.0f
 
+#define FIRE_TIMER 0.12f
+
 Hero::Hero(void)
 {
 	heroModel = 0;
@@ -80,6 +82,8 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 
 	//create projectile deque
 	projDeque = new deque<Projectile * >();
+
+	fireTimer = 0;
 
 	return true;
 }
@@ -263,10 +267,14 @@ void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam){
 }
 
 void Hero::HandleShooting(float t, Input * input){
-	if (input->MouseBeenPushed(MK_LBUTTON)){
+	if (fireTimer > 0){
+		fireTimer -= t / 1000.0f;
+	}
+	if ((input->MouseBeenPushed(MK_LBUTTON) || input->IsMouseDown(MK_LBUTTON)) && fireTimer <= 0){
 		Projectile * shot = new Projectile();
 		Vector direction = (nearTargetPos - position).normalize();
 		shot->Initialize(position + direction * 5, direction);
 		projDeque->push_back(shot);
+		fireTimer += FIRE_TIMER;
 	}
 }

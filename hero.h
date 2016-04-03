@@ -54,6 +54,8 @@ private:
 	Vector nearTargetPos;
 
 	std::deque<Projectile*> * projDeque;  //deque of projectiles that have been fired by the ship
+
+	float fireTimer;  //time remaining until can shoot again
 };
 
 #endif
