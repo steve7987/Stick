@@ -232,12 +232,13 @@ void ActionState::CheckCollisions(){
 
 void ActionState::CreateWave(){
 	//add some random enemies
+	float dist = 40 + rand()%10;
 	for (int i = 0; i < 10; i++){
 		Vector ori = Vector(125, -20, -5 + i);
-		Vector tar = Vector(95, 20, -50 + 10*i);
+		Vector tar = Vector(dist, 10, -50 + 10*i);
 		Vector exit = Vector(0, 80, -50 + 10*i);
 		Enemy * add = new Enemy();
-		add->Initialize(ori, tar, exit, 10.0f);
+		add->Initialize(ori, tar, exit, 30.0f);
 		m_EnemyDeque->push_front(add);
 	}
 }

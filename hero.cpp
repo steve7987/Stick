@@ -6,6 +6,9 @@
 #define MAX_PITCH 0.523
 #define MAX_YAW 0.3
 
+#define TARGETER_NEAR 40.0f
+#define TARGETER_FAR 50.0f
+
 Hero::Hero(void)
 {
 	heroModel = 0;
@@ -61,7 +64,7 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 		textDump("unable to initialize near target in hero class");
 		return false;
 	}
-	m_NearTarget->SetScale(3,3);
+	m_NearTarget->SetScale(2,2);
 	nearTargetPos = Vector(10,0,0);
 	//create far target
 	m_FarTarget = new Billboard();
@@ -73,7 +76,7 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 		textDump("unable to initialize far target in hero class");
 		return false;
 	}
-	m_FarTarget->SetScale(3,3);
+	m_FarTarget->SetScale(2,2);
 
 	//create projectile deque
 	projDeque = new deque<Projectile * >();
@@ -241,15 +244,21 @@ void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam){
 	Vector origin, direction;
 	int mx, my;
 	input->GetMouseLocation(mx, my);
+	//get ray from camera to mouse
 	g_graphics->GetMouseRay(mx, my, origin, direction, activeCam);
 	direction = direction / direction.length();
-	Vector nearPos = origin + 75 * direction;
+	//calculate scale needed to make nearpos.x a certain value
+	float mag = (TARGETER_NEAR - origin.x) / direction.x;
+	Vector nearPos = origin + mag * direction;
 	m_NearTarget->SetPosition(nearPos);
-	nearTargetPos = nearPos;  //update near target position for shooting
+	nearTargetPos = nearPos; 
 	//compute fartarget pos
+	//get ray from ship to near target
 	Vector shipRay = nearPos - position;
 	shipRay = shipRay / shipRay.length();
-	Vector farpos = position + 125 * shipRay;
+	//calculate magnitute needed to make farpos.x a certain value
+	mag = (TARGETER_FAR - position.x) / shipRay.x;
+	Vector farpos = position + mag * shipRay;
 	m_FarTarget->SetPosition(farpos);
 }
 
