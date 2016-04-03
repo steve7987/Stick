@@ -97,6 +97,11 @@ bool ActionState::update(float t, Input * input){
 
 	CheckCollisions();
 
+	//if no enemies left, add new wave
+	if (m_EnemyDeque->empty()){
+		CreateWave();
+	}
+
 	//check for end of level
 	if (LevelEndReached()){
 		g_gameStateManager->change("level complete");
@@ -175,13 +180,7 @@ void ActionState::onEnter(){
 	}
 	//create enemy deque
 	m_EnemyDeque = new deque<Enemy *>();
-	//add some random enemies
-	for (int i = 0; i < 10; i++){
-		Vector pos = Vector(50 + rand()%50, 5 + rand()%20, -30 + rand()%60);
-		Enemy * add = new Enemy();
-		add->Initialize(pos);
-		m_EnemyDeque->push_front(add);
-	}
+	
 	
 }
 
@@ -229,4 +228,16 @@ void ActionState::CheckCollisions(){
 		}
 	}
 
+}
+
+void ActionState::CreateWave(){
+	//add some random enemies
+	for (int i = 0; i < 10; i++){
+		Vector ori = Vector(125, -20, -5 + i);
+		Vector tar = Vector(95, 20, -50 + 10*i);
+		Vector exit = Vector(0, 80, -50 + 10*i);
+		Enemy * add = new Enemy();
+		add->Initialize(ori, tar, exit, 10.0f);
+		m_EnemyDeque->push_front(add);
+	}
 }

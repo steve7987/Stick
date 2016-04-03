@@ -243,13 +243,13 @@ void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam){
 	input->GetMouseLocation(mx, my);
 	g_graphics->GetMouseRay(mx, my, origin, direction, activeCam);
 	direction = direction / direction.length();
-	Vector nearPos = origin + 100 * direction;
+	Vector nearPos = origin + 75 * direction;
 	m_NearTarget->SetPosition(nearPos);
 	nearTargetPos = nearPos;  //update near target position for shooting
 	//compute fartarget pos
 	Vector shipRay = nearPos - position;
 	shipRay = shipRay / shipRay.length();
-	Vector farpos = position + 150 * shipRay;
+	Vector farpos = position + 125 * shipRay;
 	m_FarTarget->SetPosition(farpos);
 }
 

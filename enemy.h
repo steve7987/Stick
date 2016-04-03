@@ -16,7 +16,7 @@ public:
 	Enemy(void);
 	~Enemy(void);
 
-	bool Initialize(Vector position);
+	bool Initialize(Vector origin, Vector target, Vector exit, float time);
 	void Shutdown();
 
 	bool Render(float t);
@@ -28,8 +28,16 @@ public:
 	void BeenHit();  //called when the ship has been hit
 
 private:
+	bool MoveToTarget(Vector destination, float speed, float t);  //moves the enemy to the destination based on speed and time, returns true if target reached
+
 	Vector position;
 	Vector dimensions;
+
+	//basic AI vars
+	Vector target;  //where the enemy will move to on the screen
+	Vector exit;  //where the enemy will exit to off the screen
+	float timer;  //timer until exit begins
+	int mode;  //current action.  1=move to target, 2=at target, 3=move to exit, 4=remove
 
 	Model * m_Model;  //model for the main part of the enemy ship
 

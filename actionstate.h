@@ -40,6 +40,8 @@ private:
 	bool LevelEndReached();
 	void AdjustCamera();
 	
+	void CreateWave();  //creates a new wave of enemies to fight
+
 	int asSentence;
 	int debugSentence;  //used for ouputting different messages
 	
