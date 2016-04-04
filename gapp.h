@@ -23,6 +23,7 @@
 #include "mainmenustate.h"
 #include "actionstate.h"
 #include "levelcompletestate.h"
+#include "teststate.h"
 
 extern ModelManager * g_modelManager;
 extern TextureManager * g_textureManager;

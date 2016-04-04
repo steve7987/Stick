@@ -40,7 +40,7 @@ bool MainMenuState::update(float t, Input * input){
 			g_gameStateManager->change("action");
 		}
 		if (window == GUIWINDOW_MAINMENUANIM){
-			//g_gameStateManager->change("animation");
+			g_gameStateManager->change("animation");
 		}
 	}
 

@@ -108,6 +108,10 @@ bool Gapp::Initialize() {
 	LevelCompleteState * lc = new LevelCompleteState();
 	lc->Initialize();
 	m_gameStateManager->add("level complete", lc);
+
+	TestState * ts = new TestState();
+	ts->Initialize();
+	m_gameStateManager->add("animation", ts);
 	
 	textDump("finished main load");
 	return true;
