@@ -144,6 +144,12 @@
     <ClInclude Include="teststate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="explosion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="explosionshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="billboard.cpp">
@@ -260,6 +266,12 @@
     <ClCompile Include="teststate.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="explosion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="explosionshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="color.ps">
@@ -292,5 +304,9 @@
     <None Include="shield.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="explosion.ps">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="explosion.vs" />
   </ItemGroup>
 </Project>

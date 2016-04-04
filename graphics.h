@@ -27,6 +27,7 @@
 #include "textureshader.h"
 #include "lightshader.h"
 #include "shieldshader.h"
+#include "explosionshader.h"
 
 extern Gui * g_gui;
 
@@ -41,7 +42,7 @@ const float SCREEN_NEAR = 0.1f;
 #define SHADER_COLOR 1
 #define SHADER_TEXTURE 2
 #define SHADER_SHIELD 3
-#define SHADER_TUBE 4
+#define SHADER_EXPLOSION 4
 
 class Graphics{
 public:
@@ -87,8 +88,7 @@ private:
 	bool RenderObjectCS(Renderable * m);    //render using color shader
 	bool RenderObjectTS(Renderable * m);	//render using texture shader
 	bool RenderObjectSS(Renderable * m, D3DXVECTOR3 direction, float strength);  //render using shield shader
-	bool RenderObjectTube(Renderable * m, float textureOffset, D3DXVECTOR3 p1, D3DXVECTOR3 p2, D3DXVECTOR3 p3, D3DXVECTOR3 p4,
-						   D3DXVECTOR3 Center, D3DXVECTOR3 v1, D3DXVECTOR3 v2, float s1, float s2, float s3, float maxAngle, float radius);
+	bool RenderObjectES(Renderable * m, D3DXVECTOR3 direction, float strength);  //render using explosion shader
 
 	D3DXMATRIX viewMatrix, projectionMatrix, orthoMatrix, worldMatrix; //used in rendering a frame
 	
@@ -103,6 +103,7 @@ private:
 	TextureShader * m_TextureShader;
 	LightShader * m_LightShader;
 	ShieldShader * m_ShieldShader;
+	ExplosionShader * m_ExplosionShader;
 
 	priority_queue<RenderableType, vector<RenderableType>, CompareRenderableType> renderQueue;
 

@@ -14,6 +14,7 @@
 #include "springcamera.h"
 #include "block.h"
 #include "billboard.h"
+#include "explosion.h"
 
 extern Graphics * g_graphics;
 extern Gui * g_gui;
@@ -40,6 +41,8 @@ private:
 	SpringCamera * m_Camera;
 
 	Block * m_Block;  //just a block for something to look at
+
+	Explosion * m_Explosion;
 };
 
 #endif

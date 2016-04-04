@@ -6,6 +6,7 @@ Graphics::Graphics(){
 	m_colorShader = 0;
 	m_TextureShader = 0;
 	m_ShieldShader = 0;
+	m_ExplosionShader = 0;
 	m_Text = 0;
 	m_background = 0;
 
@@ -110,6 +111,14 @@ bool Graphics::Initialize(int x , int y , HWND hwnd){
 		m_ShieldShader = 0;
 		return false;
 	}
+	//create explosion shader
+	m_ExplosionShader = new ExplosionShader();
+	if (!m_ExplosionShader || !m_ExplosionShader->Initialize(m_d3d->GetDevice(), hwnd))
+	{
+		MessageBox(hwnd, L"Could not initialize the explosion shader.", L"Error", MB_OK);
+		m_ExplosionShader = 0;
+		return false;
+	}
 	//create the light
 	m_Light = new Light();
 	if (!m_Light){
@@ -133,6 +142,12 @@ void Graphics::Shutdown(){
 	{
 		delete m_Light;
 		m_Light = 0;
+	}
+	//release explosion shader
+	if (m_ExplosionShader){
+		m_ExplosionShader->Shutdown();
+		delete m_ExplosionShader;
+		m_ExplosionShader = 0;
 	}
 	//release shield shader
 	if (m_ShieldShader){
@@ -281,6 +296,15 @@ bool Graphics::RenderObjectSwitch(Renderable * m, int shaderType, float * parame
 		delete parameters;
 		return ret;
 		break;
+	case SHADER_EXPLOSION:
+		if (!parameters){
+			textDump("bad params for explosion shader");
+			return false;
+		}
+		ret = RenderObjectES(m, D3DXVECTOR3(parameters[0], parameters[1], parameters[2]), parameters[3]);
+		delete parameters;
+		return ret;
+		break;
 	default:
 		textDump("Unknown shader type");
 		return false;
@@ -327,6 +351,18 @@ bool Graphics::RenderObjectTS(Renderable * m){
 
 bool Graphics::RenderObjectSS(Renderable * m, D3DXVECTOR3 direction, float strength){
 	
+	if (!m->Render(m_d3d->GetDeviceContext(), activeCamera->GetLookVector())) {
+		return false;
+	}
+	bool result = m_ShieldShader->Render(m_d3d->GetDeviceContext(), m->GetIndexCount(), m->GetWorldMatrix(), 
+										viewMatrix, projectionMatrix,m->GetTexture(), direction, strength);
+	if (!result){
+		return false;
+	}
+	return true;
+}
+
+bool Graphics::RenderObjectES(Renderable * m, D3DXVECTOR3 direction, float strength){
 	if (!m->Render(m_d3d->GetDeviceContext(), activeCamera->GetLookVector())) {
 		return false;
 	}

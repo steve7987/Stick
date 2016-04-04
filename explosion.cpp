@@ -1,6 +1,6 @@
 #include "explosion.h"
 
-#define EXPLOSION_MODEL "./Assets/sphere.txt"
+#define EXPLOSION_MODEL "./Assets/icosphere3.txt"
 #define EXPLOSION_TEXTURE L"./Assets/Outline.dds"
 
 Explosion::Explosion(void){

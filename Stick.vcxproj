@@ -85,6 +85,8 @@
     <ClInclude Include="d3dgraphics.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="environment.h" />
+    <ClInclude Include="explosion.h" />
+    <ClInclude Include="explosionshader.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="fontshader.h" />
     <ClInclude Include="fps.h" />
@@ -128,6 +130,8 @@
     <ClCompile Include="d3dgraphics.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="environment.cpp" />
+    <ClCompile Include="explosion.cpp" />
+    <ClCompile Include="explosionshader.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="fontshader.cpp" />
     <ClCompile Include="fps.cpp" />
@@ -161,6 +165,8 @@
   <ItemGroup>
     <None Include="color.ps" />
     <None Include="color.vs" />
+    <None Include="explosion.ps" />
+    <None Include="explosion.vs" />
     <None Include="font.ps" />
     <None Include="font.vs" />
     <None Include="light.ps" />
