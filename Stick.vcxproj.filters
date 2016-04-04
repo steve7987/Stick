@@ -307,6 +307,8 @@
     <None Include="explosion.ps">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="explosion.vs" />
+    <None Include="explosion.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

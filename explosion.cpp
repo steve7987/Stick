@@ -1,7 +1,9 @@
 #include "explosion.h"
 
-#define EXPLOSION_MODEL "./Assets/icosphere3.txt"
-#define EXPLOSION_TEXTURE L"./Assets/Outline.dds"
+#define EXPLOSION_MODEL "./Assets/icosphere4.txt"
+#define EXPLOSION_TEXTURE L"./Assets/tmpexplosion.dds"
+
+#define EXPLOSION_LOOPTIME 0.75f
 
 Explosion::Explosion(void){
 	m_Model = 0;
@@ -25,6 +27,8 @@ bool Explosion::Initialize(Vector position){
 	this->position = position;
 	m_Model->SetPosition(position);
 
+	timer = 0;
+
 	return true;
 }
 
@@ -38,10 +42,17 @@ void Explosion::Shutdown(){
 
 
 bool Explosion::Render(float t){
-	g_graphics->RenderObject(m_Model, SHADER_LIGHT);
+	float * x = new float[4];
+	x[0] = sin(timer / EXPLOSION_LOOPTIME * 2*PI) * 0.5f + 0.25f;
+	x[1] = sin(timer / EXPLOSION_LOOPTIME * 2*PI + 2*PI / 3) * 0.5f + 0.25f;
+	x[2] = sin(timer / EXPLOSION_LOOPTIME * 2*PI + 4*PI / 3) * 0.5f + 0.25f;
+	x[3] = 0.0f;
+
+	g_graphics->RenderObject(m_Model, SHADER_EXPLOSION, x);
 	return true;
 }
 
 bool Explosion::Update(float t){
+	timer += t / 1000.0f;
 	return true;
 }

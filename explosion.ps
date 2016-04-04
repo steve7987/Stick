@@ -5,12 +5,6 @@
 Texture2D shaderTexture;
 SamplerState SampleType;
 
-cbuffer ExplosionBuffer
-{
-    float3 direction;
-    float strength;
-};
-
 struct PixelInputType
 {
     float4 position : SV_POSITION;
@@ -22,39 +16,11 @@ struct PixelInputType
 float4 ExplosionPixelShader(PixelInputType input) : SV_TARGET
 {
     float4 textureColor;
-    float intensity;
-    float4 color;
-	float scale;
 
+	textureColor.r = input.deltaP.x;
+	textureColor.g = 0.0f;
+	textureColor.b = 0.0f;
+	textureColor.a = 1.0f;
 
-    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
-    textureColor = shaderTexture.Sample(SampleType, input.tex);
-	
-	// Set the default output color to white
-    color.r = 1;
-	color.g = 1;
-	color.b = 1;
-	color.a = 1;
-
-	//calculate distance from this pixel to impact direction
-	float3 dp;
-	dp.x = input.deltaP.x;
-	dp.y = input.deltaP.y;
-	dp.z = input.deltaP.z;
-	float dist = sqrt(dot(dp - direction, dp - direction));
-
-	intensity = 1 - saturate(dist/strength);
-	intensity = intensity;
-	//color = textureColor;
-	if(intensity > 0.0f)
-    {
-		color = color * intensity + textureColor * (1 - intensity);
-		color.a = intensity;
-    }
-	else 
-	{
-		discard;
-	}
-
-    return color;
+	return textureColor;
 }

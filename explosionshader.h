@@ -21,8 +21,8 @@ private:
 		D3DXMATRIX projection;
 	};
 	struct ExplosionBufferType{
-		D3DXVECTOR3 direction;
-		float strength;  //determines how much strength/alpha
+		D3DXVECTOR3 distortion;
+		float time;  //unused for now
 	};
 
 public:
@@ -37,7 +37,7 @@ public:
 	//direction should be unit vector from center of shield to point of contact
 	bool SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, 
 					   D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, 
-					   D3DXVECTOR3 direction, float strength);
+					   D3DXVECTOR3 distortion, float time);
 	void RenderShader(ID3D11DeviceContext* deviceContext, int indexCount);
 
 private:

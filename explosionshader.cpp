@@ -289,7 +289,7 @@ void ExplosionShader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hw
 //set global variables for shaders
 bool ExplosionShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, 
 					   D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, 
-					   D3DXVECTOR3 direction, float strength)
+					   D3DXVECTOR3 distortion, float time)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -330,8 +330,10 @@ bool ExplosionShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 	//set shader texture in the pixel shader
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 
-	//setup the light buffer
-	// Lock the light constant buffer so it can be written to.
+	
+
+	//setup the explosion buffer
+	// Lock the explosion constant buffer so it can be written to.
 	result = deviceContext->Map(m_explosionBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if(FAILED(result))
 	{
@@ -342,17 +344,20 @@ bool ExplosionShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 	dataPtr2 = (ExplosionBufferType*)mappedResource.pData;
 
 	// Copy the shield variables into the constant buffer.
-	dataPtr2->direction = direction;
-	dataPtr2->strength = strength;
+	dataPtr2->distortion = distortion;
+	dataPtr2->time = time;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_explosionBuffer, 0);
 
-	// Set the position of the light constant buffer in the pixel shader.
-	bufferNumber = 0;
+	// Set the position of the explosion constant buffer in the vertex shader.
+	bufferNumber = 1;
 
-	// Finally set the light constant buffer in the pixel shader with the updated values.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_explosionBuffer);
+	// Finally set the explosion constant buffer in the vertex shader with the updated values.
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_explosionBuffer);
+
+	//set shader texture in the vertex shader
+	deviceContext->VSSetShaderResources(0, 1, &texture);
 
 	return true;
 }
