@@ -1,7 +1,7 @@
 #include "explosion.h"
 
 #define EXPLOSION_MODEL "./Assets/icosphere4.txt"
-#define EXPLOSION_TEXTURE L"./Assets/tmpexplosion.dds"
+#define EXPLOSION_TEXTURE L"./Assets/explosionDistortion.dds"
 
 #define EXPLOSION_LOOPTIME 0.75f
 

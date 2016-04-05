@@ -43,24 +43,18 @@ PixelInputType ExplosionVertexShader(VertexInputType input)
     PixelInputType output;
     
 
-	// Change the position vector to be 4 units for proper matrix calculations.
-    input.position.w = 1.0f;
-
-	uint3 sampleCoord = uint3(256*input.normal.x + 256, 256*input.normal.y + 256, 0);
+	//sample the noise texture
+	uint3 sampleCoord = uint3(256*input.tex.x, 256*input.tex.y, 0);
 	float4 distex = shaderTexture.Load(sampleCoord);
 	
+	//calculate the displacement based on noise tex and distortion buffer
+	float displacement;
+	displacement = distortion.x * distex.r + distortion.y * distex.g + distortion.z * distex.b;
+	input.position = input.position * (1 + displacement);
 	
+	//set w to one for proper matrix calculations.
+    input.position.w = 1.0f;
 	
-	float4 finalDis;
-	finalDis.x = distortion.x * distex.r;
-	finalDis.y = distortion.y * distex.g;
-	finalDis.z = distortion.z * distex.b;
-	finalDis.w = 0.0f;
-
-	input.position = input.position + finalDis;
-
-	float norm = dot(input.position, input.position) / 8;
-
 	// Calculate the position of the vertex against the world, view, and projection matrices.
     output.position = mul(input.position, worldMatrix);
     output.position = mul(output.position, viewMatrix);
@@ -71,7 +65,7 @@ PixelInputType ExplosionVertexShader(VertexInputType input)
 	
 	output.normal = input.normal;
 
-	output.deltaP.x = norm;
+	output.deltaP.x = displacement;
     
 
     return output;
