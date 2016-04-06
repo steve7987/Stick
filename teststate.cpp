@@ -39,7 +39,7 @@ bool TestState::Initialize(){
 	m_Block->Initialize(position, dimensions);
 	//create an explosion
 	m_Explosion = new Explosion();
-	m_Explosion->Initialize(Vector (10, 2, 0));
+	m_Explosion->Initialize(Vector (-10, 0, 0));
 
 
 	return true;

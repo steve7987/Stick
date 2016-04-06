@@ -263,13 +263,13 @@
     <ClCompile Include="enemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="teststate.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="explosion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="explosionshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="teststate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

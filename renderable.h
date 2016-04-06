@@ -12,7 +12,7 @@ public:
 	virtual bool Render(ID3D11DeviceContext * deviceContext, Vector camlook) = 0;
 	virtual int GetIndexCount() = 0;
 	virtual D3DXMATRIX GetWorldMatrix() = 0;
-	virtual ID3D11ShaderResourceView* GetTexture() = 0;
+	virtual ID3D11ShaderResourceView* GetTexture(int index = 0) = 0;
 
 	virtual bool HasAlpha() = 0;
 	virtual float getDepthSq(Vector campos, Vector look) = 0;

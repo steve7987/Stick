@@ -367,7 +367,7 @@ bool Graphics::RenderObjectES(Renderable * m, D3DXVECTOR3 direction, float stren
 		return false;
 	}
 	bool result = m_ExplosionShader->Render(m_d3d->GetDeviceContext(), m->GetIndexCount(), m->GetWorldMatrix(), 
-										viewMatrix, projectionMatrix,m->GetTexture(), direction, strength);
+											viewMatrix, projectionMatrix,m->GetTexture(0), m->GetTexture(1), direction, strength);
 	if (!result){
 		return false;
 	}

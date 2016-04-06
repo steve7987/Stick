@@ -70,7 +70,7 @@ D3DXMATRIX Billboard::GetWorldMatrix(){
 	return worldMatrix;
 }
 
-ID3D11ShaderResourceView* Billboard::GetTexture(){
+ID3D11ShaderResourceView* Billboard::GetTexture(int index){
 	return m_texture->GetTexture();
 }
 

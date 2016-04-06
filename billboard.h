@@ -30,7 +30,7 @@ public:
 	bool Render(ID3D11DeviceContext * deviceContext, Vector camlook);
 	int GetIndexCount();
 	D3DXMATRIX GetWorldMatrix();
-	ID3D11ShaderResourceView* GetTexture();
+	ID3D11ShaderResourceView* GetTexture(int index = 0);
 	bool HasAlpha();
 	float getDepthSq(Vector campos, Vector look);
 	

@@ -48,7 +48,9 @@ public:
 
 	D3DXMATRIX GetWorldMatrix();
 
-	ID3D11ShaderResourceView* GetTexture();
+	ID3D11ShaderResourceView* GetTexture(int index = 0);
+
+	void SetSecondaryTexture(ID3D11Device * device, WCHAR* textureFilename);  //sets the secondary texture under index 1
 
 private:
 	std::string modelFile;
@@ -64,6 +66,7 @@ private:
 	bool hasAlpha;
 
 	Texture * m_texture;
+	Texture * m_secondaryTexture;
 };
 
 #endif

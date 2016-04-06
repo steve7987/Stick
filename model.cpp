@@ -61,7 +61,13 @@ void Model::GetBoundingSphere(float& radius, Vector& center){
 	center.z = zpos;
 }
 
-ID3D11ShaderResourceView* Model::GetTexture(){
+ID3D11ShaderResourceView* Model::GetTexture(int index){
+	if (index == 1){
+		return m_secondaryTexture->GetTexture();
+	}
+	else if (index != 0){
+		textDump("invalid texture index");
+	}
 	return m_texture->GetTexture();
 }
 
@@ -117,4 +123,8 @@ void Model::UpdateWorldMatrix(){
 
 void Model::SetWorldMatrix(D3DXMATRIX world){
 	worldMatrix = world;
+}
+
+void Model::SetSecondaryTexture(ID3D11Device * device, WCHAR* textureFilename){
+	 m_secondaryTexture = g_textureManager->GetTexture(device, textureFilename);
 }
