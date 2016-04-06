@@ -1,5 +1,4 @@
 //vertex shader
-
 //globals
 
 cbuffer MatrixBuffer
@@ -44,12 +43,15 @@ PixelInputType ExplosionVertexShader(VertexInputType input)
     
 
 	//sample the noise texture
-	uint3 sampleCoord = uint3(256*input.tex.x, 256*input.tex.y, 0);
+	uint3 sampleCoord = uint3(512*input.tex.x, 512*input.tex.y, 0);
 	float4 distex = shaderTexture.Load(sampleCoord);
 	
+
 	//calculate the displacement based on noise tex and distortion buffer
 	float displacement;
 	displacement = distortion.x * distex.r + distortion.y * distex.g + distortion.z * distex.b;
+	displacement = displacement * 2;
+	displacement = distex.r + distex.g + distex.b;
 	input.position = input.position * (1 + displacement);
 	
 	//set w to one for proper matrix calculations.
@@ -66,7 +68,6 @@ PixelInputType ExplosionVertexShader(VertexInputType input)
 	output.normal = input.normal;
 
 	output.deltaP.x = displacement;
-    
 
     return output;
 }

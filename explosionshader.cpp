@@ -33,11 +33,11 @@ void ExplosionShader::Shutdown(){
 
 bool ExplosionShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, 
 						 D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, 
-						 D3DXVECTOR3 direction, float strength)
+						 ID3D11ShaderResourceView* secondaryTexture, D3DXVECTOR3 direction, float strength)
 {
 	//set shader parameters
 	if (!SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, 
-							 texture, direction, strength)){
+							 texture, secondaryTexture, direction, strength)){
 		return false;
 	}
 	//then render
@@ -289,7 +289,7 @@ void ExplosionShader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hw
 //set global variables for shaders
 bool ExplosionShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, 
 					   D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, 
-					   D3DXVECTOR3 distortion, float time)
+					   ID3D11ShaderResourceView* secondaryTexture, D3DXVECTOR3 distortion, float time)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -329,7 +329,7 @@ bool ExplosionShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 
 	//set shader texture in the pixel shader
 	deviceContext->PSSetShaderResources(0, 1, &texture);
-
+	deviceContext->PSSetShaderResources(1, 1, &secondaryTexture);
 	
 
 	//setup the explosion buffer
@@ -355,6 +355,9 @@ bool ExplosionShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 
 	// Finally set the explosion constant buffer in the vertex shader with the updated values.
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_explosionBuffer);
+	//also put the explosionbuffer in the pixel shader
+	bufferNumber = 0;
+	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_explosionBuffer);
 
 	//set shader texture in the vertex shader
 	deviceContext->VSSetShaderResources(0, 1, &texture);

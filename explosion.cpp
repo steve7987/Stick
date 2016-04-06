@@ -1,7 +1,8 @@
 #include "explosion.h"
 
-#define EXPLOSION_MODEL "./Assets/icosphere4.txt"
-#define EXPLOSION_TEXTURE L"./Assets/explosionDistortion.dds"
+#define EXPLOSION_MODEL "./Assets/icosphere5.txt"
+#define EXPLOSION_TEXTURE L"./Assets/explosionDistortion5.dds"
+#define EXPLOSION_RAMPTEXTURE L"./Assets/tempExpRamp.dds"
 
 #define EXPLOSION_LOOPTIME 0.75f
 
@@ -24,6 +25,7 @@ bool Explosion::Initialize(Vector position){
 		textDump("could not initialize model in explosion class");
 		return false;
 	}
+	m_Model->SetSecondaryTexture(g_graphics->GetDevice(), EXPLOSION_RAMPTEXTURE);
 	this->position = position;
 	m_Model->SetPosition(position);
 
@@ -47,6 +49,11 @@ bool Explosion::Render(float t){
 	x[1] = sin(timer / EXPLOSION_LOOPTIME * 2*PI + 2*PI / 3) * 0.5f + 0.25f;
 	x[2] = sin(timer / EXPLOSION_LOOPTIME * 2*PI + 4*PI / 3) * 0.5f + 0.25f;
 	x[3] = 0.0f;
+
+	float len = sqrt(x[0]*x[0] + x[1]*x[1] + x[2]*x[2]);
+	x[0] /= len;
+	x[1] /= len;
+	x[2] /= len;
 
 	g_graphics->RenderObject(m_Model, SHADER_EXPLOSION, x);
 	return true;

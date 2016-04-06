@@ -33,11 +33,11 @@ public:
 	void Shutdown();
 	bool Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, 
 			    D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, 
-				D3DXVECTOR3 direction, float strength);
+				ID3D11ShaderResourceView* secondaryTexture, D3DXVECTOR3 distortion, float time);
 	//direction should be unit vector from center of shield to point of contact
 	bool SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, 
 					   D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, 
-					   D3DXVECTOR3 distortion, float time);
+					   ID3D11ShaderResourceView* secondaryTexture, D3DXVECTOR3 distortion, float time);
 	void RenderShader(ID3D11DeviceContext* deviceContext, int indexCount);
 
 private:

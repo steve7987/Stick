@@ -1,8 +1,14 @@
 // pixel shader
 
 //globals
+cbuffer ExplosionBuffer
+{
+    float3 distortion;
+    float time;
+};
 
-Texture2D shaderTexture;
+Texture2D noiseTexture : register(t0);
+Texture2D rampTexture : register(t1);
 SamplerState SampleType;
 
 struct PixelInputType
@@ -16,11 +22,24 @@ struct PixelInputType
 float4 ExplosionPixelShader(PixelInputType input) : SV_TARGET
 {
     float4 textureColor;
+	float4 distex;
 
-	textureColor.r = input.deltaP.x;
-	textureColor.g = 0.5f;
-	textureColor.b = 0.0f;
-	textureColor.a = 1.0f;
+	
+
+	//calculate the displacement in the same way as the vertex shader
+	distex = noiseTexture.Sample(SampleType, input.tex);
+
+
+
+	float displacement;
+	displacement = distortion.x * distex.r + distortion.y * distex.g + distortion.z * distex.b;
+	displacement = displacement * 2;
+
+	
+	//sample the ramp color using the displacement value
+	float2 coords = float2(displacement, 0.0f);
+	textureColor = rampTexture.Sample(SampleType, coords);
+	
 
 	return textureColor;
 }
