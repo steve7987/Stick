@@ -37,10 +37,9 @@ bool TestState::Initialize(){
 	Vector dimensions = Vector(1000,1,100);
 	m_Block = new Block();
 	m_Block->Initialize(position, dimensions);
-	//create an explosion
+	
 	m_Explosion = new Explosion();
 	m_Explosion->Initialize(Vector (-10, 0, 0));
-
 
 	return true;
 }
@@ -77,6 +76,16 @@ bool TestState::update(float t, Input * input){
 		if (window == GUIWINDOW_ANIMATIONMAIN){
 			g_gameStateManager->change("main menu");
 		}
+	}
+	if (input->KeyBeenPushed(VK_SPACE)){
+		if (m_Explosion){
+			m_Explosion->Shutdown();
+			delete m_Explosion;
+			m_Explosion = 0;
+		}
+		//create an explosion
+		m_Explosion = new Explosion();
+		m_Explosion->Initialize(Vector (-10, 0, 0));
 	}
 
 	m_Explosion->Update(t);

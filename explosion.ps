@@ -26,16 +26,24 @@ float4 ExplosionPixelShader(PixelInputType input) : SV_TARGET
 
 	
 
-	//calculate the displacement in the same way as the vertex shader
+	//calculate the displacement in the same way as the vertex shader (but now using texture coords for better coloring)
 	distex = noiseTexture.Sample(SampleType, input.tex);
-
-
-
+	
 	float displacement;
 	displacement = distortion.x * distex.r + distortion.y * distex.g + distortion.z * distex.b;
 	displacement = displacement * 2;
 
-	
+	//adjust displacement so it provides better color
+	displacement = displacement / 3.5f + time - 0.35f;
+
+	//clamp displacement based on time
+	if (displacement < 0.0f){
+		displacement = 0.0f;
+	}
+	if (displacement >= 1.0f) {
+		discard;
+	}
+
 	//sample the ramp color using the displacement value
 	float2 coords = float2(displacement, 0.0f);
 	textureColor = rampTexture.Sample(SampleType, coords);
