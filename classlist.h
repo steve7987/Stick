@@ -10,6 +10,7 @@ class ColorShader;  //displays all vertices as a single color
 class D3Dgraphics;  //low level graphics
 class Enemy;  //generic enemy that can be shot at or collided with
 class Environment; //contains all the assets needed to make the environment (e.g. terrain, water, buildings) doesn't contain enemies or powerups etc
+class Effect;  //parent class for any type of graphical effect (e.g. explosion)
 class Explosion;  //creates a single explosion for some amount of time
 class Font;
 class FontShader;

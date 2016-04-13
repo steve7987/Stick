@@ -6,6 +6,7 @@
 #include <string.h>
 #include <map>
 #include <queue>
+#include <deque>
 
 #include "classlist.h"
 #include "d3dgraphics.h"
@@ -21,6 +22,7 @@
 #include "basecamera.h"
 #include "camera.h"
 #include "billboard.h"
+#include "effect.h"
 
 //shaders
 #include "colorshader.h"
@@ -81,6 +83,10 @@ public:
 	//background commands
 	void SetBackground(WCHAR* textureFilename);  
 	void ClearBackground();
+
+	//effect commands
+	void AddEffect(Effect * e);
+	void ClearEffects();
 	
 private:
 	bool RenderObjectSwitch(Renderable * m, int shaderType, float * parameters = 0);
@@ -116,6 +122,8 @@ private:
 	Text * m_Text;
 
 	Bitmap * m_background;
+
+	std::deque<Effect*> * m_EffectDeque;
 };
 
 #endif

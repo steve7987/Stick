@@ -4,11 +4,12 @@
 #include "graphics.h"
 #include "model.h"
 #include "vector.h"
+#include "effect.h"
 
 extern Graphics * g_graphics;
 
 
-class Explosion{
+class Explosion : public Effect{
 public:
 	Explosion(void);
 	~Explosion(void);

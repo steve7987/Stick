@@ -150,6 +150,9 @@
     <ClInclude Include="explosionshader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="effect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="billboard.cpp">

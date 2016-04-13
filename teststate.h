@@ -41,8 +41,6 @@ private:
 	SpringCamera * m_Camera;
 
 	Block * m_Block;  //just a block for something to look at
-
-	Explosion * m_Explosion;
 };
 
 #endif

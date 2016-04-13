@@ -83,6 +83,7 @@
     <ClInclude Include="classlist.h" />
     <ClInclude Include="colorshader.h" />
     <ClInclude Include="d3dgraphics.h" />
+    <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="explosion.h" />

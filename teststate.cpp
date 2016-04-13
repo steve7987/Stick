@@ -5,7 +5,6 @@
 TestState::TestState(){
 	m_Camera = 0;
 	m_Block = 0;
-	m_Explosion = 0;
 }
 	
 TestState::~TestState(){
@@ -38,18 +37,11 @@ bool TestState::Initialize(){
 	m_Block = new Block();
 	m_Block->Initialize(position, dimensions);
 	
-	m_Explosion = new Explosion();
-	m_Explosion->Initialize(Vector (-10, 0, 0), 5);
 
 	return true;
 }
 	
 void TestState::Shutdown(){
-	if (m_Explosion){
-		m_Explosion->Shutdown();
-		delete m_Explosion;
-		m_Explosion = 0;
-	}
 	if (m_Block){
 		m_Block->Shutdown();
 		delete m_Block;
@@ -78,26 +70,12 @@ bool TestState::update(float t, Input * input){
 		}
 	}
 	if (input->KeyBeenPushed(VK_SPACE)){
-		if (m_Explosion){
-			m_Explosion->Shutdown();
-			delete m_Explosion;
-			m_Explosion = 0;
-		}
-		//create an explosion
-		m_Explosion = new Explosion();
-		m_Explosion->Initialize(Vector (-10, 0, 0), 1);
+		Explosion * e = new Explosion();
+		e->Initialize(Vector(randb(-2,2), randb(-2,2), randb(-2,2)), 1.0f);
+		g_graphics->AddEffect(e);
 	}
 
-	if (!m_Explosion->Update(t)){
-		if (m_Explosion){
-			m_Explosion->Shutdown();
-			delete m_Explosion;
-			m_Explosion = 0;
-		}
-		//create an explosion
-		m_Explosion = new Explosion();
-		m_Explosion->Initialize(Vector (-10, 0, 0), 1);
-	}
+	
 
 	return true;
 }
@@ -105,7 +83,6 @@ bool TestState::update(float t, Input * input){
 void TestState::render(float t){
 	g_graphics->StartFrame(t, m_Camera);
 	m_Block->Render(t);
-	m_Explosion->Render(t);
 	g_graphics->EndFrame();
 }
 

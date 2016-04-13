@@ -9,6 +9,7 @@ Graphics::Graphics(){
 	m_ExplosionShader = 0;
 	m_Text = 0;
 	m_background = 0;
+	m_EffectDeque = 0;
 
 }
 
@@ -130,12 +131,29 @@ bool Graphics::Initialize(int x , int y , HWND hwnd){
 	m_Light->SetDirection(0.5f, -0.8f, 1.0f);
 	m_Light->SetAmbientColor(0.6f, 0.6f, 0.6f, 1.0f);
 	activeLight = m_Light;
+	
+	//create effect deque
+	m_EffectDeque = new deque<Effect *>();
+
 	textDump("Graphics initialized");
 	return true;
 }
 
 
 void Graphics::Shutdown(){
+	if (m_EffectDeque){
+		while (!m_EffectDeque->empty()){
+			Effect * del = m_EffectDeque->front();
+			m_EffectDeque->pop_front();
+			del->Shutdown();
+			delete del;
+			del = 0;
+		}
+		delete m_EffectDeque;
+		m_EffectDeque = 0;
+	}
+
+	
 	ClearBackground();	
 	//release the light object
 	if(m_Light)
@@ -203,6 +221,20 @@ void Graphics::Shutdown(){
 }
 
 bool Graphics::StartFrame(float time, BaseCamera * cam, Light * light){
+	//update effects
+	for (std::deque<Effect*>::iterator it = m_EffectDeque->begin(); it != m_EffectDeque->end(); ){
+		if (!(*it)->Update(time)){
+			//need to remove
+			(*it)->Shutdown();
+			delete (*it);
+			(*it) = 0;
+			it = m_EffectDeque->erase(it);
+		}
+		else {
+			++it;  //dont increment in for loop since removing automatically iterates to the next element
+		}
+	}
+	
 	if (cam == NULL){
 		activeCamera = m_Camera;
 	}
@@ -247,6 +279,11 @@ bool Graphics::StartFrame(float time, BaseCamera * cam, Light * light){
 	m_d3d->TurnZBufferOn();
 	m_d3d->TurnOffAlphaBlending();
 	//now prepared to render 3d
+	//render effects in the deque first
+	for (std::deque<Effect*>::iterator it = m_EffectDeque->begin(); it != m_EffectDeque->end(); ++it){
+		(*it)->Render(time);
+	}
+
 	return true;
 }
 
@@ -500,4 +537,20 @@ void Graphics::ClearBackground(){
 float Graphics::GetAspectRatio(){
 	float aspect = (float) screenWidth / (float) screenHeight;
 	return aspect;
+}
+
+void Graphics::AddEffect(Effect * e){
+	m_EffectDeque->push_back(e);
+}
+	
+void Graphics::ClearEffects(){
+	if (m_EffectDeque){
+		while (!m_EffectDeque->empty()){
+			Effect * del = m_EffectDeque->front();
+			m_EffectDeque->pop_front();
+			del->Shutdown();
+			delete del;
+			del = 0;
+		}
+	}
 }
