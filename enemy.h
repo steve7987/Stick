@@ -7,6 +7,7 @@
 #include "model.h"
 #include "vector.h"
 #include "helpers.h"
+#include "explosion.h"
 
 extern Graphics * g_graphics;
 

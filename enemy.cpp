@@ -2,7 +2,7 @@
 
 #define SHIP_MODEL "./Assets/enemyship.txt"
 #define SHIP_TEXTURE L"./Assets/blocktex.dds"
-#define SHIP_DIMENSIONS Vector(0.937, 1.087, 1.091);
+#define SHIP_DIMENSIONS Vector(0.937, 1.087, 1.091)
 #define SHIP_SPEED 50.0f
 
 
@@ -90,6 +90,10 @@ Vector Enemy::GetDimensions(){
 
 void Enemy::BeenHit(){
 	remove = true;
+	//create some explosions
+	Explosion * e = new Explosion();
+	e->Initialize(position, 3*SHIP_DIMENSIONS, 1.0f);
+	g_graphics->AddEffect(e);
 }
 
 bool Enemy::MoveToTarget(Vector destination, float speed, float t){
