@@ -13,7 +13,7 @@ public:
 	Explosion(void);
 	~Explosion(void);
 
-	bool Initialize(Vector position);
+	bool Initialize(Vector position, float duration);
 	void Shutdown();
 
 	bool Render(float t);
@@ -26,7 +26,9 @@ private:
 
 	Vector position;  
 
-	float timer;
+	float timer;  //time since explosion was created
+
+	float duration;  //how long the explosion should take
 };
 
 #endif

@@ -6,6 +6,7 @@
 
 #define EXPLOSION_LOOPTIME 0.85f
 
+
 Explosion::Explosion(void){
 	m_Model = 0;
 }
@@ -15,7 +16,7 @@ Explosion::~Explosion(void){
 }
 
 
-bool Explosion::Initialize(Vector position){
+bool Explosion::Initialize(Vector position, float duration){
 	m_Model = new Model();
 	if (!m_Model){
 		textDump("could not create model in explosion class");
@@ -34,6 +35,8 @@ bool Explosion::Initialize(Vector position){
 	//give the explosion a random orientation
 	Vector axis = Vector(randb(-1.0f, 1.0f), randb(-1.0f, 1.0f), randb(-1.0f, 1.0f));
 	m_Model->SetRotation(Quaternion(Vector(1,0,0), axis));
+
+	this->duration = duration;
 
 	return true;
 }
@@ -64,9 +67,10 @@ bool Explosion::Render(float t){
 }
 
 bool Explosion::Update(float t){
-	timer += t / 1000.0f;
+	timer += t / (1000.0f * duration);
 	float size = timer + 0.1f;
 	m_Model->SetScale(size, size, size);
+
 	
-	return true;
+	return timer < 1.0f;
 }

@@ -39,7 +39,7 @@ bool TestState::Initialize(){
 	m_Block->Initialize(position, dimensions);
 	
 	m_Explosion = new Explosion();
-	m_Explosion->Initialize(Vector (-10, 0, 0));
+	m_Explosion->Initialize(Vector (-10, 0, 0), 5);
 
 	return true;
 }
@@ -85,10 +85,19 @@ bool TestState::update(float t, Input * input){
 		}
 		//create an explosion
 		m_Explosion = new Explosion();
-		m_Explosion->Initialize(Vector (-10, 0, 0));
+		m_Explosion->Initialize(Vector (-10, 0, 0), 1);
 	}
 
-	m_Explosion->Update(t);
+	if (!m_Explosion->Update(t)){
+		if (m_Explosion){
+			m_Explosion->Shutdown();
+			delete m_Explosion;
+			m_Explosion = 0;
+		}
+		//create an explosion
+		m_Explosion = new Explosion();
+		m_Explosion->Initialize(Vector (-10, 0, 0), 1);
+	}
 
 	return true;
 }

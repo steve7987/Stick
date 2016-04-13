@@ -34,7 +34,7 @@ float4 ExplosionPixelShader(PixelInputType input) : SV_TARGET
 	displacement = displacement * 2;
 
 	//adjust displacement so it provides better color
-	displacement = displacement / 3.5f + time - 0.35f;
+	displacement = displacement / 3.5f + 1.1f * time - 0.35f;
 
 	//clamp displacement based on time
 	if (displacement < 0.0f){
