@@ -71,7 +71,7 @@ bool TestState::update(float t, Input * input){
 	}
 	if (input->KeyBeenPushed(VK_SPACE)){
 		Explosion * e = new Explosion();
-		e->Initialize(Vector(randb(-2,2), randb(-2,2), randb(-2,2)), 1.0f);
+		e->Initialize(Vector(randb(-2,2), randb(-2,2), randb(-2,2)), Vector(1, 1, 1), 1.0f);
 		g_graphics->AddEffect(e);
 	}
 

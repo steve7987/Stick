@@ -14,7 +14,7 @@ public:
 	Explosion(void);
 	~Explosion(void);
 
-	bool Initialize(Vector position, float duration);
+	bool Initialize(Vector position, Vector scale, float duration);
 	void Shutdown();
 
 	bool Render(float t);
@@ -26,6 +26,7 @@ private:
 	Model * m_Model;
 
 	Vector position;  
+	Vector scale;
 
 	float timer;  //time since explosion was created
 

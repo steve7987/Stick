@@ -16,7 +16,7 @@ Explosion::~Explosion(void){
 }
 
 
-bool Explosion::Initialize(Vector position, float duration){
+bool Explosion::Initialize(Vector position, Vector scale, float duration){
 	m_Model = new Model();
 	if (!m_Model){
 		textDump("could not create model in explosion class");
@@ -37,6 +37,7 @@ bool Explosion::Initialize(Vector position, float duration){
 	m_Model->SetRotation(Quaternion(Vector(1,0,0), axis));
 
 	this->duration = duration;
+	this->scale = scale;
 
 	return true;
 }
@@ -69,7 +70,7 @@ bool Explosion::Render(float t){
 bool Explosion::Update(float t){
 	timer += t / (1000.0f * duration);
 	float size = timer + 0.1f;
-	m_Model->SetScale(size, size, size);
+	m_Model->SetScale(size * scale);
 
 	
 	return timer < 1.0f;
