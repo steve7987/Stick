@@ -1,6 +1,6 @@
 #include "terrain.h"
 
-#define TERRAIN_WIDTH 256
+#define TERRAIN_WIDTH 12
 #define TERRAIN_HEIGHT 256
 #define TERRAIN_TEXTURE L"./assets/testTexture.dds"
 
@@ -116,7 +116,7 @@ bool Terrain::InitializeBuffers(ID3D11Device * device){
 
 	
 	// Calculate the number of vertices in the terrain.
-	vertexCount = (TERRAIN_WIDTH - 1) * (TERRAIN_HEIGHT - 1) * 6;
+	vertexCount = (TERRAIN_HEIGHT - 1) * (TERRAIN_WIDTH - 1) * 6;
 
 	// Set the index count to the same as the vertex count.
 	indexCount = vertexCount;
@@ -202,52 +202,52 @@ bool Terrain::CreateInitialTerrain(){
 		return false;
 	}
 	int index = 0;
-	for (int i = 0; i < TERRAIN_WIDTH - 1; i++){
-		for (int j = 0; j < TERRAIN_HEIGHT - 1; j++){
-			//calculate indices of the for corners
-			int BL = (TERRAIN_HEIGHT * i) + j;
-			int BR = (TERRAIN_HEIGHT * i) + j + 1;
-			int UL = (TERRAIN_HEIGHT * (i + 1)) + j;
-			int UR = (TERRAIN_HEIGHT * (i + 1)) + j + 1;
+	for (int i = 0; i < TERRAIN_HEIGHT - 1; i++){
+		for (int j = 0; j < TERRAIN_WIDTH - 1; j++){
+			//calculate indices of the four corners
+			int BL = (TERRAIN_WIDTH * i) + j;
+			int BR = (TERRAIN_WIDTH * i) + j + 1;
+			int UL = (TERRAIN_WIDTH * (i + 1)) + j;
+			int UR = (TERRAIN_WIDTH * (i + 1)) + j + 1;
 
+			//tri 1 UR
+			m_TerrainData[index].position = m_HeightMap[UR].position;
+			m_TerrainData[index].tu = 0.0f;
+			m_TerrainData[index].tv = 0.0f;
+			m_TerrainData[index].normal = m_HeightMap[UR].normal;
+			index++;
+			
 			//tri 1 UL
 			m_TerrainData[index].position = m_HeightMap[UL].position;
-			m_TerrainData[index].tu = 0.0f;
+			m_TerrainData[index].tu = 1.0f;
 			m_TerrainData[index].tv = 0.0f;
 			m_TerrainData[index].normal = m_HeightMap[UL].normal;
 			index++;
 
-			//tri 1 UR
-			m_TerrainData[index].position = m_HeightMap[UR].position;
-			m_TerrainData[index].tu = 1.0f;
-			m_TerrainData[index].tv = 0.0f;
-			m_TerrainData[index].normal = m_HeightMap[UR].normal;
-			index++;
-
 			//tri 1 BL
 			m_TerrainData[index].position = m_HeightMap[BL].position;
-			m_TerrainData[index].tu = 0.0f;
-			m_TerrainData[index].tv = 1.0f;
-			m_TerrainData[index].normal = m_HeightMap[BL].normal;
-			index++;
-
-			//tri 2 BL
-			m_TerrainData[index].position = m_HeightMap[BL].position;
-			m_TerrainData[index].tu = 0.0f;
+			m_TerrainData[index].tu = 1.0f;
 			m_TerrainData[index].tv = 1.0f;
 			m_TerrainData[index].normal = m_HeightMap[BL].normal;
 			index++;
 
 			//tri 2 UR
 			m_TerrainData[index].position = m_HeightMap[UR].position;
-			m_TerrainData[index].tu = 1.0f;
+			m_TerrainData[index].tu = 0.0f;
 			m_TerrainData[index].tv = 0.0f;
 			m_TerrainData[index].normal = m_HeightMap[UR].normal;
 			index++;
 
+			//tri 2 BL
+			m_TerrainData[index].position = m_HeightMap[BL].position;
+			m_TerrainData[index].tu = 1.0f;
+			m_TerrainData[index].tv = 1.0f;
+			m_TerrainData[index].normal = m_HeightMap[BL].normal;
+			index++;
+
 			//tri 2 BR
 			m_TerrainData[index].position = m_HeightMap[BR].position;
-			m_TerrainData[index].tu = 1.0f;
+			m_TerrainData[index].tu = 0.0f;
 			m_TerrainData[index].tv = 1.0f;
 			m_TerrainData[index].normal = m_HeightMap[BR].normal;
 			index++;
@@ -259,10 +259,10 @@ bool Terrain::CreateInitialTerrain(){
 
 bool Terrain::CreateHeightMap(){
 	m_HeightMap = new HeightMapType[TERRAIN_WIDTH * TERRAIN_HEIGHT];
-	for (int i = 0; i < TERRAIN_WIDTH; i++){
-		for (int j = 0; j < TERRAIN_HEIGHT; j++){
-			m_HeightMap[i * TERRAIN_HEIGHT + j].position = Vector(i, 0, 128 - j);
-			m_HeightMap[i * TERRAIN_HEIGHT + j].normal = Vector(0, 1, 0);
+	for (int i = 0; i < TERRAIN_HEIGHT; i++){
+		for (int j = 0; j < TERRAIN_WIDTH; j++){
+			m_HeightMap[i * TERRAIN_WIDTH + j].position = Vector(i - 40, 0, j - TERRAIN_WIDTH / 2);
+			m_HeightMap[i * TERRAIN_WIDTH + j].normal = Vector(0, 1, 0);
 		}
 	}
 	return true;
