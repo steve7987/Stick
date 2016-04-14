@@ -35,6 +35,7 @@ class SelectionState;  //state for preparing ship and level
 class Shield;  //handles graphics for shields
 class ShieldShader;  //shader used for creating shield effects
 class SpringCamera;
+class Terrain;  //creates and renders and block of terrain
 class TestState;  //used for doing random animation tests without messing up other game states
 class Text;  
 class Texture;  //holds single texture

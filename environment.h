@@ -5,6 +5,7 @@
 #include "graphics.h"
 #include "model.h"
 #include "vector.h"
+#include "terrain.h"
 
 
 //game files
@@ -25,7 +26,7 @@ public:
 
 private:
 	Block * m_block;
-
+	Terrain * m_Terrain;
 };
 
 #endif
