@@ -48,6 +48,8 @@ public:
 	bool HasAlpha();
 	float getDepthSq(Vector campos, Vector look);
 
+	void Scroll(float amount);  //scrolls the terrain forward by the given amount
+
 private:
 	bool RenderBuffers(ID3D11DeviceContext * deviceContext);
 

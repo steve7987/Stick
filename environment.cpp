@@ -1,5 +1,6 @@
 #include "environment.h"
 
+#define TERRAIN_TEXTURE L"./assets/sand.dds"
 
 Environment::Environment(void)
 {
@@ -23,11 +24,26 @@ bool Environment::Initialize(){
 		return false;
 	}
 	
+	m_block = new Block();
+	if (!m_block){
+		textDump("error creating environment block");
+		return false;
+	}
+	if (!m_block->Initialize(Vector(-20, -12.1f, -1000), Vector(5000, 0.0f, 2000), TERRAIN_TEXTURE)){
+		textDump("error initializing environment block");
+		return false;
+	}
 
 	return true;
 }
 	
 void Environment::Shutdown(){
+	if (m_block){
+		m_block->Shutdown();
+		delete m_block;
+		m_block = 0;
+	}
+	
 	if (m_Terrain){
 		m_Terrain->Shutdown();
 		delete m_Terrain;
@@ -38,8 +54,9 @@ void Environment::Shutdown(){
 
 void Environment::render(float t){
 	g_graphics->RenderObject(m_Terrain, SHADER_LIGHT);
+	//m_block->Render(t);
 }
 
 void Environment::update(float t){
-
+	//m_Terrain->Scroll(t / 10.0f);
 }

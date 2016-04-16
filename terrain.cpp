@@ -1,6 +1,6 @@
 #include "terrain.h"
 
-#define TERRAIN_WIDTH 128
+#define TERRAIN_WIDTH 256
 #define TERRAIN_HEIGHT 256
 #define TERRAIN_TEXTURE L"./assets/sand.dds"
 
@@ -317,12 +317,12 @@ void Terrain::CalculateNormals(){
 }
 
 void Terrain::CreateHeightMap(){
-	CreateSandDune(0, TERRAIN_WIDTH / 2);
-	CreateSandDune(TERRAIN_WIDTH / 2, TERRAIN_WIDTH);
+	CreateSandDune(TERRAIN_WIDTH / 5, TERRAIN_WIDTH / 2);
+	CreateSandDune(TERRAIN_WIDTH / 2, 4 * TERRAIN_WIDTH / 5);
 }
 
 void Terrain::CreateSandDune(int begin, int end){
-	float maxHeight = 5.0f + randb(-1, 1);
+	float maxHeight = 12.0f + randb(-3, 3);
 	float offsetPercent = 0.15f + randb(0.01, 0.04);
 	float Zm = 0.72f + randb(-0.1, 0.1);  //constant for where the top of the sand dune is
 	for (int i = 0; i < TERRAIN_HEIGHT; i++){
@@ -340,4 +340,8 @@ void Terrain::CreateSandDune(int begin, int end){
 			m_HeightMap[i * TERRAIN_WIDTH + j].position.y += maxHeight * heightPercent;
 		}
 	}
+}
+
+void Terrain::Scroll(float amount){
+	this->position.x -= amount;
 }

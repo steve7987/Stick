@@ -12,13 +12,21 @@ Block::~Block(void)
 }
 
 
-bool Block::Initialize(Vector position, Vector dimensions){
+bool Block::Initialize(Vector position, Vector dimensions, WCHAR* textureFilename){
 	blockModel = new Model();
 	if (!blockModel){
 		textDump("could not create model in block class");
 		return false;
 	}
-	if (!blockModel->Initialize(g_graphics->GetDevice(), BLOCK_MODEL, BLOCK_TEXTURE, false)){
+	bool result = true;
+	if (textureFilename != 0){
+		result = blockModel->Initialize(g_graphics->GetDevice(), BLOCK_MODEL, textureFilename, false);
+	}
+	else {
+		result = blockModel->Initialize(g_graphics->GetDevice(), BLOCK_MODEL, BLOCK_TEXTURE, false);
+	}
+
+	if (!result){
 		textDump("could not initialize model in block class");
 		return false;
 	}
@@ -40,7 +48,7 @@ void Block::Shutdown(){
 }
 
 bool Block::Render(float t){
-	g_graphics->RenderObject(blockModel, SHADER_LIGHT);
+	g_graphics->RenderObject(blockModel, SHADER_TEXTURE);
 	return true;
 }
 

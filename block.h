@@ -15,7 +15,7 @@ public:
 	Block(void);
 	~Block(void);
 
-	bool Initialize(Vector position, Vector dimensions);
+	bool Initialize(Vector position, Vector dimensions, WCHAR* textureFilename = 0);
 	void Shutdown();
 
 	bool Render(float t);
