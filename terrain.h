@@ -52,8 +52,13 @@ private:
 	bool RenderBuffers(ID3D11DeviceContext * deviceContext);
 
 	bool InitializeBuffers(ID3D11Device * device);
-	bool CreateHeightMap();
+	bool InitializeHeightMap();  //creates a height map with all y values set to zero and normals to <0,1,0>
+	void CalculateNormals();  //calculates the normals of the heightmap by weighting all the faces the vertice is part of
 	bool CreateInitialTerrain();
+
+	void CreateHeightMap();  //modifies the y values of the height map to create a specific type of terrain
+	void CreateSandDune(int begin, int end);  //creates a sand dune shape on the strip from begin to end
+
 
 	ID3D11Buffer * vertexBuffer;
 	ID3D11Buffer * indexBuffer;
@@ -64,6 +69,8 @@ private:
 	
 
 	HeightMapType * m_HeightMap;
+
+	Vector position;  //the terrain model has vertices from 0,0,0 to length, 0, width.  Position moves the model to different locations
 };
 
 

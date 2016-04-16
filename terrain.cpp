@@ -1,8 +1,8 @@
 #include "terrain.h"
 
-#define TERRAIN_WIDTH 12
+#define TERRAIN_WIDTH 128
 #define TERRAIN_HEIGHT 256
-#define TERRAIN_TEXTURE L"./assets/testTexture.dds"
+#define TERRAIN_TEXTURE L"./assets/sand.dds"
 
 Terrain::Terrain(){
 	vertexBuffer = 0;
@@ -18,10 +18,15 @@ Terrain::~Terrain(){
 
 
 bool Terrain::Initialize(ID3D11Device * device){
-	if (!CreateHeightMap()){
+	position = Vector(-20, -12, -TERRAIN_WIDTH / 2.0f);
+	
+	if (!InitializeHeightMap()){
 		return false;
 	}
 	
+	CreateHeightMap();
+	CalculateNormals();
+
 	if (!CreateInitialTerrain()){
 		return false;
 	}
@@ -64,7 +69,7 @@ int Terrain::GetIndexCount(){
 
 D3DXMATRIX Terrain::GetWorldMatrix(){
 	D3DXMATRIX trans;
-	D3DXMatrixTranslation(&trans, 0.0f, 0.0f, 0.0f);
+	D3DXMatrixTranslation(&trans, position.x, position.y, position.z);
 	return trans;
 }
 
@@ -257,13 +262,82 @@ bool Terrain::CreateInitialTerrain(){
 	return true;
 }
 
-bool Terrain::CreateHeightMap(){
+bool Terrain::InitializeHeightMap(){
 	m_HeightMap = new HeightMapType[TERRAIN_WIDTH * TERRAIN_HEIGHT];
 	for (int i = 0; i < TERRAIN_HEIGHT; i++){
 		for (int j = 0; j < TERRAIN_WIDTH; j++){
-			m_HeightMap[i * TERRAIN_WIDTH + j].position = Vector(i - 40, 0, j - TERRAIN_WIDTH / 2);
+			m_HeightMap[i * TERRAIN_WIDTH + j].position = Vector(i, 0, j);
 			m_HeightMap[i * TERRAIN_WIDTH + j].normal = Vector(0, 1, 0);
 		}
 	}
 	return true;
+}
+
+void Terrain::CalculateNormals(){
+	//calculate normals for each face
+	Vector * faceNormals = new Vector[(TERRAIN_WIDTH - 1) * (TERRAIN_HEIGHT - 1)];
+	for (int i = 0; i < TERRAIN_HEIGHT - 1; i++){
+		for (int j = 0; j < TERRAIN_WIDTH - 1; j++){
+			//get 3 indices for the face
+			int BL = (TERRAIN_WIDTH * i) + j;
+			int BR = (TERRAIN_WIDTH * i) + j + 1;
+			int UL = (TERRAIN_WIDTH * (i + 1)) + j;
+			//calculate the normal
+			Vector v1 = m_HeightMap[BR].position - m_HeightMap[BL].position;
+			Vector v2 = m_HeightMap[UL].position - m_HeightMap[BL].position;
+			faceNormals[i * (TERRAIN_WIDTH - 1) + j] = v1.cross(v2).normalize();
+		}
+	}
+	//for each vertex average the face normals
+	for (int i = 0; i < TERRAIN_HEIGHT; i++){
+		for (int j = 0; j < TERRAIN_WIDTH; j++){
+			Vector normSum = Vector(0, 0, 0);
+			//bottom left face
+			if (i - 1 >= 0 && j - 1 >= 0){
+				normSum = normSum + faceNormals[(i - 1) * (TERRAIN_WIDTH - 1) + j - 1];
+			}
+			//bottom right face
+			if (i - 1 >= 0 && j < TERRAIN_WIDTH - 1){
+				normSum = normSum + faceNormals[(i - 1) * (TERRAIN_WIDTH - 1) + j];
+			}
+			//top left face
+			if (i < TERRAIN_HEIGHT - 1 && j - 1 >= 0){
+				normSum = normSum + faceNormals[i * (TERRAIN_WIDTH - 1) + j - 1];
+			}
+			//top right face
+			if (i < TERRAIN_HEIGHT - 1 && j < TERRAIN_WIDTH - 1){
+				normSum = normSum + faceNormals[i * (TERRAIN_WIDTH - 1) + j];
+			}
+			//store the average of the face normals
+			m_HeightMap[i * TERRAIN_WIDTH + j].normal = normSum.normalize();
+		}
+	}
+	delete [] faceNormals;
+	faceNormals = 0;
+}
+
+void Terrain::CreateHeightMap(){
+	CreateSandDune(0, TERRAIN_WIDTH / 2);
+	CreateSandDune(TERRAIN_WIDTH / 2, TERRAIN_WIDTH);
+}
+
+void Terrain::CreateSandDune(int begin, int end){
+	float maxHeight = 5.0f + randb(-1, 1);
+	float offsetPercent = 0.15f + randb(0.01, 0.04);
+	float Zm = 0.72f + randb(-0.1, 0.1);  //constant for where the top of the sand dune is
+	for (int i = 0; i < TERRAIN_HEIGHT; i++){
+		float zOffset = sin((float) i / TERRAIN_HEIGHT * 2 * PI) * offsetPercent;
+		for (int j = 0; j < TERRAIN_WIDTH; j++){
+			float heightPercent = 0;
+			//calculate the percentage across the [begin, end] interval this vertex is
+			float zpercent = (float) (j - begin) / (end - begin) + zOffset;
+			if (zpercent >= 0 && zpercent < Zm){  //windward side
+				heightPercent = 0.5f * (1 - cos(PI * zpercent / Zm));
+			}
+			else if (zpercent >= Zm && zpercent <= 1.0f) {  //slip side
+				heightPercent = 1 - cos(PI / 2.0f * (zpercent - 1) / (Zm - 1));
+			}
+			m_HeightMap[i * TERRAIN_WIDTH + j].position.y += maxHeight * heightPercent;
+		}
+	}
 }
