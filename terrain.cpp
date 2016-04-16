@@ -1,15 +1,20 @@
 #include "terrain.h"
 
-#define TERRAIN_WIDTH 256
-#define TERRAIN_HEIGHT 256
+#define TERRAIN_WIDTH 257
+#define TERRAIN_HEIGHT 1025
 #define TERRAIN_TEXTURE L"./assets/sand.dds"
 
+//should be divisor of Terrain width - 1
+#define CELL_WIDTH 64
+//should be divisor of Terrain height - 1
+#define CELL_HEIGHT 64
+
 Terrain::Terrain(){
-	vertexBuffer = 0;
-	indexBuffer = 0;
-	m_Texture = 0;
 	m_TerrainData = 0;
 	m_HeightMap = 0;
+	m_NormalMap = 0;
+
+	m_TerrainCells = 0;
 }
 	
 Terrain::~Terrain(){
@@ -27,247 +32,49 @@ bool Terrain::Initialize(ID3D11Device * device){
 	CreateHeightMap();
 	CalculateNormals();
 
-	if (!CreateInitialTerrain()){
-		return false;
-	}
-	
-	if (!InitializeBuffers(device)){
-		return false;
-	}
-
-	m_Texture = g_textureManager->GetTexture(device, TERRAIN_TEXTURE);
+	CreateTerrainCells(device);
 
 	return true;
 }
 
 void Terrain::Shutdown(){
+	if (m_TerrainCells){
+		for (int i = 0; i < (TERRAIN_WIDTH - 1) / CELL_WIDTH * (TERRAIN_HEIGHT - 1) / CELL_HEIGHT; i++){
+			m_TerrainCells[i]->Shutdown();
+			delete m_TerrainCells[i];
+			m_TerrainCells[i] = 0;
+		}
+		delete [] m_TerrainCells;
+		m_TerrainCells = 0;
+	}
+
 	if (m_HeightMap){
 		delete m_HeightMap;
 		m_HeightMap = 0;
 	}
+	if (m_NormalMap){
+		delete m_NormalMap;
+		m_NormalMap = 0;
+	}
+
 	if (m_TerrainData){
 		delete m_TerrainData;
 		m_TerrainData = 0;
 	}
-	if (vertexBuffer){
-		vertexBuffer->Release();
-		vertexBuffer = 0;
-	}
-	if (indexBuffer){
-		indexBuffer->Release();
-		indexBuffer = 0;
-	}
 }
 	
-bool Terrain::Render(ID3D11DeviceContext * deviceContext, Vector camlook){
-	return RenderBuffers(deviceContext);
-}
-	
-int Terrain::GetIndexCount(){
-	return indexCount;
-}
-
-D3DXMATRIX Terrain::GetWorldMatrix(){
-	D3DXMATRIX trans;
-	D3DXMatrixTranslation(&trans, position.x, position.y, position.z);
-	return trans;
-}
-
-ID3D11ShaderResourceView* Terrain::GetTexture(int index){
-	return m_Texture->GetTexture();
-}
-
-
-bool Terrain::HasAlpha(){
-	return false;
-}
-
-float Terrain::getDepthSq(Vector campos, Vector look){
-	return 0.0f;
-}
-
-
-bool Terrain::RenderBuffers(ID3D11DeviceContext * deviceContext){
-	unsigned int stride;
-	unsigned int offset;
-
-
-	// Set vertex buffer stride and offset.
-	stride = sizeof(VertexType);
-	offset = 0;
-
-	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-
-	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	return true;
-}
-
-
-
-bool Terrain::InitializeBuffers(ID3D11Device * device){
-	VertexType* vertices;
-	unsigned long* indices;
-	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
-	D3D11_SUBRESOURCE_DATA vertexData, indexData;
-	HRESULT result;
-	int i;
-
-
-	
-	// Calculate the number of vertices in the terrain.
-	vertexCount = (TERRAIN_HEIGHT - 1) * (TERRAIN_WIDTH - 1) * 6;
-
-	// Set the index count to the same as the vertex count.
-	indexCount = vertexCount;
-
-	// Create the vertex array.
-	vertices = new VertexType[vertexCount];
-	if(!vertices)
-	{
-		return false;
-	}
-
-	// Create the index array.
-	indices = new unsigned long[indexCount];
-	if(!indices)
-	{
-		return false;
-	}
-	
-	// Load the vertex array and index array with 3D terrain model data.
-	for(i=0; i < vertexCount; i++)
-	{
-		vertices[i].position = m_TerrainData[i].position.d3dvector();
-		vertices[i].texture = D3DXVECTOR2(m_TerrainData[i].tu, m_TerrainData[i].tv);
-		vertices[i].normal = m_TerrainData[i].normal.d3dvector();
-		indices[i] = i;
-	}
-
-	// Set up the description of the static vertex buffer.
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(VertexType) * vertexCount;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
-
-	// Give the subresource structure a pointer to the vertex data.
-	vertexData.pSysMem = vertices;
-	vertexData.SysMemPitch = 0;
-	vertexData.SysMemSlicePitch = 0;
-
-	// Now create the vertex buffer.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
-	if(FAILED(result))
-	{
-		return false;
-	}
-
-	// Set up the description of the static index buffer.
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned long) * indexCount;
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-	indexBufferDesc.StructureByteStride = 0;
-
-	// Give the subresource structure a pointer to the index data.
-	indexData.pSysMem = indices;
-	indexData.SysMemPitch = 0;
-	indexData.SysMemSlicePitch = 0;
-
-	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
-	if(FAILED(result))
-	{
-		return false;
-	}
-
-	// Release the arrays now that the buffers have been created and loaded.
-	delete [] vertices;
-	vertices = 0;
-
-	delete [] indices;
-	indices = 0;
-
-	return true;
-}
-
-bool Terrain::CreateInitialTerrain(){
-	vertexCount = (TERRAIN_WIDTH - 1) * (TERRAIN_HEIGHT - 1) * 6;  //6 vertices per quad
-	m_TerrainData = new ModelType[vertexCount];
-	if (!m_TerrainData){
-		textDump("Error creating terrain model");
-		return false;
-	}
-	int index = 0;
-	for (int i = 0; i < TERRAIN_HEIGHT - 1; i++){
-		for (int j = 0; j < TERRAIN_WIDTH - 1; j++){
-			//calculate indices of the four corners
-			int BL = (TERRAIN_WIDTH * i) + j;
-			int BR = (TERRAIN_WIDTH * i) + j + 1;
-			int UL = (TERRAIN_WIDTH * (i + 1)) + j;
-			int UR = (TERRAIN_WIDTH * (i + 1)) + j + 1;
-
-			//tri 1 UR
-			m_TerrainData[index].position = m_HeightMap[UR].position;
-			m_TerrainData[index].tu = 0.0f;
-			m_TerrainData[index].tv = 0.0f;
-			m_TerrainData[index].normal = m_HeightMap[UR].normal;
-			index++;
-			
-			//tri 1 UL
-			m_TerrainData[index].position = m_HeightMap[UL].position;
-			m_TerrainData[index].tu = 1.0f;
-			m_TerrainData[index].tv = 0.0f;
-			m_TerrainData[index].normal = m_HeightMap[UL].normal;
-			index++;
-
-			//tri 1 BL
-			m_TerrainData[index].position = m_HeightMap[BL].position;
-			m_TerrainData[index].tu = 1.0f;
-			m_TerrainData[index].tv = 1.0f;
-			m_TerrainData[index].normal = m_HeightMap[BL].normal;
-			index++;
-
-			//tri 2 UR
-			m_TerrainData[index].position = m_HeightMap[UR].position;
-			m_TerrainData[index].tu = 0.0f;
-			m_TerrainData[index].tv = 0.0f;
-			m_TerrainData[index].normal = m_HeightMap[UR].normal;
-			index++;
-
-			//tri 2 BL
-			m_TerrainData[index].position = m_HeightMap[BL].position;
-			m_TerrainData[index].tu = 1.0f;
-			m_TerrainData[index].tv = 1.0f;
-			m_TerrainData[index].normal = m_HeightMap[BL].normal;
-			index++;
-
-			//tri 2 BR
-			m_TerrainData[index].position = m_HeightMap[BR].position;
-			m_TerrainData[index].tu = 0.0f;
-			m_TerrainData[index].tv = 1.0f;
-			m_TerrainData[index].normal = m_HeightMap[BR].normal;
-			index++;
-
-		}
+bool Terrain::Render(float t){
+	for (int i = 0; i < (TERRAIN_WIDTH - 1) / CELL_WIDTH * (TERRAIN_HEIGHT - 1) / CELL_HEIGHT; i++){
+		g_graphics->RenderObject(m_TerrainCells[i], SHADER_LIGHT);
 	}
 	return true;
 }
 
 bool Terrain::InitializeHeightMap(){
-	m_HeightMap = new HeightMapType[TERRAIN_WIDTH * TERRAIN_HEIGHT];
+	m_HeightMap = new Vector[TERRAIN_WIDTH * TERRAIN_HEIGHT];
 	for (int i = 0; i < TERRAIN_HEIGHT; i++){
 		for (int j = 0; j < TERRAIN_WIDTH; j++){
-			m_HeightMap[i * TERRAIN_WIDTH + j].position = Vector(i, 0, j);
-			m_HeightMap[i * TERRAIN_WIDTH + j].normal = Vector(0, 1, 0);
+			m_HeightMap[i * TERRAIN_WIDTH + j] = Vector(i, 0, j);
 		}
 	}
 	return true;
@@ -283,11 +90,13 @@ void Terrain::CalculateNormals(){
 			int BR = (TERRAIN_WIDTH * i) + j + 1;
 			int UL = (TERRAIN_WIDTH * (i + 1)) + j;
 			//calculate the normal
-			Vector v1 = m_HeightMap[BR].position - m_HeightMap[BL].position;
-			Vector v2 = m_HeightMap[UL].position - m_HeightMap[BL].position;
+			Vector v1 = m_HeightMap[BR] - m_HeightMap[BL];
+			Vector v2 = m_HeightMap[UL] - m_HeightMap[BL];
 			faceNormals[i * (TERRAIN_WIDTH - 1) + j] = v1.cross(v2).normalize();
 		}
 	}
+	m_NormalMap = new Vector[TERRAIN_WIDTH * TERRAIN_HEIGHT];
+
 	//for each vertex average the face normals
 	for (int i = 0; i < TERRAIN_HEIGHT; i++){
 		for (int j = 0; j < TERRAIN_WIDTH; j++){
@@ -309,7 +118,7 @@ void Terrain::CalculateNormals(){
 				normSum = normSum + faceNormals[i * (TERRAIN_WIDTH - 1) + j];
 			}
 			//store the average of the face normals
-			m_HeightMap[i * TERRAIN_WIDTH + j].normal = normSum.normalize();
+			m_NormalMap[i * TERRAIN_WIDTH + j] = normSum.normalize();
 		}
 	}
 	delete [] faceNormals;
@@ -337,11 +146,23 @@ void Terrain::CreateSandDune(int begin, int end){
 			else if (zpercent >= Zm && zpercent <= 1.0f) {  //slip side
 				heightPercent = 1 - cos(PI / 2.0f * (zpercent - 1) / (Zm - 1));
 			}
-			m_HeightMap[i * TERRAIN_WIDTH + j].position.y += maxHeight * heightPercent;
+			m_HeightMap[i * TERRAIN_WIDTH + j].y += maxHeight * heightPercent;
 		}
 	}
 }
 
 void Terrain::Scroll(float amount){
 	this->position.x -= amount;
+}
+
+void Terrain::CreateTerrainCells(ID3D11Device * device){
+	m_TerrainCells = new TerrainCell *[(TERRAIN_WIDTH - 1) / CELL_WIDTH * (TERRAIN_HEIGHT - 1) / CELL_HEIGHT];
+	for (int i = 0; i < (TERRAIN_HEIGHT - 1) / CELL_HEIGHT; i++){
+		for (int j = 0; j < (TERRAIN_WIDTH - 1) / CELL_WIDTH; j++){
+			int index = i * (TERRAIN_WIDTH - 1) / CELL_WIDTH + j;
+			m_TerrainCells[index] = new TerrainCell();
+			m_TerrainCells[index]->Initialize(device, m_HeightMap, m_NormalMap, i * CELL_HEIGHT, j * CELL_WIDTH, CELL_HEIGHT, CELL_WIDTH, TERRAIN_WIDTH, TERRAIN_TEXTURE);
+			m_TerrainCells[index]->SetOffset(position);
+		}
+	}
 }

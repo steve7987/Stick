@@ -113,6 +113,7 @@
     <ClInclude Include="shieldshader.h" />
     <ClInclude Include="springcamera.h" />
     <ClInclude Include="terrain.h" />
+    <ClInclude Include="terraincell.h" />
     <ClInclude Include="teststate.h" />
     <ClInclude Include="text.h" />
     <ClInclude Include="texture.h" />
@@ -157,6 +158,7 @@
     <ClCompile Include="shieldshader.cpp" />
     <ClCompile Include="springcamera.cpp" />
     <ClCompile Include="terrain.cpp" />
+    <ClCompile Include="terraincell.cpp" />
     <ClCompile Include="teststate.cpp" />
     <ClCompile Include="text.cpp" />
     <ClCompile Include="texture.cpp" />

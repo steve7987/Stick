@@ -53,7 +53,7 @@ void Environment::Shutdown(){
 }
 
 void Environment::render(float t){
-	g_graphics->RenderObject(m_Terrain, SHADER_LIGHT);
+	m_Terrain->Render(t);
 	//m_block->Render(t);
 }
 
