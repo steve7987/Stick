@@ -34,6 +34,8 @@ bool Terrain::Initialize(ID3D11Device * device){
 
 	CreateTerrainCells(device);
 
+	currentScroll = 0;
+
 	return true;
 }
 
@@ -152,7 +154,23 @@ void Terrain::CreateSandDune(int begin, int end){
 }
 
 void Terrain::Scroll(float amount){
-	this->position.x -= amount;
+	currentScroll += amount;
+	Vector scrollOffset;
+	for (int i = 0; i < (TERRAIN_HEIGHT - 1) / CELL_HEIGHT; i++){
+		for (int j = 0; j < (TERRAIN_WIDTH - 1) / CELL_WIDTH; j++){
+			int index = i * (TERRAIN_WIDTH - 1) / CELL_WIDTH + j;
+			if ((i + 1) * CELL_HEIGHT < currentScroll){
+				scrollOffset = Vector(currentScroll - TERRAIN_HEIGHT + 1, 0, 0);
+			}
+			else {
+				scrollOffset = Vector(currentScroll, 0, 0);
+			}
+			m_TerrainCells[index]->SetOffset(position - scrollOffset);
+		}
+	}
+	if (currentScroll > TERRAIN_HEIGHT){
+		currentScroll -= TERRAIN_HEIGHT;
+	}
 }
 
 void Terrain::CreateTerrainCells(ID3D11Device * device){

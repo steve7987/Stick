@@ -58,5 +58,5 @@ void Environment::render(float t){
 }
 
 void Environment::update(float t){
-	//m_Terrain->Scroll(t / 10.0f);
+	m_Terrain->Scroll(t / 10.0f);
 }

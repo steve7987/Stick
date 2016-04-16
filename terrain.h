@@ -64,6 +64,7 @@ private:
 	Vector * m_NormalMap;
 
 	Vector position;  //the terrain model has vertices from 0,0,0 to length, 0, width.  Position moves the model to different locations
+	float currentScroll;  //gives the amount the terrain has been scrolled in the negative x direction
 
 	TerrainCell ** m_TerrainCells;
 };
