@@ -26,8 +26,18 @@ Vector SpringCamera::GetPosition(){
 	return position;
 }
 
-void SpringCamera::Update(Vector targetPosition){
+void SpringCamera::Update(Vector targetPosition, float t){
 	this->targetPosition = targetPosition;
+	//simulate spring deq
+	while (t > step){
+		Vector accel = vweight * velocity + dweight * (position - targetPosition);
+		velocity = velocity + accel * step / 1000.0f;
+		position = position + velocity * step / 1000.0f;
+		t = t - step;
+	}
+	Vector accel = vweight * velocity + dweight * (position - targetPosition);
+	velocity = velocity + accel * t / 1000.0f;
+	position = position + velocity * t / 1000.0f;
 }
 	
 void SpringCamera::Reset(Vector position){
@@ -55,16 +65,7 @@ void SpringCamera::Render(float t){
 	upRot.z = 0;
 	upRot = upRot / sqrt(upRot.x * upRot.x + upRot.w * upRot.w);
 	up = upRot * up;
-	//simulate spring deq
-	while (t > step){
-		Vector accel = vweight * velocity + dweight * (position - desiredPosition);
-		velocity = velocity + accel * step / 1000.0f;
-		position = position + velocity * step / 1000.0f;
-		t = t - step;
-	}
-	Vector accel = vweight * velocity + dweight * (position - desiredPosition);
-	velocity = velocity + accel * t / 1000.0f;
-	position = position + velocity * t / 1000.0f;
+	
 
 	Vector target = position + look;
 	Vector finalPos = target - rotation* look;
@@ -87,4 +88,10 @@ void SpringCamera::SetFieldOfView(float fov){
 
 float SpringCamera::GetFieldOfView(){
 	return m_fieldOfView;
+}
+
+Vector SpringCamera::GetFinalPosition(){
+	Vector target = position + look;
+	Vector finalPos = target - rotation* look;
+	return finalPos;
 }

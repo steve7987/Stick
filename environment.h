@@ -21,12 +21,14 @@ public:
 	bool Initialize();
 	void Shutdown(); 
 	
-	void update(float t);
+	void update(float t, Vector CameraPosition);
 	void render(float t);
 
 private:
 	Block * m_block;
 	Terrain * m_Terrain;
+
+	Model * m_SkyDome;
 };
 
 #endif

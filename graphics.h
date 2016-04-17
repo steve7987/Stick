@@ -87,6 +87,10 @@ public:
 	//effect commands
 	void AddEffect(Effect * e);
 	void ClearEffects();
+	void RenderEffects(float t);  //updates and renders all of the current effects
+
+	//renders the given skydome model with input colors.  Should be called before rendering anything else
+	bool RenderSkyDome(Renderable * r, Vector apexColor, Vector centerColor);
 	
 private:
 	bool RenderObjectSwitch(Renderable * m, int shaderType, float * parameters = 0);

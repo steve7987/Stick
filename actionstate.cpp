@@ -79,8 +79,9 @@ bool ActionState::update(float t, Input * input){
 	
 
 	m_Hero->Update(t, input, m_Camera);
-	m_Environment->update(t);
-	AdjustCamera();
+	AdjustCamera(t);
+	m_Environment->update(t, m_Camera->GetFinalPosition());
+	
 	//update enemies, check if they should be removed
 	for (std::deque<Enemy*>::iterator it = m_EnemyDeque->begin(); it != m_EnemyDeque->end(); ){
 		if (!(*it)->Update(t)){
@@ -111,11 +112,13 @@ bool ActionState::update(float t, Input * input){
 
 void ActionState::render(float t){
 	g_graphics->StartFrame(t, m_Camera);
+	m_Environment->render(t);  //need to render environment first so skydome is correct
+	g_graphics->RenderEffects(t);
 	m_Hero->Render(t);
 	for (std::deque<Enemy*>::iterator it = m_EnemyDeque->begin(); it != m_EnemyDeque->end(); ++it){
 		(*it)->Render(t);
 	}
-	m_Environment->render(t);
+	
 	g_graphics->EndFrame();
 
 }
@@ -156,7 +159,7 @@ void ActionState::onEnter(){
 	//reset camera
 	m_Camera->Reset(Vector(-2 * CAM_DISTANCE, 0, 0));
 	m_Camera->SetFieldOfView(PI / 4);
-	m_Camera->Update(Vector(-CAM_DISTANCE, 0, 0));
+	m_Camera->Update(Vector(-CAM_DISTANCE, 0, 0), 0.0f);
 	//compute soft boundary for hero based on camera
 	float frustrumHeight = CAM_DISTANCE * tan(m_Camera->GetFieldOfView() * 0.5);
 	float frustrumWidth = frustrumHeight * g_graphics->GetAspectRatio();
@@ -189,7 +192,7 @@ bool ActionState::LevelEndReached(){
 	return false;
 }
 
-void ActionState::AdjustCamera(){
+void ActionState::AdjustCamera(float t){
 	Vector pos = m_Hero->GetPosition();
 	pos = pos * 0.9;
 	if (pos.y > softBoundary.y){
@@ -205,7 +208,7 @@ void ActionState::AdjustCamera(){
 		pos.z = -softBoundary.z;
 	}
 
-	m_Camera->Update(pos + Vector(-CAM_DISTANCE, 0, 0));
+	m_Camera->Update(pos + Vector(-CAM_DISTANCE, 0, 0), t);
 	Quaternion xRot = m_Hero->GetRotation();  //compute only rotation around x-axis
 	//xRot.y = 0;
 	xRot.z = 0;

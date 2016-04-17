@@ -82,6 +82,7 @@ bool TestState::update(float t, Input * input){
 
 void TestState::render(float t){
 	g_graphics->StartFrame(t, m_Camera);
+	g_graphics->RenderEffects(t);
 	m_Block->Render(t);
 	g_graphics->EndFrame();
 }
@@ -101,5 +102,5 @@ void TestState::onEnter(){
 	//reset camera
 	m_Camera->Reset(Vector(-2 * CAM_DISTANCE, 0, 0));
 	m_Camera->SetFieldOfView(PI / 4);
-	m_Camera->Update(Vector(-CAM_DISTANCE, 0, 0));
+	m_Camera->Update(Vector(-CAM_DISTANCE, 0, 0), 0.0f);
 }

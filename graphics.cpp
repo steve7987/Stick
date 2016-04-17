@@ -221,19 +221,7 @@ void Graphics::Shutdown(){
 }
 
 bool Graphics::StartFrame(float time, BaseCamera * cam, Light * light){
-	//update effects
-	for (std::deque<Effect*>::iterator it = m_EffectDeque->begin(); it != m_EffectDeque->end(); ){
-		if (!(*it)->Update(time)){
-			//need to remove
-			(*it)->Shutdown();
-			delete (*it);
-			(*it) = 0;
-			it = m_EffectDeque->erase(it);
-		}
-		else {
-			++it;  //dont increment in for loop since removing automatically iterates to the next element
-		}
-	}
+	
 	
 	if (cam == NULL){
 		activeCamera = m_Camera;
@@ -279,10 +267,7 @@ bool Graphics::StartFrame(float time, BaseCamera * cam, Light * light){
 	m_d3d->TurnZBufferOn();
 	m_d3d->TurnOffAlphaBlending();
 	//now prepared to render 3d
-	//render effects in the deque first
-	for (std::deque<Effect*>::iterator it = m_EffectDeque->begin(); it != m_EffectDeque->end(); ++it){
-		(*it)->Render(time);
-	}
+	
 
 	return true;
 }
@@ -553,4 +538,41 @@ void Graphics::ClearEffects(){
 			del = 0;
 		}
 	}
+}
+
+void Graphics::RenderEffects(float t){
+	//update effects
+	for (std::deque<Effect*>::iterator it = m_EffectDeque->begin(); it != m_EffectDeque->end(); ){
+		if (!(*it)->Update(t)){
+			//need to remove
+			(*it)->Shutdown();
+			delete (*it);
+			(*it) = 0;
+			it = m_EffectDeque->erase(it);
+		}
+		else {
+			++it;  //dont increment in for loop since removing automatically iterates to the next element
+		}
+	}
+
+	//render effects in the deque first
+	for (std::deque<Effect*>::iterator it = m_EffectDeque->begin(); it != m_EffectDeque->end(); ++it){
+		(*it)->Render(t);
+	}
+}
+
+bool Graphics::RenderSkyDome(Renderable * r, Vector apexColor, Vector centerColor){
+	m_d3d->TurnZBufferOff();
+	m_d3d->TurnOffCulling();
+	if (!r->Render(m_d3d->GetDeviceContext(), activeCamera->GetLookVector())){
+		return false;
+	}
+	bool result = m_TextureShader->Render(m_d3d->GetDeviceContext(), r->GetIndexCount(), r->GetWorldMatrix(), 
+										  viewMatrix, projectionMatrix, r->GetTexture());
+	if (!result){
+		return false;
+	}
+	m_d3d->TurnOnCulling();
+	m_d3d->TurnZBufferOn();
+
 }

@@ -16,7 +16,7 @@ public:
 
 	Vector GetLookVector();
 	Vector GetPosition();
-	void Update(Vector targetPosition);
+	void Update(Vector targetPosition, float t);  //updates the camera position based on spring movement
 	void Reset(Vector position);
 	void SetRotation(Quaternion rotate);
 	
@@ -27,6 +27,8 @@ public:
 
 	void SetFieldOfView(float fov);
 	float GetFieldOfView();
+
+	Vector GetFinalPosition();
 
 private:
 	//position and velocity of camera

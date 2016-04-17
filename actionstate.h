@@ -38,7 +38,7 @@ public:
 private:
 	void CheckCollisions();
 	bool LevelEndReached();
-	void AdjustCamera();
+	void AdjustCamera(float t);
 	
 	void CreateWave();  //creates a new wave of enemies to fight
 	void BottomWave();  //creates a wave of enemies that spawn from the bottom
