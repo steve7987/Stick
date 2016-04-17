@@ -1,0 +1,28 @@
+// pixel shader
+
+//globals
+
+Texture2D shaderTexture;
+SamplerState SampleType;
+
+cbuffer SkydomeBuffer
+{
+	float4 apexColor;
+    float4 centerColor;
+};
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float height : TEXCOORD0;
+};
+
+float4 SkydomePixelShader(PixelInputType input) : SV_TARGET
+{
+    float4 color;
+
+	//determine the color by interpolating based on the height
+	color = lerp(centerColor, apexColor, input.height);
+
+    return color;
+}

@@ -71,7 +71,7 @@ void Environment::Shutdown(){
 }
 
 void Environment::render(float t){
-	g_graphics->RenderSkyDome(m_SkyDome, Vector(0.1,0.1,0.7), Vector(0.1, 0.1, 1.0));
+	g_graphics->RenderSkyDome(m_SkyDome, Vector(0.1f, 0.1f, 0.5f), Vector(0.1f, 0.6f, 1.0f));
 	m_Terrain->Render(t);
 	//m_block->Render(t);
 }

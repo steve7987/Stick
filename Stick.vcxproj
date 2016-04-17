@@ -111,6 +111,7 @@
     <ClInclude Include="renderable.h" />
     <ClInclude Include="shield.h" />
     <ClInclude Include="shieldshader.h" />
+    <ClInclude Include="skydomeshader.h" />
     <ClInclude Include="springcamera.h" />
     <ClInclude Include="terrain.h" />
     <ClInclude Include="terraincell.h" />
@@ -156,6 +157,7 @@
     <ClCompile Include="projectile.cpp" />
     <ClCompile Include="shield.cpp" />
     <ClCompile Include="shieldshader.cpp" />
+    <ClCompile Include="skydomeshader.cpp" />
     <ClCompile Include="springcamera.cpp" />
     <ClCompile Include="terrain.cpp" />
     <ClCompile Include="terraincell.cpp" />
@@ -178,6 +180,8 @@
     <None Include="light.vs" />
     <None Include="shield.ps" />
     <None Include="shield.vs" />
+    <None Include="skydome.ps" />
+    <None Include="skydome.vs" />
     <None Include="texture.ps" />
     <None Include="texture.vs" />
   </ItemGroup>

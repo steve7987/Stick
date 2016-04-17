@@ -3,10 +3,13 @@
 Graphics::Graphics(){
 	m_d3d = 0;
 	m_Camera = 0;
+
 	m_colorShader = 0;
 	m_TextureShader = 0;
 	m_ShieldShader = 0;
 	m_ExplosionShader = 0;
+	m_SkydomeShader = 0;
+
 	m_Text = 0;
 	m_background = 0;
 	m_EffectDeque = 0;
@@ -120,6 +123,14 @@ bool Graphics::Initialize(int x , int y , HWND hwnd){
 		m_ExplosionShader = 0;
 		return false;
 	}
+	//create skydome shader
+	m_SkydomeShader = new SkydomeShader();
+	if (!m_SkydomeShader || !m_SkydomeShader->Initialize(m_d3d->GetDevice(), hwnd))
+	{
+		MessageBox(hwnd, L"Could not initialize the skydome shader.", L"Error", MB_OK);
+		m_SkydomeShader = 0;
+		return false;
+	}
 	//create the light
 	m_Light = new Light();
 	if (!m_Light){
@@ -160,6 +171,12 @@ void Graphics::Shutdown(){
 	{
 		delete m_Light;
 		m_Light = 0;
+	}
+	//release skydome shader
+	if (m_SkydomeShader){
+		m_SkydomeShader->Shutdown();
+		delete m_SkydomeShader;
+		m_SkydomeShader = 0;
 	}
 	//release explosion shader
 	if (m_ExplosionShader){
@@ -567,8 +584,10 @@ bool Graphics::RenderSkyDome(Renderable * r, Vector apexColor, Vector centerColo
 	if (!r->Render(m_d3d->GetDeviceContext(), activeCamera->GetLookVector())){
 		return false;
 	}
-	bool result = m_TextureShader->Render(m_d3d->GetDeviceContext(), r->GetIndexCount(), r->GetWorldMatrix(), 
-										  viewMatrix, projectionMatrix, r->GetTexture());
+	D3DXVECTOR4 apex = D3DXVECTOR4(apexColor.x , apexColor.y, apexColor.z, 1.0f);
+	D3DXVECTOR4 center = D3DXVECTOR4(centerColor.x , centerColor.y, centerColor.z, 1.0f);
+	bool result = m_SkydomeShader->Render(m_d3d->GetDeviceContext(), r->GetIndexCount(), r->GetWorldMatrix(), 
+										  viewMatrix, projectionMatrix, apex, center);
 	if (!result){
 		return false;
 	}

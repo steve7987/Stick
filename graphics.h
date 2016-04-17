@@ -30,6 +30,7 @@
 #include "lightshader.h"
 #include "shieldshader.h"
 #include "explosionshader.h"
+#include "skydomeshader.h"
 
 extern Gui * g_gui;
 
@@ -114,6 +115,7 @@ private:
 	LightShader * m_LightShader;
 	ShieldShader * m_ShieldShader;
 	ExplosionShader * m_ExplosionShader;
+	SkydomeShader * m_SkydomeShader;
 
 	priority_queue<RenderableType, vector<RenderableType>, CompareRenderableType> renderQueue;
 

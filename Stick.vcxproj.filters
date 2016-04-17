@@ -159,6 +159,9 @@
     <ClInclude Include="terraincell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="skydomeshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="billboard.cpp">
@@ -287,6 +290,9 @@
     <ClCompile Include="terraincell.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="skydomeshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="color.ps">
@@ -323,6 +329,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="explosion.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="skydome.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="skydome.ps">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

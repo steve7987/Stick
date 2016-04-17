@@ -34,6 +34,7 @@ class Renderable;   //any object thats rendered in 3d world
 class SelectionState;  //state for preparing ship and level
 class Shield;  //handles graphics for shields
 class ShieldShader;  //shader used for creating shield effects
+class SkydomeShader;  //shader used for rendering the skydome
 class SpringCamera;
 class Terrain;  //creates and renders and block of terrain
 class TerrainCell;  //contains a small chuck of terrain to be rendered
