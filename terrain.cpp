@@ -137,7 +137,7 @@ void Terrain::CreateSandDune(int begin, int end){
 	float offsetPercent = 0.15f + randb(0.01, 0.04);
 	float Zm = 0.72f + randb(-0.1, 0.1);  //constant for where the top of the sand dune is
 	for (int i = 0; i < TERRAIN_HEIGHT; i++){
-		float zOffset = sin((float) i / TERRAIN_HEIGHT * 2 * PI) * offsetPercent;
+		float zOffset = sin((float) i / (TERRAIN_HEIGHT - 1) * 2 * PI) * offsetPercent;
 		for (int j = 0; j < TERRAIN_WIDTH; j++){
 			float heightPercent = 0;
 			//calculate the percentage across the [begin, end] interval this vertex is
