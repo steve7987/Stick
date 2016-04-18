@@ -78,7 +78,7 @@ bool ActionState::update(float t, Input * input){
 	}
 	
 
-	m_Hero->Update(t, input, m_Camera);
+	m_Hero->Update(t, input, m_Camera, m_EnemyDeque);
 	AdjustCamera(t);
 	m_Environment->update(t, m_Camera->GetFinalPosition());
 	
@@ -234,6 +234,8 @@ void ActionState::CheckCollisions(){
 }
 
 void ActionState::CreateWave(){
+	//TestWave();
+	
 	int waveType = rand()%3;
 	if (waveType == 0){
 		TopWave();
@@ -244,12 +246,13 @@ void ActionState::CreateWave(){
 	else if (waveType == 2){
 		SideWave();
 	}
+	
 }
 
 void ActionState::TopWave(){
 	for (int i = 0; i < 5; i++){
-		Vector ori = Vector(80, 150, -50 + i*20);
-		Vector tar = Vector(30, 5, -20 + 10*i);
+		Vector ori = Vector(125, 150, -50 + i*20);
+		Vector tar = Vector(40, 5, -20 + 10*i);
 		Vector exit = Vector(-30, 0, -20 + 10*i);
 		
 		Enemy * add = new Enemy();
@@ -289,6 +292,16 @@ void ActionState::SideWave(){
 		
 		Enemy * add = new Enemy();
 		add->Initialize(ori, tar, exit, 0.2f + 0.2*i);
+		m_EnemyDeque->push_front(add);
+	}
+}
+
+void ActionState::TestWave(){
+	for (int i = 0; i < 15; i++){
+		Vector ori = Vector(randb(20, 100), randb(0,15), randb(-20,20));
+		
+		Enemy * add = new Enemy();
+		add->Initialize(0.9*ori, ori, 1.1*ori, 30.8f);
 		m_EnemyDeque->push_front(add);
 	}
 }

@@ -10,6 +10,7 @@
 #include "helpers.h"
 #include "billboard.h"
 #include "projectile.h"
+#include "enemy.h"
 
 extern Graphics * g_graphics;
 
@@ -23,9 +24,8 @@ public:
 	void Shutdown();
 
 	bool Render(float t);
-	//velocity should come from the keyboard
-	//blockDeque is a deque of blocks that can be collided with
-	void Update(float t, Input * input, BaseCamera * activeCam);   
+
+	void Update(float t, Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque);   
 
 	Vector GetPosition();
 	Vector GetVelocity();
@@ -35,7 +35,7 @@ public:
 
 private:
 	void HandleMovement(float t, Input * input);
-	void AdjustTargeting(Input * input, BaseCamera * activeCam);
+	void AdjustTargeting(Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque);
 	void HandleShooting(float t, Input * input);
 
 	//model for the hero
@@ -51,7 +51,8 @@ private:
 	Billboard * m_NearTarget;  //the near targeter goes from mouse to plane parallel to camera
 	Billboard * m_FarTarget;  //far targeter goes on ray from ship to near targeter
 
-	Vector nearTargetPos;
+	Vector nearTargetPos;  //position of the near targeter
+	float nearTargetDistance;  //x-coord of the near targeter
 
 	std::deque<Projectile*> * projDeque;  //deque of projectiles that have been fired by the ship
 

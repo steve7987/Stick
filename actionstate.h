@@ -44,6 +44,7 @@ private:
 	void BottomWave();  //creates a wave of enemies that spawn from the bottom
 	void TopWave();  //creates a wave of enemies that spawn from the top
 	void SideWave();  //creates a wave of enemies that spawn from the sides
+	void TestWave();  //creates a wave of enemines and random positions for targeting testing
 
 	int asSentence;
 	int debugSentence;  //used for ouputting different messages

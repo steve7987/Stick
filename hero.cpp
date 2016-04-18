@@ -6,8 +6,8 @@
 #define MAX_PITCH 0.523
 #define MAX_YAW 0.3
 
-#define TARGETER_NEAR 20.0f
-#define TARGETER_FAR 30.0f
+#define MIN_TARGETING_DISTANCE 15.0f
+#define MAX_TARGETING_DISTANCE 200.0f
 
 #define FIRE_TIMER 0.12f
 
@@ -84,6 +84,7 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 	projDeque = new deque<Projectile * >();
 
 	fireTimer = 0;
+	nearTargetDistance = 20.0f;
 
 	return true;
 }
@@ -133,9 +134,9 @@ bool Hero::Render(float t){
 	return true;
 }
 
-void Hero::Update(float t, Input * input, BaseCamera * activeCam){
+void Hero::Update(float t, Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque){
 	HandleMovement(t, input);
-	AdjustTargeting(input, activeCam);
+	AdjustTargeting(input, activeCam, enemyDeque);
 	HandleShooting(t, input);
 	//update projectiles
 	for (std::deque<Projectile*>::iterator it = projDeque->begin(); it != projDeque->end(); ){
@@ -243,16 +244,28 @@ void Hero::HandleMovement(float t, Input * input){
 	heroModel->SetRotation(rotation);
 }
 
-void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam){
-	//compute near target pos
+void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque){
 	Vector origin, direction;
 	int mx, my;
 	input->GetMouseLocation(mx, my);
 	//get ray from camera to mouse
 	g_graphics->GetMouseRay(mx, my, origin, direction, activeCam);
 	direction = direction / direction.length();
+	//update targeting distance if mouse is over an enemy
+	bool replaced = false;
+	for (std::deque<Enemy*>::iterator it = enemyDeque->begin(); it != enemyDeque->end(); ++it){
+		if (ellipsoidLineSegmentCollide((*it)->GetPosition(), (*it)->GetDimensions(), origin, origin + direction * MAX_TARGETING_DISTANCE)){
+			float newDist = (*it)->GetPosition().x - (*it)->GetDimensions().x;  //calc distance to front of target
+			if ((!replaced || newDist < nearTargetDistance) && newDist > MIN_TARGETING_DISTANCE){  //update the distance if its new or closer than old distance
+				nearTargetDistance = newDist;
+				replaced = true;
+			}
+		}
+	}
+	
+	
 	//calculate scale needed to make nearpos.x a certain value
-	float mag = (TARGETER_NEAR - origin.x) / direction.x;
+	float mag = (nearTargetDistance - origin.x) / direction.x;
 	Vector nearPos = origin + mag * direction;
 	m_NearTarget->SetPosition(nearPos);
 	nearTargetPos = nearPos; 
@@ -261,7 +274,7 @@ void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam){
 	Vector shipRay = nearPos - position;
 	shipRay = shipRay / shipRay.length();
 	//calculate magnitute needed to make farpos.x a certain value
-	mag = (TARGETER_FAR - position.x) / shipRay.x;
+	mag = (nearTargetDistance + 10.0f - position.x) / shipRay.x;
 	Vector farpos = position + mag * shipRay;
 	m_FarTarget->SetPosition(farpos);
 }

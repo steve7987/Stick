@@ -3,7 +3,7 @@
 #define PROJECTILE_MODEL "./Assets/laser.txt"
 #define PROJECTILE_TEXTURE L"./Assets/Outline.dds"
 #define PROJECTILE_TIMER 1.0f
-#define PROJECTILE_SPEED 380.0f
+#define PROJECTILE_SPEED 780.0f
 
 Projectile::Projectile(void)
 {
