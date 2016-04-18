@@ -23,7 +23,9 @@ Vector SpringCamera::GetLookVector(){
 }
 
 Vector SpringCamera::GetPosition(){
-	return position;
+	Vector target = position + look;
+	Vector finalPos = target - rotation* look;
+	return finalPos;
 }
 
 void SpringCamera::Update(Vector targetPosition, float t){

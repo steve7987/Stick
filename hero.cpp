@@ -262,13 +262,11 @@ void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam, std::deque<Ene
 			}
 		}
 	}
-	
-	
 	//calculate scale needed to make nearpos.x a certain value
 	float mag = (nearTargetDistance - origin.x) / direction.x;
 	Vector nearPos = origin + mag * direction;
-	m_NearTarget->SetPosition(nearPos);
 	nearTargetPos = nearPos; 
+	m_NearTarget->SetPosition(nearPos);
 	//compute fartarget pos
 	//get ray from ship to near target
 	Vector shipRay = nearPos - position;
@@ -277,6 +275,15 @@ void Hero::AdjustTargeting(Input * input, BaseCamera * activeCam, std::deque<Ene
 	mag = (nearTargetDistance + 10.0f - position.x) / shipRay.x;
 	Vector farpos = position + mag * shipRay;
 	m_FarTarget->SetPosition(farpos);
+	
+	//scale the targets based on their distance from the camera (so they always appear the same size)
+	float nearCamDist = (nearPos - origin).length();
+	float finalScale = nearCamDist / 20.0f;
+	m_NearTarget->SetScale(finalScale, finalScale);
+
+	float farCamDist = (nearPos - origin).length();
+	finalScale = farCamDist / 30.0f;
+	m_FarTarget->SetScale(finalScale, finalScale);
 }
 
 void Hero::HandleShooting(float t, Input * input){
