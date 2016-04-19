@@ -173,6 +173,30 @@ void Terrain::Scroll(float amount){
 	}
 }
 
+float Terrain::GetHeight(float x, float z){
+	//translate coords to be relative to terrain mesh
+	float realX = x - position.x + currentScroll;
+	float realZ = z - position.z;
+	int i = (int) realX;
+	i = i % TERRAIN_HEIGHT;
+	int j = (int) realZ;
+
+	int BL = i * TERRAIN_WIDTH + j;
+	int BR = i * TERRAIN_WIDTH + j + 1;
+	int UL = ((i + 1) % TERRAIN_HEIGHT) * TERRAIN_WIDTH + j;
+	int UR = ((i + 1) % TERRAIN_HEIGHT) * TERRAIN_WIDTH + j + 1;
+	float xPercent = realX - (int) realX;
+	float zPercent = realZ - (int) realZ;
+	//calculate height by weighting height at the four corners
+	if (zPercent > xPercent){
+		//on tri with BL, BR, UR
+		return (1 - zPercent) * m_HeightMap[BL].y + xPercent * m_HeightMap[UR].y + (zPercent - xPercent) * m_HeightMap[BR].y + position.y;
+	}
+	else {  //tri with BL, UR, UL
+		return (1 - xPercent) * m_HeightMap[BL].y + zPercent * m_HeightMap[UR].y + (xPercent - zPercent) * m_HeightMap[UL].y + position.y;
+	}
+}
+
 void Terrain::CreateTerrainCells(ID3D11Device * device){
 	m_TerrainCells = new TerrainCell *[(TERRAIN_WIDTH - 1) / CELL_WIDTH * (TERRAIN_HEIGHT - 1) / CELL_HEIGHT];
 	for (int i = 0; i < (TERRAIN_HEIGHT - 1) / CELL_HEIGHT; i++){
@@ -184,3 +208,4 @@ void Terrain::CreateTerrainCells(ID3D11Device * device){
 		}
 	}
 }
+

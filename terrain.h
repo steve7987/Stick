@@ -45,6 +45,8 @@ public:
 	
 	void Scroll(float amount);  //scrolls the terrain forward by the given amount
 
+	float GetHeight(float x, float z);  //gives the y-height of the terrain at the given spot (adjusts for scroll)
+
 private:
 	
 	bool InitializeHeightMap();  //creates a height map with all y values set to zero and normals to <0,1,0>

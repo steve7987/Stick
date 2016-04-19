@@ -80,3 +80,7 @@ void Environment::update(float t, Vector CameraPosition){
 	m_SkyDome->SetPosition(CameraPosition);
 	m_Terrain->Scroll(t / 10.0f);
 }
+
+float Environment::GetTerrainHeight(float x, float z){
+	return m_Terrain->GetHeight(x, z);
+}

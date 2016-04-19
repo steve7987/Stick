@@ -70,7 +70,7 @@ void ActionState::Shutdown(){
 	
 bool ActionState::update(float t, Input * input){
 	std::ostringstream debugoss;
-	debugoss << "Velocity: " << m_Hero->GetVelocity().y << ", " << m_Hero->GetVelocity().z;
+	debugoss << "Height: " << m_Environment->GetTerrainHeight(m_Hero->GetPosition().x, m_Hero->GetPosition().z);
 	g_graphics->ChangeSentence(debugSentence, debugoss.str(), 12, 52, 1.0f, 1.0f, 1.0f);
 
 	if (input->KeyBeenPushed(VK_ESCAPE)){

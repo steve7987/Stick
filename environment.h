@@ -24,6 +24,8 @@ public:
 	void update(float t, Vector CameraPosition);
 	void render(float t);
 
+	float GetTerrainHeight(float x, float z);
+
 private:
 	Block * m_block;
 	Terrain * m_Terrain;
