@@ -11,6 +11,7 @@
 #include "billboard.h"
 #include "projectile.h"
 #include "enemy.h"
+#include "environment.h"
 
 extern Graphics * g_graphics;
 
@@ -25,7 +26,7 @@ public:
 
 	bool Render(float t);
 
-	void Update(float t, Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque);   
+	void Update(float t, Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque, Environment * environment);   
 
 	Vector GetPosition();
 	Vector GetVelocity();
@@ -34,7 +35,7 @@ public:
 	std::deque<Projectile*> * GetProjectileDeque();
 
 private:
-	void HandleMovement(float t, Input * input);
+	void HandleMovement(float t, Input * input, Environment * environment);
 	void AdjustTargeting(Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque);
 	void HandleShooting(float t, Input * input);
 

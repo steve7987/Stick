@@ -134,8 +134,8 @@ bool Hero::Render(float t){
 	return true;
 }
 
-void Hero::Update(float t, Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque){
-	HandleMovement(t, input);
+void Hero::Update(float t, Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque, Environment * environment){
+	HandleMovement(t, input, environment);
 	AdjustTargeting(input, activeCam, enemyDeque);
 	HandleShooting(t, input);
 	//update projectiles
@@ -169,7 +169,7 @@ std::deque<Projectile*> * Hero::GetProjectileDeque(){
 	return projDeque;
 }
 
-void Hero::HandleMovement(float t, Input * input){
+void Hero::HandleMovement(float t, Input * input, Environment * environment){
 	//get key movement
 	Vector keyYZacc = Vector(0,0,0);
 	if (input->IsKeyDown(0x57) || input->IsKeyDown(0x41) || input->IsKeyDown(0x53) || input->IsKeyDown(0x44)){  
@@ -208,27 +208,38 @@ void Hero::HandleMovement(float t, Input * input){
 	if (acceleration.z == 0 && velocity.z < 0){
 		acceleration.z = 1;
 	}
-	
+
+	if (acceleration * acceleration != 0){ 
+		acceleration = acceleration / acceleration.length();
+		acceleration = ACCELERATION * acceleration * t / 1000.0f;  //final accel vector
+	}
+
+	//if there is a collision with terrain handle it
+	if (environment->GetTerrainHeight(position.x, position.z) > position.y - 1.0f){
+		position.y = environment->GetTerrainHeight(position.x, position.z) + 1.0f;
+	}
+
+
 
 
 	//calculate velocity
 	if (acceleration * acceleration != 0){ 
-		acceleration = acceleration / acceleration.length();
-		acceleration = ACCELERATION * acceleration * t / 1000.0;  //final accel vector
+		//acceleration = acceleration / acceleration.length();
+		//acceleration = ACCELERATION * acceleration * t / 1000.0;  //final accel vector
 		
 		if (acceleration.y * velocity.y < 0 && acceleration.y *acceleration.y > velocity.y * velocity.y){
-			//if accel in opposite direction of velocity and larger create a stop
+			//if accel in opposite direction of velocity and larger in magnitude set vel to zero
 			velocity.y = 0;
 			acceleration.y = 0;
 		}
 		if (acceleration.z * velocity.z < 0 && acceleration.z *acceleration.z > velocity.z * velocity.z){
-			//if accel in opposite direction of velocity and larger create a stop
+			//if accel in opposite direction of velocity and larger in magnitude set vel to zero
 			velocity.z = 0;
 			acceleration.z = 0;
 		}
 
 		velocity = velocity + acceleration;
-		if (velocity * velocity > SPEED_MAX * SPEED_MAX) {
+		if (velocity * velocity > SPEED_MAX * SPEED_MAX) {  //check if speed is larger than the max possible speed
 			velocity = velocity / velocity.length() * SPEED_MAX;
 		}
 	}
