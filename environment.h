@@ -25,6 +25,7 @@ public:
 	void render(float t);
 
 	float GetTerrainHeight(float x, float z);
+	Vector GetTerrainNormal(float x, float z);
 
 private:
 	Block * m_block;

@@ -84,3 +84,7 @@ void Environment::update(float t, Vector CameraPosition){
 float Environment::GetTerrainHeight(float x, float z){
 	return m_Terrain->GetHeight(x, z);
 }
+
+Vector Environment::GetTerrainNormal(float x, float z){
+	return m_Terrain->GetNormal(x, z);
+}

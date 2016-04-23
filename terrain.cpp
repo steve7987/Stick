@@ -197,6 +197,30 @@ float Terrain::GetHeight(float x, float z){
 	}
 }
 
+Vector Terrain::GetNormal(float x, float z){
+	//translate coords to be relative to terrain mesh
+	float realX = x - position.x + currentScroll;
+	float realZ = z - position.z;
+	int i = (int) realX;
+	i = i % TERRAIN_HEIGHT;
+	int j = (int) realZ;
+
+	int BL = i * TERRAIN_WIDTH + j;
+	int BR = i * TERRAIN_WIDTH + j + 1;
+	int UL = ((i + 1) % TERRAIN_HEIGHT) * TERRAIN_WIDTH + j;
+	int UR = ((i + 1) % TERRAIN_HEIGHT) * TERRAIN_WIDTH + j + 1;
+	float xPercent = realX - (int) realX;
+	float zPercent = realZ - (int) realZ;
+	//calculate normal by weighting height at the four corners
+	if (zPercent > xPercent){
+		//on tri with BL, BR, UR
+		return ((1 - zPercent) * m_NormalMap[BL] + xPercent * m_NormalMap[UR] + (zPercent - xPercent) * m_NormalMap[BR]).normalize();
+	}
+	else {  //tri with BL, UR, UL
+		return ((1 - xPercent) * m_NormalMap[BL] + zPercent * m_NormalMap[UR] + (xPercent - zPercent) * m_NormalMap[UL]).normalize();
+	}
+}
+
 void Terrain::CreateTerrainCells(ID3D11Device * device){
 	m_TerrainCells = new TerrainCell *[(TERRAIN_WIDTH - 1) / CELL_WIDTH * (TERRAIN_HEIGHT - 1) / CELL_HEIGHT];
 	for (int i = 0; i < (TERRAIN_HEIGHT - 1) / CELL_HEIGHT; i++){

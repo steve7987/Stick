@@ -46,6 +46,7 @@ public:
 	void Scroll(float amount);  //scrolls the terrain forward by the given amount
 
 	float GetHeight(float x, float z);  //gives the y-height of the terrain at the given spot (adjusts for scroll)
+	Vector GetNormal(float x, float z);  //gives the vector normal to the terrain at the given spot (adjusts for scroll)
 
 private:
 	
