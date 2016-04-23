@@ -21,7 +21,7 @@ bool ActionState::Initialize(){
 	g_graphics->SetVisibleSentence(asSentence, false);
 	
 	debugSentence = g_graphics->RegisterSentence(256);
-	g_graphics->ChangeSentence(debugSentence, "Block Vector: ", 12, 52, 1.0f, 1.0f, 1.0f);
+	g_graphics->ChangeSentence(debugSentence, "Height: ", 12, 52, 1.0f, 1.0f, 1.0f);
 	g_graphics->SetVisibleSentence(debugSentence, false);
 	
 	g_gui->setVisible(GUIWINDOW_ACTION, false);
@@ -78,7 +78,7 @@ bool ActionState::update(float t, Input * input){
 	}
 	
 
-	m_Hero->Update(t, input, m_Camera, m_EnemyDeque);
+	m_Hero->Update(t, input, m_Camera, m_EnemyDeque, m_Environment);
 	AdjustCamera(t);
 	m_Environment->update(t, m_Camera->GetFinalPosition());
 	
@@ -207,8 +207,11 @@ void ActionState::AdjustCamera(float t){
 	if (pos.z < -softBoundary.z){
 		pos.z = -softBoundary.z;
 	}
-
-	m_Camera->Update(pos + Vector(-CAM_DISTANCE, 0, 0), t);
+	Vector camPos = pos + Vector(-CAM_DISTANCE, 0, 0);
+	if (camPos.y + 1.0f < m_Environment->GetTerrainHeight(camPos.x, camPos.z)){
+		camPos.y = 1.0f + m_Environment->GetTerrainHeight(camPos.x, camPos.z);
+	}
+	m_Camera->Update(camPos, t);
 	Quaternion xRot = m_Hero->GetRotation();  //compute only rotation around x-axis
 	//xRot.y = 0;
 	xRot.z = 0;
