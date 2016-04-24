@@ -38,10 +38,13 @@ private:
 	void HandleMovement(float t, Input * input, Environment * environment);
 	void AdjustTargeting(Input * input, BaseCamera * activeCam, std::deque<Enemy *> * enemyDeque);
 	void HandleShooting(float t, Input * input);
+	void UpdateEngine(float t);
 
 	//model for the hero
 	Model * heroModel;
 	Model *sbModel;  //transparent cube to represent the soft boundary for the ship
+	Billboard * m_EngineBillboard;
+	float engineTimer;
 	
 	Vector position;
 	Vector velocity;  //velocity is in units per second

@@ -18,6 +18,7 @@ Hero::Hero(void)
 	m_NearTarget = 0;
 	m_FarTarget = 0;
 	projDeque = 0;
+	m_EngineBillboard = 0;
 }
 
 
@@ -79,6 +80,17 @@ bool Hero::Initialize(Vector position, Vector softBoundary){
 		return false;
 	}
 	m_FarTarget->SetScale(2,2);
+	//create engine billboard
+	m_EngineBillboard = new Billboard();
+	if (!m_EngineBillboard){
+		textDump("unable to create engine billboard");
+		return false;
+	}
+	if (!m_EngineBillboard->Initialize(g_graphics->GetDevice(), L"./Assets/engine.dds")){
+		textDump("unable to initialize engine billboard");
+		return false;
+	}
+	engineTimer = 0.0f;
 
 	//create projectile deque
 	projDeque = new deque<Projectile * >();
@@ -109,6 +121,11 @@ void Hero::Shutdown(){
 		delete m_FarTarget;
 		m_FarTarget = 0;
 	}
+	if (m_EngineBillboard){
+		m_EngineBillboard->Shutdown();
+		delete m_EngineBillboard;
+		m_EngineBillboard = 0;
+	}
 	if (projDeque){
 		while (!projDeque->empty()){
 			Projectile * del = projDeque->front();
@@ -130,6 +147,7 @@ bool Hero::Render(float t){
 	g_graphics->RenderObject(heroModel, SHADER_LIGHT);
 	g_graphics->RenderObject(m_NearTarget, SHADER_TEXTURE);
 	g_graphics->RenderObject(m_FarTarget, SHADER_TEXTURE);
+	g_graphics->RenderObject(m_EngineBillboard, SHADER_TEXTURE);
 	//g_graphics->RenderObject(sbModel, SHADER_LIGHT);
 	return true;
 }
@@ -138,6 +156,7 @@ void Hero::Update(float t, Input * input, BaseCamera * activeCam, std::deque<Ene
 	HandleMovement(t, input, environment);
 	AdjustTargeting(input, activeCam, enemyDeque);
 	HandleShooting(t, input);
+	UpdateEngine(t);
 	//update projectiles
 	for (std::deque<Projectile*>::iterator it = projDeque->begin(); it != projDeque->end(); ){
 		if (!(*it)->Update(t)){
@@ -308,4 +327,12 @@ void Hero::HandleShooting(float t, Input * input){
 		projDeque->push_back(shot);
 		fireTimer += FIRE_TIMER;
 	}
+}
+
+void Hero::UpdateEngine(float t){
+	Vector offset = rotation * Vector(-2.5f, 0, 0);
+	m_EngineBillboard->SetPosition(position + offset);
+	engineTimer += t;
+	float scale = 1.4f + 0.2f*sin(engineTimer * 2.0f * PI / 75.0f);
+	m_EngineBillboard->SetScale(scale, scale);
 }
