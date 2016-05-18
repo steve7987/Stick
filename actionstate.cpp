@@ -7,6 +7,7 @@ ActionState::ActionState(){
 	m_Hero = 0;
 	m_Environment = 0;
 	m_EnemyDeque = 0;
+	m_EnemyProjectileDeque = 0;
 	
 }
 
@@ -64,6 +65,17 @@ void ActionState::Shutdown(){
 		delete m_EnemyDeque;
 		m_EnemyDeque = 0;
 	}
+	if (m_EnemyProjectileDeque){
+		while (!m_EnemyProjectileDeque->empty()){
+			Projectile * del = m_EnemyProjectileDeque->front();
+			m_EnemyProjectileDeque->pop_front();
+			del->Shutdown();
+			delete del;
+			del = 0;
+		}
+		delete m_EnemyProjectileDeque;
+		m_EnemyProjectileDeque = 0;
+	}
 	
 }
 
@@ -84,7 +96,7 @@ bool ActionState::update(float t, Input * input){
 	
 	//update enemies, check if they should be removed
 	for (std::deque<Enemy*>::iterator it = m_EnemyDeque->begin(); it != m_EnemyDeque->end(); ){
-		if (!(*it)->Update(t)){
+		if (!(*it)->Update(t, m_EnemyProjectileDeque, m_Hero->GetPosition())){
 			//need to remove
 			(*it)->Shutdown();
 			delete (*it);
@@ -95,6 +107,20 @@ bool ActionState::update(float t, Input * input){
 			++it;  //dont increment in for loop since removing automatically iterates to the next element
 		}
 	}
+	//update enemy projectiles
+	for (std::deque<Projectile*>::iterator it = m_EnemyProjectileDeque->begin(); it != m_EnemyProjectileDeque->end(); ){
+		if (!(*it)->Update(t)){
+			//need to remove
+			(*it)->Shutdown();
+			delete (*it);
+			(*it) = 0;
+			it = m_EnemyProjectileDeque->erase(it);
+		}
+		else {
+			++it;  //dont increment in for loop since removing automatically iterates to the next element
+		}
+	}
+
 
 	CheckCollisions();
 
@@ -115,7 +141,12 @@ void ActionState::render(float t){
 	m_Environment->render(t);  //need to render environment first so skydome is correct
 	g_graphics->RenderEffects(t);
 	m_Hero->Render(t);
+	//render enemies
 	for (std::deque<Enemy*>::iterator it = m_EnemyDeque->begin(); it != m_EnemyDeque->end(); ++it){
+		(*it)->Render(t);
+	}
+	//render enemy projectiles
+	for (std::deque<Projectile*>::iterator it = m_EnemyProjectileDeque->begin(); it != m_EnemyProjectileDeque->end(); ++it){
 		(*it)->Render(t);
 	}
 	
@@ -147,6 +178,17 @@ void ActionState::onExit(){
 		}
 		delete m_EnemyDeque;
 		m_EnemyDeque = 0;
+	}
+	if (m_EnemyProjectileDeque){
+		while (!m_EnemyProjectileDeque->empty()){
+			Projectile * del = m_EnemyProjectileDeque->front();
+			m_EnemyProjectileDeque->pop_front();
+			del->Shutdown();
+			delete del;
+			del = 0;
+		}
+		delete m_EnemyProjectileDeque;
+		m_EnemyProjectileDeque = 0;
 	}
 }
 
@@ -183,6 +225,7 @@ void ActionState::onEnter(){
 	}
 	//create enemy deque
 	m_EnemyDeque = new deque<Enemy *>();
+	m_EnemyProjectileDeque = new deque<Projectile *>();
 	
 	
 }
@@ -233,6 +276,8 @@ void ActionState::CheckCollisions(){
 			}
 		}
 	}
+	//check for collisions between hero and enemy projectiles
+
 
 }
 

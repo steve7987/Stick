@@ -323,7 +323,7 @@ void Hero::HandleShooting(float t, Input * input){
 	if ((input->MouseBeenPushed(MK_LBUTTON) || input->IsMouseDown(MK_LBUTTON)) && fireTimer <= 0){
 		Projectile * shot = new Projectile();
 		Vector direction = (nearTargetPos - position).normalize();
-		shot->Initialize(position + direction * 5, direction);
+		shot->Initialize(position + direction * 5.0f, direction, 780.0f);
 		projDeque->push_back(shot);
 		fireTimer += FIRE_TIMER;
 	}

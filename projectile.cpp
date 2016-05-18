@@ -3,7 +3,7 @@
 #define PROJECTILE_MODEL "./Assets/laser.txt"
 #define PROJECTILE_TEXTURE L"./Assets/Outline.dds"
 #define PROJECTILE_TIMER 1.0f
-#define PROJECTILE_SPEED 780.0f
+#define PROJECTILE_SPEED speed
 
 Projectile::Projectile(void)
 {
@@ -16,7 +16,7 @@ Projectile::~Projectile(void)
 }
 
 
-bool Projectile::Initialize(Vector position, Vector direction){
+bool Projectile::Initialize(Vector position, Vector direction, float speed){
 	projectileModel = new Model();
 	if (!projectileModel){
 		textDump("could not create model in projectile class");
@@ -28,6 +28,7 @@ bool Projectile::Initialize(Vector position, Vector direction){
 	}
 	this->position = position;
 	this->direction = direction;
+	this->speed = speed;
 	this->previousPosition = position;
 	projectileModel->SetPosition(position);
 	projectileModel->SetRotation(Quaternion(Vector(1,0,0), direction));

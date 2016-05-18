@@ -13,7 +13,7 @@ public:
 	Projectile(void);
 	~Projectile(void);
 
-	bool Initialize(Vector position, Vector direction);
+	bool Initialize(Vector position, Vector direction, float speed);
 	void Shutdown();
 
 	bool Render(float t);
@@ -29,6 +29,7 @@ private:
 
 	Vector position;  //current position of proj tip
 	Vector direction;
+	float speed;
 
 	Vector previousPosition;  //position of the tip during the previous frame (same as pos during first frame)
 

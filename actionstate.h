@@ -56,6 +56,7 @@ private:
 	Vector softBoundary;  // yz boundary for the level.  Ship can move a bit outside of it
 
 	std::deque<Enemy*> * m_EnemyDeque;  //contains all of the current enemies
+	std::deque<Projectile*> * m_EnemyProjectileDeque;  //contains the projectiles from all current enemies
 };
 
 #endif

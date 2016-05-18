@@ -4,7 +4,7 @@
 #define SHIP_TEXTURE L"./Assets/blocktex.dds"
 #define SHIP_DIMENSIONS Vector(0.937, 1.087, 1.091)
 #define SHIP_SPEED 50.0f
-
+#define SHIP_SHOTTIMER 1.2f
 
 Enemy::Enemy(void){
 	m_Model = 0;
@@ -36,6 +36,8 @@ bool Enemy::Initialize(Vector origin, Vector target, Vector exit, float time){
 	this->timer = time;
 	this->mode = 1;
 
+	this->shotTimer = SHIP_SHOTTIMER;
+
 	//setup hitbox	
 	this->dimensions = 3*SHIP_DIMENSIONS;
 	this->remove = false;	
@@ -57,7 +59,15 @@ bool Enemy::Render(float t){
 	return true;
 }
 	
-bool Enemy::Update(float t){
+bool Enemy::Update(float t, deque<Projectile *> * projDeque, Vector targetPos){
+	if (mode != 3){  //if not exiting, try to fire a shot
+		shotTimer -= t / 1000.0f;
+		if (shotTimer < 0){
+			shotTimer = SHIP_SHOTTIMER;
+			FireShot(projDeque, targetPos); 
+		}
+	}
+	
 	if (mode == 1){  //move to target
 		if(MoveToTarget(target, SHIP_SPEED, t)){
 			mode++;
@@ -106,4 +116,11 @@ bool Enemy::MoveToTarget(Vector destination, float speed, float t){
 		position = position + velocity;
 		return false;
 	}
+}
+
+void Enemy::FireShot(deque<Projectile *> * projDeque, Vector targetPos){
+	Projectile * shot = new Projectile();
+	Vector direction = (targetPos - position).normalize();
+	shot->Initialize(position + direction * 5.0f, direction, 75.0f);
+	projDeque->push_back(shot);
 }
